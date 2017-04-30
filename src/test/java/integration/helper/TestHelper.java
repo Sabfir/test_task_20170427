@@ -44,7 +44,7 @@ public class TestHelper {
     }
 
     public Shipment createShipment() {
-        Set<ParcelItem> parcelItems = new HashSet<>();
+        List<ParcelItem> parcelItems = new ArrayList<>();
         parcelItems.add((new ParcelItem( "name1", 1f, 1f, new BigDecimal("1"))));
         List<Parcel> parcels = new ArrayList<>();
         parcels.add(new Parcel( 1, 1, new BigDecimal("12.5"),parcelItems));

@@ -8,7 +8,7 @@ import org.hibernate.annotations.CascadeType;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Data
@@ -28,10 +28,10 @@ public class Parcel {
     @Fetch(value = FetchMode.SUBSELECT)
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "parcel_item_id")
-    private Set<ParcelItem> parcelItems;
+    private List<ParcelItem> parcelItems;
 
     public Parcel(float weight, float length,
-                  BigDecimal declaredPrice, Set<ParcelItem> parcelItems) {
+                  BigDecimal declaredPrice, List<ParcelItem> parcelItems) {
         this.weight = weight;
         this.length = length;
         this.declaredPrice = declaredPrice;

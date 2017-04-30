@@ -135,38 +135,9 @@ public class InitDbService {
         );
 
         // create Shipment
-//
-//public Shipment(Client sender, Client recipient, DeliveryType deliveryType, List<Parcel> parcels,
-        //BigDecimal postPay)
 
-//public Shipment(Client sender, Client recipient, DeliveryType deliveryType, float weight, float length,
-//        BigDecimal declaredPrice, BigDecimal price, BigDecimal postPay) {
-//            this.sender = sender;
-//            this.recipient = recipient;
-//            this.deliveryType = deliveryType;
-//            this.weight = weight;
-//            this.length = length;
-//            this.declaredPrice = declaredPrice;
-//            this.price = price;
-//            this.postPay = postPay;
-//        }
-//        Parcel(int id, float weight, float length,
-//        BigDecimal declaredPrice, List<ParcelItem> parcelItems) {
-//            this.id = id;
-//            this.weight = weight;
-//            this.length = length;
-//            this.declaredPrice = declaredPrice;
-//            this.price = new BigDecimal("0");
-//            this.parcelItems = parcelItems;
-// private long id;
-//        private String name;
-//        private float quantity;
-//        private float weight;
-//        private BigDecimal price;
-//        }
-        Set<ParcelItem> parcelItems = new HashSet<>();
+        List<ParcelItem> parcelItems = new ArrayList<>();
         ParcelItem parcelItem = new ParcelItem("name1", 1f, 1f, new BigDecimal("1"));
-        //parcelItem.setId(1);
         parcelItems.add(parcelItem);
         List<Parcel> parcels = new ArrayList<>();
         parcels.add(new Parcel(1f, 1f, new BigDecimal("12.5"), parcelItems));
@@ -174,7 +145,7 @@ public class InitDbService {
         Shipment shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(1),
                 DeliveryType.W2W, parcels, new BigDecimal("2"));
         shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
-        Set<ParcelItem> parcelItems2 = new HashSet<>();
+        List<ParcelItem> parcelItems2 = new ArrayList<>();
         parcelItems2.add((new ParcelItem("name2", 2f, 2f, new BigDecimal("2"))));
         List<Parcel> parcels2 = new ArrayList<>();
         parcels2.add(new Parcel(2f, 2f, new BigDecimal("19.5"), parcelItems2));

@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,6 +17,6 @@ public class ParcelDto {
     private float width;
     private float height;
     private BigDecimal declaredPrice;
-    private Set<ParcelItem> parcelItems;
+    private List<ParcelItem> parcelItems;
     private BigDecimal price;
 }
