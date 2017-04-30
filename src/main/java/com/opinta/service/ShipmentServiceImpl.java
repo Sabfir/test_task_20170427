@@ -1,11 +1,9 @@
 package com.opinta.service;
 
 import com.opinta.dao.TariffGridDao;
-import com.opinta.entity.Address;
-import com.opinta.entity.DeliveryType;
-import com.opinta.entity.TariffGrid;
-import com.opinta.entity.W2wVariation;
-import com.opinta.util.AddressUtil;
+import com.opinta.entity.*;
+
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -15,11 +13,6 @@ import com.opinta.dao.ClientDao;
 import com.opinta.dao.ShipmentDao;
 import com.opinta.dto.ShipmentDto;
 import com.opinta.mapper.ShipmentMapper;
-import com.opinta.entity.BarcodeInnerNumber;
-import com.opinta.entity.Client;
-import com.opinta.entity.PostcodePool;
-import com.opinta.entity.Shipment;
-import com.opinta.entity.Counterparty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,15 +27,18 @@ public class ShipmentServiceImpl implements ShipmentService {
     private final TariffGridDao tariffGridDao;
     private final ShipmentMapper shipmentMapper;
     private final BarcodeInnerNumberService barcodeInnerNumberService;
+    private final ParcelService parcelService;
 
     @Autowired
     public ShipmentServiceImpl(ShipmentDao shipmentDao, ClientDao clientDao, TariffGridDao tariffGridDao,
-                               ShipmentMapper shipmentMapper, BarcodeInnerNumberService barcodeInnerNumberService) {
+                               ShipmentMapper shipmentMapper, BarcodeInnerNumberService
+                                       barcodeInnerNumberService, ParcelService parcelService) {
         this.shipmentDao = shipmentDao;
         this.clientDao = clientDao;
         this.tariffGridDao = tariffGridDao;
         this.shipmentMapper = shipmentMapper;
         this.barcodeInnerNumberService = barcodeInnerNumberService;
+        this.parcelService = parcelService;
     }
 
     @Override
@@ -93,7 +89,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     @Transactional
     public ShipmentDto save(ShipmentDto shipmentDto) {
-        Client existingClient = clientDao.getById(shipmentDto.getSenderId());
+        Client existingClient = clientDao.getById(shipmentDto.getRecipientId());
         Counterparty counterparty = existingClient.getCounterparty();
         PostcodePool postcodePool = counterparty.getPostcodePool();
         BarcodeInnerNumber newBarcode = barcodeInnerNumberService.generateBarcodeInnerNumber(postcodePool);
@@ -104,7 +100,15 @@ public class ShipmentServiceImpl implements ShipmentService {
 
         shipment.setSender(clientDao.getById(shipment.getSender().getId()));
         shipment.setRecipient(clientDao.getById(shipment.getRecipient().getId()));
-        shipment.setPrice(calculatePrice(shipment));
+        for (Parcel parcel : shipment.getParcels()) {
+            parcel.setPrice(parcelService.calculatePrice(parcel, shipment));
+        }
+        float price = 0;
+        for (Parcel parcel : shipment.getParcels()) {
+            price += Float.valueOf(parcel.getPrice().toString());
+
+        }
+        shipment.setPrice(new BigDecimal(price));
 
         return shipmentMapper.toDto(shipmentDao.save(shipment));
     }
@@ -118,16 +122,26 @@ public class ShipmentServiceImpl implements ShipmentService {
             log.debug("Can't update shipment. Shipment doesn't exist {}", id);
             return null;
         }
-        target.setPrice(calculatePrice(target));
+        for (Parcel parcel : source.getParcels()) {
+            parcel.setPrice(parcelService.calculatePrice(parcel, source));
+        }
+        float price = 0;
+        for (Parcel parcel : source.getParcels()) {
+            price += Float.valueOf(parcel.getPrice().toString());
+        }
+        source.setPrice(new BigDecimal(price));
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException e) {
             log.error("Can't get properties from object to updatable object for shipment", e);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
         target.setId(id);
         log.info("Updating shipment {}", target);
         shipmentDao.update(target);
         return shipmentMapper.toDto(target);
+
     }
 
     @Override
@@ -144,44 +158,4 @@ public class ShipmentServiceImpl implements ShipmentService {
         return true;
     }
 
-    private BigDecimal calculatePrice(Shipment shipment) {
-        log.info("Calculating price for shipment {}", shipment);
-
-        Address senderAddress = shipment.getSender().getAddress();
-        Address recipientAddress = shipment.getRecipient().getAddress();
-        W2wVariation w2wVariation = W2wVariation.COUNTRY;
-        if (AddressUtil.isSameTown(senderAddress, recipientAddress)) {
-            w2wVariation = W2wVariation.TOWN;
-        } else if (AddressUtil.isSameRegion(senderAddress, recipientAddress)) {
-            w2wVariation = W2wVariation.REGION;
-        }
-
-        TariffGrid tariffGrid = tariffGridDao.getLast(w2wVariation);
-        if (shipment.getWeight() < tariffGrid.getWeight() &&
-                shipment.getLength() < tariffGrid.getLength()) {
-            tariffGrid = tariffGridDao.getByDimension(shipment.getWeight(), shipment.getLength(), w2wVariation);
-        }
-
-        log.info("TariffGrid for weight {} per length {} and type {}: {}",
-                shipment.getWeight(), shipment.getLength(), w2wVariation, tariffGrid);
-
-        if (tariffGrid == null) {
-            return BigDecimal.ZERO;
-        }
-
-        float price = tariffGrid.getPrice() + getSurcharges(shipment);
-
-        return new BigDecimal(Float.toString(price));
-    }
-
-    private float getSurcharges(Shipment shipment) {
-        float surcharges = 0;
-        if (shipment.getDeliveryType().equals(DeliveryType.D2W) ||
-                shipment.getDeliveryType().equals(DeliveryType.W2D)) {
-            surcharges += 9;
-        } else if (shipment.getDeliveryType().equals(DeliveryType.D2D)) {
-            surcharges += 12;
-        }
-        return surcharges;
-    }
 }

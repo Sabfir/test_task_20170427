@@ -1,5 +1,6 @@
 package integration.helper;
 
+import com.opinta.dto.ShipmentDto;
 import com.opinta.entity.*;
 import com.opinta.service.*;
 import java.io.File;
@@ -12,6 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Component
 public class TestHelper {
@@ -39,8 +44,13 @@ public class TestHelper {
     }
 
     public Shipment createShipment() {
-        Shipment shipment = new Shipment(createClient(), createClient(),
-                DeliveryType.D2D, 1.0F, 1.0F, new BigDecimal(200), new BigDecimal(30), new BigDecimal(35.2));
+        Set<ParcelItem> parcelItems = new HashSet<>();
+        parcelItems.add((new ParcelItem( "name1", 1f, 1f, new BigDecimal("1"))));
+        List<Parcel> parcels = new ArrayList<>();
+        parcels.add(new Parcel( 1, 1, new BigDecimal("12.5"),parcelItems));
+        List<ShipmentDto> shipmentsSaved = new ArrayList<>();
+        Shipment shipment = new Shipment(createClient(), createClient(), DeliveryType.W2W, parcels,new BigDecimal("2"));
+//
         return shipmentService.saveEntity(shipment);
     }
 
