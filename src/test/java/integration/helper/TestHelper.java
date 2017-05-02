@@ -48,9 +48,7 @@ public class TestHelper {
         parcelItems.add((new ParcelItem( "name1", 1f, 1f, new BigDecimal("1"))));
         List<Parcel> parcels = new ArrayList<>();
         parcels.add(new Parcel( 1, 1, new BigDecimal("12.5"),parcelItems));
-        List<ShipmentDto> shipmentsSaved = new ArrayList<>();
         Shipment shipment = new Shipment(createClient(), createClient(), DeliveryType.W2W, parcels,new BigDecimal("2"));
-//
         return shipmentService.saveEntity(shipment);
     }
 

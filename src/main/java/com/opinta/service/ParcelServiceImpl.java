@@ -1,24 +1,35 @@
 package com.opinta.service;
 
+import com.opinta.dao.ParcelDao;
 import com.opinta.dao.TariffGridDao;
 import com.opinta.dto.ParcelDto;
 import com.opinta.entity.*;
+import com.opinta.mapper.ParcelMapper;
 import com.opinta.util.AddressUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.List;
+
+import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 
 @Service
 @Slf4j
 public class ParcelServiceImpl implements ParcelService {
-    @Autowired
-    private final TariffGridDao tariffGridDao;
 
-    public ParcelServiceImpl(TariffGridDao tariffGridDao) {
+    private final TariffGridDao tariffGridDao;
+    private final ParcelDao parcelDao;
+    private final ParcelMapper parcelMapper;
+
+    @Autowired
+    public ParcelServiceImpl(TariffGridDao tariffGridDao, ParcelDao parcelDao, ParcelMapper parcelMapper) {
         this.tariffGridDao = tariffGridDao;
+        this.parcelDao = parcelDao;
+        this.parcelMapper = parcelMapper;
     }
 
     public BigDecimal calculatePrice(Parcel parcel, Shipment shipment) {
@@ -50,45 +61,71 @@ public class ParcelServiceImpl implements ParcelService {
         return new BigDecimal(Float.toString(price));
     }
 
-
+    @Transactional
     @Override
     public List<Parcel> getAllEntities() {
-        return null;
+        log.info("Getting all parcels");
+        return parcelDao.getAll();
     }
-
+    @Transactional
     @Override
     public Parcel getEntityById(long id) {
-        return null;
+        log.info("Getting parcel {}", id);
+        return parcelDao.getById(id);
     }
-
+    @Transactional
     @Override
     public Parcel saveEntity(Parcel parcel) {
-        return null;
+        log.info("Saving parcels {}", parcel);
+        return parcelDao.save(parcel);
     }
-
+    @Transactional
     @Override
     public List<ParcelDto> getAll() {
-        return null;
+        log.info("Getting all parcels");
+        List<Parcel> parcels = parcelDao.getAll();
+        return parcelMapper.toDto(parcels);
     }
-
-    @Override
-    public List<ParcelDto> getAllByClientId(long clientId) {
-        return null;
-    }
-
+    @Transactional
     @Override
     public ParcelDto getById(long id) {
-        return null;
+        log.info("Getting parcel by id {}", id);
+        Parcel parcel = parcelDao.getById(id);
+        return parcelMapper.toDto(parcel);
     }
-
+    @Transactional
     @Override
     public ParcelDto save(ParcelDto parcelDto) {
-        return null;
+        log.info("Saving parcel {}", parcelDto);
+        Parcel parcel = parcelMapper.toEntity(parcelDto);
+        parcel = parcelDao.save(parcel);
+        return parcelMapper.toDto(parcel);
     }
-
+    @Transactional
     @Override
     public ParcelDto update(long id, ParcelDto parcelDto) {
-        return null;
+        Parcel source = parcelMapper.toEntity(parcelDto);
+        Parcel target = parcelDao.getById(id);
+        if (target == null) {
+            log.debug("Can't update parcel. Parcel doesn't exist {}", id);
+            return null;
+        }
+
+        try {
+            copyProperties(target, source);
+        } catch (IllegalAccessException e) {
+            log.error("Can't get properties from object to updatable object for parcel", e);
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            log.error("Can't get properties from object to updatable object for parcel", e);
+            e.printStackTrace();
+        }
+
+
+        target.setId(id);
+        log.info("Updating parcel {}", target);
+        parcelDao.update(target);
+        return parcelMapper.toDto(target);
     }
 
     private float getSurcharges(Shipment shipment) {

@@ -18,8 +18,6 @@ public interface ParcelService {
 
     List<ParcelDto> getAll();
 
-    List<ParcelDto> getAllByClientId(long clientId);
-
     ParcelDto getById(long id);
 
     ParcelDto save(ParcelDto parcelDto);

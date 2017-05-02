@@ -12,12 +12,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.persistence.ManyToOne;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -29,13 +28,16 @@ import static org.mockito.Mockito.verify;
 public class PDFGeneratorServiceTest {
     @Mock
     private ShipmentService shipmentService;
-
+    @Mock
+    private ParcelService parcelService;
     private PDFGeneratorService pdfGeneratorService;
     private Shipment shipment;
+    private Parcel parcel;
+
 
     @Before
     public void setUp() throws Exception {
-        pdfGeneratorService = new PDFGeneratorServiceImpl(shipmentService);
+        pdfGeneratorService = new PDFGeneratorServiceImpl(shipmentService, parcelService);
 
         Address senderAddress = new Address("00001", "Ternopil", "Monastiriska",
                 "Monastiriska", "Sadova", "51", "");
@@ -44,35 +46,33 @@ public class PDFGeneratorServiceTest {
                 new PostcodePool("00003", false));
         Client sender = new Client("FOP Ivanov", "001", senderAddress, counterparty);
         Client recipient = new Client("Petrov PP", "002", recipientAddress, counterparty);
-//        shipment = new Shipment(sender, recipient, DeliveryType.W2W, 1, 1,
-//                new BigDecimal("12.5"), new BigDecimal("2.5"), new BigDecimal("15.25"));
-
         List<ParcelItem> parcelItems = new ArrayList<>();
-        parcelItems.add((new ParcelItem( "name1", 1f, 1f, new BigDecimal("10"))));
+        parcelItems.add((new ParcelItem("name1", 1f, 1f, new BigDecimal("10"))));
         List<Parcel> parcels = new ArrayList<>();
-        Parcel parcel = new Parcel(1, 1, new BigDecimal("12.5"),parcelItems);
-        parcel.setPrice(new BigDecimal("2.5"));
-       parcels.add(parcel);
-        List<ShipmentDto> shipmentsSaved = new ArrayList<>();
-        shipment = new Shipment(sender, recipient, DeliveryType.W2W, parcels,new BigDecimal("15.25"),new BigDecimal("2.5"));
+        parcel = new Parcel(1, 1, new BigDecimal("12.5"), parcelItems);
+        parcels.add(parcel);
+        shipment = new Shipment(sender, recipient, DeliveryType.W2W, parcels, new BigDecimal("15.25"), new BigDecimal("2.5"));
+
 
     }
 
     @Test
     public void generateLabel_and_generatePostpay_ShouldReturnNotEmptyFile() {
         when(shipmentService.getEntityById(1L)).thenReturn(shipment);
+        when(parcelService.getEntityById(1L)).thenReturn(parcel);
         assertNotEquals("PDFGenerator returned an empty label",
-                pdfGeneratorService.generateLabel(1L).length, 0);
+                pdfGeneratorService.generateLabel(1L, 1L).length, 0);
         assertNotEquals("PDFGenerator returned an empty postpay form",
-                pdfGeneratorService.generateLabel(1L).length, 0);
+                pdfGeneratorService.generateLabel(1L, 1L).length, 0);
         verify(shipmentService, atLeast(2)).getEntityById(1L);
     }
 
     @Test
     public void generateLabel_ShouldReturnValidAcroForms() throws Exception {
         when(shipmentService.getEntityById(1L)).thenReturn(shipment);
+        when(parcelService.getEntityById(1L)).thenReturn(parcel);
 
-        byte[] labelForm = pdfGeneratorService.generateLabel(1L);
+        byte[] labelForm = pdfGeneratorService.generateLabel(1L, 1L);
 
         PDAcroForm acroForm = getAcroFormFromPdfFile(labelForm);
 
@@ -133,7 +133,7 @@ public class PDFGeneratorServiceTest {
                 field.getValue(), "Khreschatik st., 121, Kiev\n00002");
 
         field = (PDTextField) acroForm.getField("priceHryvnas");
-       assertEquals("Expected priceHryvnas to be 15", field.getValue(), "15");
+        assertEquals("Expected priceHryvnas to be 15", field.getValue(), "15");
 
         field = (PDTextField) acroForm.getField("priceKopiyky");
         assertEquals("Expected priceKopiyky to be 25", field.getValue(), "25");
