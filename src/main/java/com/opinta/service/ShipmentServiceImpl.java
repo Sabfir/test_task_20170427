@@ -1,10 +1,8 @@
 package com.opinta.service;
 
-import com.opinta.dao.ParcelDao;
 import com.opinta.dao.TariffGridDao;
 import com.opinta.entity.*;
-import com.opinta.mapper.ParcelMapper;
-import com.opinta.util.AddressUtil;
+
 import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
@@ -29,20 +27,16 @@ public class ShipmentServiceImpl implements ShipmentService {
     private final TariffGridDao tariffGridDao;
     private final ShipmentMapper shipmentMapper;
     private final BarcodeInnerNumberService barcodeInnerNumberService;
-    private final ParcelDao parcelDao;
-    private final ParcelMapper parcelMapper;
 
     @Autowired
     public ShipmentServiceImpl(ShipmentDao shipmentDao, ClientDao clientDao, TariffGridDao tariffGridDao,
-                               ShipmentMapper shipmentMapper, BarcodeInnerNumberService barcodeInnerNumberService,
-                               ParcelDao parcelDao, ParcelMapper parcelMapper) {
+                               ShipmentMapper shipmentMapper, BarcodeInnerNumberService barcodeInnerNumberService) {
         this.shipmentDao = shipmentDao;
         this.clientDao = clientDao;
         this.tariffGridDao = tariffGridDao;
         this.shipmentMapper = shipmentMapper;
         this.barcodeInnerNumberService = barcodeInnerNumberService;
-        this.parcelDao = parcelDao;
-        this.parcelMapper = parcelMapper;
+
     }
 
     @Override
