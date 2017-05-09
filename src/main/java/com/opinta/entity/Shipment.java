@@ -31,9 +31,9 @@ public class Shipment {
     private BigDecimal price;
     private BigDecimal postPay;
     private String description;
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
-    @JoinColumn(name="shipment_id")
+    @JoinColumn(name = "shipment_id")
     private List<Parcel> parcels = new ArrayList<>();
 
     public Shipment(Client sender, Client recipient, DeliveryType deliveryType, BigDecimal price, BigDecimal postPay) {

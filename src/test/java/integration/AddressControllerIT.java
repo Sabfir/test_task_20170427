@@ -120,7 +120,7 @@ public class AddressControllerIT extends BaseControllerIT {
     @Test
     public void deleteAddress_notFound() throws Exception {
         when()
-                .delete("/addresses/{id}", addressId+1).
+                .delete("/addresses/{id}", addressId + 1).
         then().
                 statusCode(SC_NOT_FOUND);
     }

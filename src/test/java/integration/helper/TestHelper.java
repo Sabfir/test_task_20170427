@@ -1,10 +1,11 @@
 package integration.helper;
 
-import com.opinta.entity.*;
-import com.opinta.service.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+
+import com.opinta.entity.*;
+import com.opinta.service.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -58,9 +59,12 @@ public class TestHelper {
         parcelItemDtos3.add(new ParcelItem("Plutonium", 1f, 0.1f, new BigDecimal("3643933.2")));
 
         List<Parcel> parcels = new ArrayList<>();
-        parcels.add(new Parcel(1.65f, 0.245f, 0.15f, 0.117f, new BigDecimal("3430.33"), new BigDecimal("3600.00"), parcelItemDtos1));
-        parcels.add(new Parcel(1f, 0.15f, 0.05f, 0.15f, new BigDecimal("1840.12"), new BigDecimal("1900.00"), parcelItemDtos2));
-        parcels.add(new Parcel(1.240f, 1.2f, 2.4f, 1.2f, new BigDecimal("6103872.70"), new BigDecimal("6103872.70"), parcelItemDtos3));
+        parcels.add(new Parcel(1.65f, 0.245f, 0.15f, 0.117f, new BigDecimal("3430.33"),
+                new BigDecimal("33.00"), parcelItemDtos1));
+        parcels.add(new Parcel(1f, 0.15f, 0.05f, 0.15f, new BigDecimal("1840.12"),
+                new BigDecimal("42"), parcelItemDtos2));
+        parcels.add(new Parcel(1.240f, 1.2f, 2.4f, 1.2f, new BigDecimal("6103872.70"),
+                new BigDecimal("30"), parcelItemDtos3));
         Shipment shipment = new Shipment(createClient(), createClient(),
                 DeliveryType.D2D, new BigDecimal(200), new BigDecimal(205));
         shipment.setParcels(parcels);

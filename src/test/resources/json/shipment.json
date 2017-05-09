@@ -11,7 +11,7 @@
       "width": 0.15,
       "height": 0.117,
       "declaredPrice": 3430.33,
-      "price": 3600,
+      "price": 33.0,
       "items": [
         {
           "name": "Mango dress",
@@ -20,7 +20,7 @@
           "price": 356.3
         },
         {
-           "name": "Laboutin shoues",
+          "name": "Laboutin shoues",
           "quantity": 1,
           "weight": 0.47,
           "price": 1042.34
@@ -32,7 +32,7 @@
           "price": 800.99
         },
         {
-           "name": "Chanel Perfume",
+          "name": "Chanel Perfume",
           "quantity": 1,
           "weight": 0.25,
           "price": 1756.3
@@ -45,7 +45,7 @@
       "width": 0.05,
       "height": 0.15,
       "declaredPrice": 1840.12,
-      "price": 1900,
+      "price": 30.0,
       "items": [
         {
           "name": "IRF9640STRLPBF Transisator",
@@ -73,10 +73,10 @@
       "width": 2.4,
       "height": 1.2,
       "declaredPrice": 6103872.7,
-      "price": 6103872.7,
+      "price": 30,
       "items": [
         {
-           "name": "Uranium",
+          "name": "Uranium",
           "quantity": 1,
           "weight": 0.1,
           "price": 2459939.5
@@ -90,6 +90,5 @@
       ]
     }
   ],
-  "price": 6109372.5
+  "price": 93
 }
-

@@ -23,7 +23,6 @@ public class ParcelItem {
     private float weight;
     private BigDecimal price;
 
-
     public ParcelItem(String name, float quantity, float weight, BigDecimal price) {
         this.name = name;
         this.quantity = quantity;

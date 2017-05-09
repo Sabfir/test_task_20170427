@@ -8,5 +8,5 @@ import org.mapstruct.Mapper;
  * Created by Мария on 09.05.2017.
  */
 @Mapper(componentModel = "spring")
-public interface ParcelItemMapper extends BaseMapper<ParcelItemDto, ParcelItem>{
+public interface ParcelItemMapper extends BaseMapper<ParcelItemDto, ParcelItem> {
 }

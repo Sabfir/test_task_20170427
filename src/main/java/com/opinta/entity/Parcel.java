@@ -1,6 +1,5 @@
 package com.opinta.entity;
 
-import com.opinta.dto.ParcelItemDto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.LazyCollection;
@@ -27,9 +26,9 @@ public class Parcel {
     private float height;
     private BigDecimal price;
     private BigDecimal declaredPrice;
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
-    @JoinColumn(name="parcel_id")
+    @JoinColumn(name = "parcel_id")
     private List<ParcelItem> items = new ArrayList<>();
 
     public Parcel(float weight, float length, float width, float height, BigDecimal declaredPrice, BigDecimal price) {
@@ -41,7 +40,8 @@ public class Parcel {
         this.price = price;
     }
 
-    public Parcel(float weight, float length, float width, float height, BigDecimal declaredPrice, BigDecimal price, List<ParcelItem> items) {
+    public Parcel(float weight, float length, float width, float height, BigDecimal declaredPrice,
+                  BigDecimal price, List<ParcelItem> items) {
         this.weight = weight;
         this.length = length;
         this.width = width;

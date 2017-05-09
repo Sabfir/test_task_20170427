@@ -1,7 +1,6 @@
 package com.opinta.service;
 
 import com.opinta.dao.TariffGridDao;
-import com.opinta.entity.*;
 
 import java.math.BigDecimal;
 import java.util.Iterator;
@@ -12,7 +11,9 @@ import javax.transaction.Transactional;
 import com.opinta.dao.ClientDao;
 import com.opinta.dao.ShipmentDao;
 import com.opinta.dto.ShipmentDto;
+import com.opinta.entity.*;
 import com.opinta.mapper.ShipmentMapper;
+import com.opinta.util.AddressUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -117,7 +118,6 @@ public class ShipmentServiceImpl implements ShipmentService {
             log.error("Can't get properties from object to updatable object for shipment", e);
         }
         target.setId(id);
-        target.setPrice(calculatePrice(target));
         log.info("Updating shipment {}", target);
         shipmentDao.update(target);
         return shipmentMapper.toDto(target);
@@ -139,18 +139,31 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     private BigDecimal calculatePrice(Shipment shipment) {
         log.info("Calculating price for shipment {}", shipment);
-
+        Address senderAddress = shipment.getSender().getAddress();
+        Address recipientAddress = shipment.getRecipient().getAddress();
+        W2wVariation w2wVariation = W2wVariation.COUNTRY;
+        if (AddressUtil.isSameTown(senderAddress, recipientAddress)) {
+            w2wVariation = W2wVariation.TOWN;
+        } else if (AddressUtil.isSameRegion(senderAddress, recipientAddress)) {
+            w2wVariation = W2wVariation.REGION;
+        }
+        TariffGrid tariffGrid = tariffGridDao.getLast(w2wVariation);
        Float sum = new Float(0);
        Iterator<Parcel> iterator = shipment.getParcels().iterator();
-       while (iterator.hasNext()){
+       while (iterator.hasNext()) {
            Parcel parcel = iterator.next();
-           if(parcel.getPrice() != null){
-               sum += new Float(String.valueOf(parcel.getPrice()));
+           if (parcel.getWeight() < tariffGrid.getWeight() && parcel.getLength() < tariffGrid.getLength()) {
+                 tariffGrid = tariffGridDao.getByDimension(parcel.getWeight(), parcel.getLength(), w2wVariation);
            }
+           if (tariffGrid == null) {
+               return BigDecimal.ZERO;
+           }
+           float parcelPrice = tariffGrid.getPrice() + getSurcharges(shipment);
+           parcel.setPrice(new BigDecimal(String.valueOf(parcelPrice)));
+           sum += parcelPrice;
        }
         return new BigDecimal(Float.toString(sum));
     }
-
 
     private float getSurcharges(Shipment shipment) {
         float surcharges = 0;

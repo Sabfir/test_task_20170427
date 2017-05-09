@@ -1,6 +1,5 @@
 package com.opinta.dto;
 
-import com.opinta.entity.ParcelItem;
 import lombok.Getter;
 import lombok.Setter;
 
