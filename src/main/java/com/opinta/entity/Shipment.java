@@ -8,6 +8,8 @@ import javax.persistence.*;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 @Entity
 @Data
@@ -29,7 +31,8 @@ public class Shipment {
     private BigDecimal price;
     private BigDecimal postPay;
     private String description;
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    @OneToMany(cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     @JoinColumn(name="shipment_id")
     private List<Parcel> parcels = new ArrayList<>();
 

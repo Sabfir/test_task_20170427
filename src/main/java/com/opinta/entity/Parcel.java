@@ -3,6 +3,8 @@ package com.opinta.entity;
 import com.opinta.dto.ParcelItemDto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -25,7 +27,8 @@ public class Parcel {
     private float height;
     private BigDecimal price;
     private BigDecimal declaredPrice;
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    @OneToMany(cascade=CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     @JoinColumn(name="parcel_id")
     private List<ParcelItem> items = new ArrayList<>();
 
