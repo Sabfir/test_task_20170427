@@ -2,6 +2,7 @@ package com.opinta.service;
 
 import com.opinta.entity.Address;
 import com.opinta.entity.Client;
+import com.opinta.entity.Parcel;
 import com.opinta.entity.Shipment;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -23,11 +24,14 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
     private ShipmentService shipmentService;
     private PDDocument template;
     private PDTextField field;
+    private ParcelService parcelService;
 
     @Autowired
-    public PDFGeneratorServiceImpl(ShipmentService shipmentService) {
+    public PDFGeneratorServiceImpl(ShipmentService shipmentService, ParcelService parcelService) {
         this.shipmentService = shipmentService;
+        this.parcelService = parcelService;
     }
+
 
     @Override
     public byte[] generatePostpay(long shipmentId) {
@@ -65,8 +69,9 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
     }
 
     @Override
-    public byte[] generateLabel(long shipmentId) {
+    public byte[] generateLabel(long shipmentId, long parcelId) {
         Shipment shipment = shipmentService.getEntityById(shipmentId);
+        Parcel parcel = parcelService.getEntityById(parcelId);
         byte[] data = null;
         try {
             File file = new File(getClass()
@@ -79,13 +84,13 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
                 generateClientsData(shipment, acroForm);
 
                 field = (PDTextField) acroForm.getField("mass");
-                field.setValue(String.valueOf(shipment.getWeight()));
+                field.setValue(String.valueOf(parcel.getWeight()));
 
                 field = (PDTextField) acroForm.getField("value");
-                field.setValue(String.valueOf(shipment.getDeclaredPrice()));
-
+                field.setValue(String.valueOf(parcel.getDeclaredPrice()));
                 field = (PDTextField) acroForm.getField("sendingCost");
                 field.setValue(String.valueOf(shipment.getPrice()));
+
 
                 field = (PDTextField) acroForm.getField("postPrice");
                 field.setValue(String.valueOf(shipment.getPostPay()));

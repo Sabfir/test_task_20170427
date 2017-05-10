@@ -4,7 +4,6 @@ import com.opinta.entity.Counterparty;
 import com.opinta.entity.PostcodePool;
 import java.util.List;
 
-import com.opinta.entity.Counterparty;
 
 public interface CounterpartyDao {
     
