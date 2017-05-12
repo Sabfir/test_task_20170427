@@ -5,9 +5,9 @@
   <module name="SuppressionCommentFilter"/>
   <module name="TreeWalker">
     <module name="FileContentsHolder"/>
-    <module name="com.github.sevntu.checkstyle.checks.coding.ForbidCCommentsInMethods">
-      <property name="severity" value="warning"/>
-    </module>
+    <!--<module name="com.github.sevntu.checkstyle.checks.coding.ForbidCCommentsInMethods">-->
+      <!--<property name="severity" value="warning"/>-->
+    <!--</module>-->
     <module name="com.github.sevntu.checkstyle.checks.naming.InterfaceTypeParameterNameCheck">
       <property name="severity" value="warning"/>
       <property name="format" value="^[A-Z]$"/>

@@ -1,10 +1,11 @@
 package integration.helper;
 
-import com.opinta.entity.*;
-import com.opinta.service.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+
+import com.opinta.entity.*;
+import com.opinta.service.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class TestHelper {
@@ -39,8 +42,32 @@ public class TestHelper {
     }
 
     public Shipment createShipment() {
+
+        List<ParcelItem> parcelItemDtos1 = new ArrayList<>();
+        parcelItemDtos1.add(new ParcelItem("Mango dress", 1.0f, 0.356f, new BigDecimal("356.3")));
+        parcelItemDtos1.add(new ParcelItem("Laboutin shoues", 1.0f, 0.470f, new BigDecimal("1042.34")));
+        parcelItemDtos1.add(new ParcelItem("Versache top", 1.0f, 0.256f, new BigDecimal("800.99")));
+        parcelItemDtos1.add(new ParcelItem("Chanel Perfume", 1.0f, 0.250f, new BigDecimal("1756.3")));
+
+        List<ParcelItem> parcelItemDtos2 = new ArrayList<>();
+        parcelItemDtos2.add(new ParcelItem("IRF9640STRLPBF Transisator", 10f, 0.18f, new BigDecimal("140.56")));
+        parcelItemDtos2.add(new ParcelItem(" IRFB23N15DPBF Transistor", 43f, 0.34f, new BigDecimal("1600.56")));
+        parcelItemDtos2.add(new ParcelItem(" BS250FTA Transistor", 14f, 0.610f, new BigDecimal("140.56")));
+
+        List<ParcelItem> parcelItemDtos3 = new ArrayList<>();
+        parcelItemDtos3.add(new ParcelItem("Uranium", 1.0f, 0.1f, new BigDecimal("2459939.5")));
+        parcelItemDtos3.add(new ParcelItem("Plutonium", 1f, 0.1f, new BigDecimal("3643933.2")));
+
+        List<Parcel> parcels = new ArrayList<>();
+        parcels.add(new Parcel(1.65f, 0.245f, 0.15f, 0.117f, new BigDecimal("3430.33"),
+                new BigDecimal("33.00"), parcelItemDtos1));
+        parcels.add(new Parcel(1f, 0.15f, 0.05f, 0.15f, new BigDecimal("1840.12"),
+                new BigDecimal("42"), parcelItemDtos2));
+        parcels.add(new Parcel(1.240f, 1.2f, 2.4f, 1.2f, new BigDecimal("6103872.70"),
+                new BigDecimal("30"), parcelItemDtos3));
         Shipment shipment = new Shipment(createClient(), createClient(),
-                DeliveryType.D2D, 1.0F, 1.0F, new BigDecimal(200), new BigDecimal(30), new BigDecimal(35.2));
+                DeliveryType.D2D, new BigDecimal(200), new BigDecimal(205));
+        shipment.setParcels(parcels);
         return shipmentService.saveEntity(shipment);
     }
 

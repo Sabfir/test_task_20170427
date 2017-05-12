@@ -66,7 +66,7 @@ public class CounterpartyServiceImpl implements CounterpartyService {
     @Transactional
     public List<CounterpartyDto> getAll() {
         log.info("Getting all counterparties");
-        List<Counterparty> counterparties =  counterpartyDao.getAll();
+        List<Counterparty> counterparties = counterpartyDao.getAll();
         return counterpartyMapper.toDto(counterparties);
     }
 
