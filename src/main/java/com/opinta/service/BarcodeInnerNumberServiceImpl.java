@@ -44,7 +44,8 @@ public class BarcodeInnerNumberServiceImpl implements BarcodeInnerNumberService 
     public List<BarcodeInnerNumberDto> getAll(long postcodeId) {
         PostcodePool postcodePool = postcodePoolDao.getById(postcodeId);
         if (postcodePool == null) {
-            log.debug("Can't get barcodeInnerNumberDto list by postcodePool. PostCodePool {} doesn't exist", postcodeId);
+            log.debug("Can't get barcodeInnerNumberDto list by postcodePool. PostCodePool {} doesn't exist",
+                    postcodeId);
             return null;
         }
         log.info("Getting all barcodeInnerNumbers by postcodeId {}", postcodeId);
@@ -120,7 +121,7 @@ public class BarcodeInnerNumberServiceImpl implements BarcodeInnerNumberService 
         POSTCODE_COUNTERS.putIfAbsent(postcode, 0);
         int innerNumberCounter = POSTCODE_COUNTERS.get(postcode);
         POSTCODE_COUNTERS.put(postcode, innerNumberCounter + 1);
-        if (innerNumberCounter > 9999999) {
+        if (innerNumberCounter > 9_999_999) {
             throw new RuntimeException(format("Barcode %d is too large", innerNumberCounter));
         }
         return String.format("%07d", innerNumberCounter);

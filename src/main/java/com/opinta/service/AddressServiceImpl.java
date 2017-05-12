@@ -101,6 +101,6 @@ public class AddressServiceImpl implements AddressService {
     @Transactional
     public AddressDto update(long id, AddressDto addressDto) {
         Address address = updateEntity(id, addressMapper.toEntity(addressDto));
-        return (address == null ? null : addressMapper.toDto(address));
+        return address == null ? null : addressMapper.toDto(address);
     }
 }

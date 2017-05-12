@@ -1,13 +1,94 @@
 {
   "senderId": [],
   "recipientId": [],
-  "deliveryType": "D2W",
-  "weight": 5,
-  "length": 4,
-  "width": 0,
-  "height": 0,
-  "declaredPrice": 23.5,
-  "price": 33,
-  "postPay": 71,
-  "description": null
+  "deliveryType": "D2D",
+  "postPay": 205,
+  "description": null,
+  "parcels": [
+    {
+      "weight": 1.65,
+      "length": 0.245,
+      "width": 0.15,
+      "height": 0.117,
+      "declaredPrice": 3430.33,
+      "price": 33.0,
+      "items": [
+        {
+          "name": "Mango dress",
+          "quantity": 1,
+          "weight": 0.356,
+          "price": 356.3
+        },
+        {
+          "name": "Laboutin shoues",
+          "quantity": 1,
+          "weight": 0.47,
+          "price": 1042.34
+        },
+        {
+          "name": "Versache top",
+          "quantity": 1,
+          "weight": 0.256,
+          "price": 800.99
+        },
+        {
+          "name": "Chanel Perfume",
+          "quantity": 1,
+          "weight": 0.25,
+          "price": 1756.3
+        }
+      ]
+    },
+    {
+      "weight": 1,
+      "length": 0.15,
+      "width": 0.05,
+      "height": 0.15,
+      "declaredPrice": 1840.12,
+      "price": 30.0,
+      "items": [
+        {
+          "name": "IRF9640STRLPBF Transisator",
+          "quantity": 10,
+          "weight": 0.18,
+          "price": 140.56
+        },
+        {
+          "name": " IRFB23N15DPBF Transistor",
+          "quantity": 43,
+          "weight": 0.34,
+          "price": 1600.56
+        },
+        {
+          "name": " BS250FTA Transistor",
+          "quantity": 14,
+          "weight": 0.61,
+          "price": 140.56
+        }
+      ]
+    },
+    {
+      "weight": 1.24,
+      "length": 1.2,
+      "width": 2.4,
+      "height": 1.2,
+      "declaredPrice": 6103872.7,
+      "price": 30,
+      "items": [
+        {
+          "name": "Uranium",
+          "quantity": 1,
+          "weight": 0.1,
+          "price": 2459939.5
+        },
+        {
+          "name": "Plutonium",
+          "quantity": 1,
+          "weight": 0.1,
+          "price": 3643933.2
+        }
+      ]
+    }
+  ],
+  "price": 93
 }

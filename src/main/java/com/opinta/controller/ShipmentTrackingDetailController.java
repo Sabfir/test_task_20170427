@@ -44,7 +44,7 @@ public class ShipmentTrackingDetailController {
 			return new ResponseEntity<>(format("No ShipmentTrackingDetail found for ID %d", id), NOT_FOUND);
 		}
 		return new ResponseEntity<>(shipmentTrackingDetailDto, OK);
-	}
+	 }
 
 	@PostMapping
     @ResponseStatus(OK)

@@ -95,7 +95,8 @@ public class PostcodePoolServiceImpl implements PostcodePoolService {
     public boolean addBarcodeInnerNumbers(long postcodeId, List<BarcodeInnerNumberDto> barcodeInnerNumberDtos) {
         PostcodePool postcodePool = postcodePoolDao.getById(postcodeId);
         if (postcodePool == null) {
-            log.debug("Can't add barcodeInnerNumberDto list to postcodePool. PostCodePool doesn't exist {}", postcodeId);
+            log.debug("Can't add barcodeInnerNumberDto list to postcodePool. PostCodePool doesn't exist {}",
+                    postcodeId);
             return false;
         }
         postcodePool.setBarcodeInnerNumbers(barcodeInnerNumberMapper.toEntity(barcodeInnerNumberDtos));
