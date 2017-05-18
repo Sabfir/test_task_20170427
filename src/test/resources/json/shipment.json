@@ -1,13 +1,94 @@
 {
   "senderId": [],
   "recipientId": [],
-  "deliveryType": "D2W",
-  "weight": 5,
-  "length": 4,
-  "width": 0,
-  "height": 0,
-  "declaredPrice": 23.5,
-  "price": 33,
-  "postPay": 71,
-  "description": null
+  "deliveryType": "D2D",
+  "postPay": 205,
+  "description": null,
+  "price": 93,
+  "parcels": [
+    {
+      "weight": 1.65,
+      "length": 0.245,
+      "width": 0.15,
+      "height": 0.117,
+      "declaredPrice": 3430.33,
+      "price": 33.0,
+      "items": [
+        {
+          "name": "House of Toys",
+          "quantity": 2,
+          "weight": 0.356,
+          "price": 400.0
+        },
+        {
+          "name": "NA-NA Toy Store",
+          "quantity": 3,
+          "weight": 0.47,
+          "price": 1042.34
+        },
+        {
+          "name": "Super Kids",
+          "quantity": 5,
+          "weight": 0.256,
+          "price": 800.99
+        },
+        {
+          "name": "Kinder-shop",
+          "quantity": 1,
+          "weight": 0.25,
+          "price": 1756.3
+        }
+      ]
+    },
+    {
+      "weight": 1,
+      "length": 0.15,
+      "width": 0.05,
+      "height": 0.15,
+      "declaredPrice": 1840.12,
+      "price": 30.0,
+      "items": [
+        {
+          "name": "Designer LEGO City Passenger Terminal (60104)",
+          "quantity": 10,
+          "weight": 0.18,
+          "price": 140.56
+        },
+        {
+          "name": "Designer LEGO City Swift pursuit 294 details (60138)",
+          "quantity": 43,
+          "weight": 0.34,
+          "price": 1600.56
+        },
+        {
+          "name": "Designer LEGO City Servicing of VIPs (60102)",
+          "quantity": 14,
+          "weight": 0.61,
+          "price": 140.56
+        }
+      ]
+    },
+    {
+      "weight": 1.24,
+      "length": 1.2,
+      "width": 2.4,
+      "height": 1.2,
+      "declaredPrice": 6103.7,
+      "price": 30,
+      "items": [
+        {
+          "name": "Designer LEGO BIONICLE Storm Monster (71314)",
+          "quantity": 1,
+          "weight": 0.155,
+          "price": 245.5
+        },
+        {
+          "name": "Designer LEGO BIONICLE Storm Monster (71314)",
+          "quantity": 1,
+          "weight": 0.155,
+          "price": 364.2
+        }
+      ]
+    }
+  ]
 }

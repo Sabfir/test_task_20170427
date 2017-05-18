@@ -1,6 +1,7 @@
 package com.opinta.dao;
 
 import com.opinta.entity.PostOffice;
+
 import java.util.List;
 
 public interface PostOfficeDao {

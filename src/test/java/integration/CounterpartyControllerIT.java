@@ -5,13 +5,13 @@ import com.opinta.dto.CounterpartyDto;
 import com.opinta.entity.Counterparty;
 import com.opinta.mapper.CounterpartyMapper;
 import com.opinta.service.CounterpartyService;
+import integration.helper.TestHelper;
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
-import integration.helper.TestHelper;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.when;
@@ -46,7 +46,7 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     public void getCounterparties() throws Exception {
         when().
                 get("/counterparties").
-        then().
+                then().
                 statusCode(SC_OK);
     }
 
@@ -54,7 +54,7 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     public void getCounterparty() throws Exception {
         when().
                 get("counterparties/{id}", counterpartyId).
-        then().
+                then().
                 statusCode(SC_OK).
                 body("id", equalTo(counterpartyId));
     }
@@ -63,7 +63,7 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     public void getCounterparty_notFound() throws Exception {
         when().
                 get("/counterparties/{id}", counterpartyId + 1).
-        then().
+                then().
                 statusCode(SC_NOT_FOUND);
     }
 
@@ -79,9 +79,9 @@ public class CounterpartyControllerIT extends BaseControllerIT {
                 given().
                         contentType("application/json;charset=UTF-8").
                         body(expectedJson).
-                when().
+                        when().
                         post("/counterparties/").
-                then().
+                        then().
                         extract().
                         path("id");
 
@@ -106,9 +106,9 @@ public class CounterpartyControllerIT extends BaseControllerIT {
         given().
                 contentType("application/json;charset=UTF-8").
                 body(expectedJson).
-        when().
+                when().
                 put("/counterparties/{id}", counterpartyId).
-        then().
+                then().
                 statusCode(SC_OK);
 
         // check updated data
@@ -124,7 +124,7 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     public void deleteCounterparty() throws Exception {
         when().
                 delete("/counterparties/{id}", counterpartyId).
-        then().
+                then().
                 statusCode(SC_OK);
     }
 
@@ -132,7 +132,7 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     public void deleteCounterparty_notFound() throws Exception {
         when().
                 delete("/counterparties/{id}", counterpartyId + 1).
-        then().
+                then().
                 statusCode(SC_NOT_FOUND);
     }
 }

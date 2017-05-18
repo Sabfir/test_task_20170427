@@ -5,13 +5,13 @@ import com.opinta.dto.PostOfficeDto;
 import com.opinta.entity.PostOffice;
 import com.opinta.mapper.PostOfficeMapper;
 import com.opinta.service.PostOfficeService;
+import integration.helper.TestHelper;
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
-import integration.helper.TestHelper;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.when;
@@ -45,7 +45,7 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     public void getPostOffices() throws Exception {
         when().
                 get("/post-offices").
-        then().
+                then().
                 statusCode(SC_OK);
     }
 
@@ -53,7 +53,7 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     public void getPostOffice() throws Exception {
         when().
                 get("/post-offices/{id}", postOfficeId).
-        then().
+                then().
                 statusCode(SC_OK).
                 body("id", equalTo(postOfficeId));
     }
@@ -62,7 +62,7 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     public void getPostOffice_notFound() throws Exception {
         when().
                 get("/post-offices/{id}", postOfficeId + 1).
-        then().
+                then().
                 statusCode(SC_NOT_FOUND);
     }
 
@@ -79,9 +79,9 @@ public class PostOfficeControllerIT extends BaseControllerIT {
                 given().
                         contentType("application/json;charset=UTF-8").
                         body(expectedJson).
-                when().
+                        when().
                         post("/post-offices").
-                then().
+                        then().
                         extract().
                         path("id");
 
@@ -108,9 +108,9 @@ public class PostOfficeControllerIT extends BaseControllerIT {
         given().
                 contentType("application/json;charset=UTF-8").
                 body(expectedJson).
-        when().
+                when().
                 put("/post-offices/{id}", postOfficeId).
-        then().
+                then().
                 statusCode(SC_OK);
 
         // check updated data
@@ -125,7 +125,7 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     public void deletePostOffice() throws Exception {
         when().
                 delete("/post-offices/{id}", postOfficeId).
-        then().
+                then().
                 statusCode(SC_OK);
     }
 
@@ -133,7 +133,7 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     public void deletePostOffices_notFound() throws Exception {
         when().
                 delete("/post-offices/{id}", postOfficeId + 1).
-        then().
+                then().
                 statusCode(SC_NOT_FOUND);
     }
 }

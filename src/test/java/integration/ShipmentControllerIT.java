@@ -5,13 +5,13 @@ import com.opinta.dto.ShipmentDto;
 import com.opinta.entity.Shipment;
 import com.opinta.mapper.ShipmentMapper;
 import com.opinta.service.ShipmentService;
+import integration.helper.TestHelper;
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
-import integration.helper.TestHelper;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.when;
@@ -45,7 +45,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
     public void getShipments() throws Exception {
         when().
                 get("/shipments").
-        then().
+                then().
                 statusCode(SC_OK);
     }
 
@@ -53,7 +53,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
     public void getShipment() throws Exception {
         when().
                 get("shipments/{id}", shipmentId).
-        then().
+                then().
                 statusCode(SC_OK).
                 body("id", equalTo(shipmentId));
     }
@@ -62,7 +62,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
     public void getShipment_notFound() throws Exception {
         when().
                 get("/shipments/{id}", shipmentId + 1).
-        then().
+                then().
                 statusCode(SC_NOT_FOUND);
     }
 
@@ -79,9 +79,9 @@ public class ShipmentControllerIT extends BaseControllerIT {
                 given().
                         contentType("application/json;charset=UTF-8").
                         body(expectedJson).
-                when().
+                        when().
                         post("/shipments").
-                then().
+                        then().
                         extract().
                         path("id");
 
@@ -108,9 +108,9 @@ public class ShipmentControllerIT extends BaseControllerIT {
         given().
                 contentType("application/json;charset=UTF-8").
                 body(expectedJson).
-        when().
+                when().
                 put("/shipments/{id}", shipmentId).
-        then().
+                then().
                 statusCode(SC_OK);
 
         // check updated data
@@ -118,7 +118,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
         ObjectMapper mapper = new ObjectMapper();
         String actualJson = mapper.writeValueAsString(shipmentDto);
 
-        jsonObject.put("price", 45);
+        jsonObject.put("price", 93);
         expectedJson = jsonObject.toString();
 
         JSONAssert.assertEquals(expectedJson, actualJson, false);
@@ -128,7 +128,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
     public void deleteShipment() throws Exception {
         when().
                 delete("/shipments/{id}", shipmentId).
-        then().
+                then().
                 statusCode(SC_OK);
     }
 
@@ -136,7 +136,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
     public void deleteShipment_notFound() throws Exception {
         when().
                 delete("/shipments/{id}", shipmentId + 1).
-        then().
+                then().
                 statusCode(SC_NOT_FOUND);
     }
 }

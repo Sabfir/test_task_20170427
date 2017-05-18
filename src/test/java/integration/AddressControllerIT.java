@@ -13,10 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.when;
 import static java.lang.Integer.MIN_VALUE;
-
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 
 public class AddressControllerIT extends BaseControllerIT {
@@ -31,17 +29,17 @@ public class AddressControllerIT extends BaseControllerIT {
     public void setUp() {
         addressId = (int) testHelper.createAddress().getId();
     }
-    
+
     @After
     public void tearDown() {
         addressService.delete(addressId);
     }
-    
+
     @Test
     public void getAddresses() throws Exception {
         when().
                 get("/addresses").
-        then().
+                then().
                 statusCode(SC_OK);
     }
 
@@ -49,7 +47,7 @@ public class AddressControllerIT extends BaseControllerIT {
     public void getAddress() throws Exception {
         when().
                 get("/addresses/{id}", addressId).
-        then().
+                then().
                 statusCode(SC_OK).
                 body("id", equalTo(addressId));
     }
@@ -58,7 +56,7 @@ public class AddressControllerIT extends BaseControllerIT {
     public void getAddress_notFound() throws Exception {
         when().
                 get("/addresses/{id}", addressId + 1).
-        then().
+                then().
                 statusCode(SC_NOT_FOUND);
     }
 
@@ -71,9 +69,9 @@ public class AddressControllerIT extends BaseControllerIT {
                 given().
                         contentType("application/json;charset=UTF-8").
                         body(expectedJson).
-                when().
+                        when().
                         post("/addresses").
-                then().
+                        then().
                         extract().
                         path("id");
 
@@ -96,9 +94,9 @@ public class AddressControllerIT extends BaseControllerIT {
         given().
                 contentType("application/json;charset=UTF-8").
                 body(expectedJson).
-        when().
+                when().
                 put("/addresses/{id}", addressId).
-        then().
+                then().
                 statusCode(SC_OK);
 
         // check if updated
@@ -113,15 +111,15 @@ public class AddressControllerIT extends BaseControllerIT {
     public void deleteAddress() throws Exception {
         when()
                 .delete("/addresses/{id}", addressId).
-        then().
+                then().
                 statusCode(SC_OK);
     }
 
     @Test
     public void deleteAddress_notFound() throws Exception {
         when()
-                .delete("/addresses/{id}", addressId+1).
-        then().
+                .delete("/addresses/{id}", addressId + 1).
+                then().
                 statusCode(SC_NOT_FOUND);
     }
 }

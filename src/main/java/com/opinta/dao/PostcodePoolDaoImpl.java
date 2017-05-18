@@ -1,13 +1,13 @@
 package com.opinta.dao;
 
-import java.util.List;
-
 import com.opinta.entity.PostcodePool;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public class PostcodePoolDaoImpl implements PostcodePoolDao {
@@ -17,6 +17,7 @@ public class PostcodePoolDaoImpl implements PostcodePoolDao {
     public PostcodePoolDaoImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
+
     @Override
     @SuppressWarnings("unchecked")
     public List<PostcodePool> getAll() {

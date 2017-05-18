@@ -2,16 +2,18 @@ package integration.helper;
 
 import com.opinta.entity.*;
 import com.opinta.service.*;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class TestHelper {
@@ -39,8 +41,29 @@ public class TestHelper {
     }
 
     public Shipment createShipment() {
-        Shipment shipment = new Shipment(createClient(), createClient(),
-                DeliveryType.D2D, 1.0F, 1.0F, new BigDecimal(200), new BigDecimal(30), new BigDecimal(35.2));
+
+        List<ParcelItem> parcelItemDtos1 = new ArrayList<>();
+        parcelItemDtos1.add(new ParcelItem("House of Toys", 2.0f, 0.356f, new BigDecimal("400.0")));
+        parcelItemDtos1.add(new ParcelItem("NA-NA Toy Store", 3.0f, 0.470f, new BigDecimal("1042.34")));
+        parcelItemDtos1.add(new ParcelItem("Super Kids", 5.0f, 0.256f, new BigDecimal("800.99")));
+        parcelItemDtos1.add(new ParcelItem("Kinder-shop", 1.0f, 0.250f, new BigDecimal("1756.3")));
+
+        List<ParcelItem> parcelItemDtos2 = new ArrayList<>();
+        parcelItemDtos2.add(new ParcelItem("Designer LEGO City Passenger Terminal (60104)", 10f, 0.18f, new BigDecimal("140.56")));
+        parcelItemDtos2.add(new ParcelItem("Designer LEGO City Swift pursuit 294 details (60138)", 43f, 0.34f, new BigDecimal("1600.56")));
+        parcelItemDtos2.add(new ParcelItem("Designer LEGO City Servicing of VIPs (60102)", 14f, 0.610f, new BigDecimal("140.56")));
+
+        List<ParcelItem> parcelItemDtos3 = new ArrayList<>();
+        parcelItemDtos3.add(new ParcelItem("Designer LEGO BIONICLE Storm Monster (71314)", 1.0f, 0.155f, new BigDecimal("245.5")));
+        parcelItemDtos3.add(new ParcelItem("Designer LEGO Star Wars Imperial Deathtroat 106 details (75121)", 1f, 0.155f, new BigDecimal("364.2")));
+
+        List<Parcel> parcels = new ArrayList<>();
+        parcels.add(new Parcel(1.65f, 0.245f, 0.15f, 0.117f, new BigDecimal("3430.33"), new BigDecimal("33.00"), parcelItemDtos1));
+        parcels.add(new Parcel(1f, 0.15f, 0.05f, 0.15f, new BigDecimal("1840.12"), new BigDecimal("42"), parcelItemDtos2));
+        parcels.add(new Parcel(1.240f, 1.2f, 2.4f, 1.2f, new BigDecimal("6103.70"), new BigDecimal("30"), parcelItemDtos3));
+
+        Shipment shipment = new Shipment(createClient(), createClient(), DeliveryType.D2D, new BigDecimal(200), new BigDecimal(205));
+        shipment.setParcels(parcels);
         return shipmentService.saveEntity(shipment);
     }
 
@@ -62,8 +85,7 @@ public class TestHelper {
     }
 
     public Address createAddress() {
-        Address address = new Address("00001", "Ternopil", "Monastiriska",
-                "Monastiriska", "Sadova", "51", "");
+        Address address = new Address("00001", "Ternopil", "Monastiriska", "Monastiriska", "Sadova", "51", "");
         return addressService.saveEntity(address);
     }
 
