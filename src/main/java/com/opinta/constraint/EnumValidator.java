@@ -1,20 +1,17 @@
 package com.opinta.constraint;
 
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 public class EnumValidator implements ConstraintValidator<EnumString, String> {
     private Set<String> AVAILABLE_ENUM_NAMES;
 
     private Set<String> getNamesSet(Class<? extends Enum<?>> e) {
         Enum<?>[] enums = e.getEnumConstants();
-        String[] names = new String[enums.length];
-        for (int i = 0; i < enums.length; i++) {
-            names[i] = enums[i].name();
-        }
+        String[] names = Arrays.stream(enums).map(Enum::name).toArray(String[]::new);
         return new HashSet<>(Arrays.asList(names));
     }
 
@@ -25,9 +22,6 @@ public class EnumValidator implements ConstraintValidator<EnumString, String> {
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (value == null) {
-            return true;
-        }
-        return AVAILABLE_ENUM_NAMES.contains(value);
+        return value == null || AVAILABLE_ENUM_NAMES.contains(value);
     }
 }

@@ -5,13 +5,13 @@ import com.opinta.dto.ClientDto;
 import com.opinta.entity.Client;
 import com.opinta.mapper.ClientMapper;
 import com.opinta.service.ClientService;
+import integration.helper.TestHelper;
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
-import integration.helper.TestHelper;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.when;
@@ -45,7 +45,7 @@ public class ClientControllerIT extends BaseControllerIT {
     public void getClients() throws Exception {
         when().
                 get("/clients").
-        then().
+                then().
                 statusCode(SC_OK);
     }
 
@@ -53,7 +53,7 @@ public class ClientControllerIT extends BaseControllerIT {
     public void getClient() throws Exception {
         when().
                 get("clients/{id}", clientId).
-        then().
+                then().
                 statusCode(SC_OK).
                 body("id", equalTo(clientId));
     }
@@ -62,7 +62,7 @@ public class ClientControllerIT extends BaseControllerIT {
     public void getClient_notFound() throws Exception {
         when().
                 get("/clients/{id}", clientId + 1).
-        then().
+                then().
                 statusCode(SC_NOT_FOUND);
     }
 
@@ -79,9 +79,9 @@ public class ClientControllerIT extends BaseControllerIT {
                 given().
                         contentType("application/json;charset=UTF-8").
                         body(expectedJson).
-                when().
+                        when().
                         post("/clients").
-                then().
+                        then().
                         extract().
                         path("id");
 
@@ -108,9 +108,9 @@ public class ClientControllerIT extends BaseControllerIT {
         given().
                 contentType("application/json;charset=UTF-8").
                 body(expectedJson).
-        when().
+                when().
                 put("/clients/{id}", clientId).
-        then().
+                then().
                 statusCode(SC_OK);
 
         // check updated data
@@ -125,7 +125,7 @@ public class ClientControllerIT extends BaseControllerIT {
     public void deleteClient() throws Exception {
         when().
                 delete("/clients/{id}", clientId).
-        then().
+                then().
                 statusCode(SC_OK);
     }
 
@@ -133,7 +133,7 @@ public class ClientControllerIT extends BaseControllerIT {
     public void deleteClient_notFound() throws Exception {
         when().
                 delete("/clients/{id}", clientId + 1).
-        then().
+                then().
                 statusCode(SC_NOT_FOUND);
     }
 }

@@ -1,16 +1,16 @@
 package com.opinta.service;
 
-import java.util.List;
-
-import javax.transaction.Transactional;
-
 import com.opinta.dao.AddressDao;
 import com.opinta.dto.AddressDto;
-import com.opinta.mapper.AddressMapper;
 import com.opinta.entity.Address;
+import com.opinta.mapper.AddressMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 
@@ -57,7 +57,9 @@ public class AddressServiceImpl implements AddressService {
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException e) {
+            log.error("Can't get properties from object to updatable object for address", e);
+        } catch (InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for address", e);
         }
         target.setId(id);

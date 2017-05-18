@@ -1,20 +1,20 @@
 package com.opinta.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.transaction.Transactional;
-
 import com.opinta.dao.BarcodeInnerNumberDao;
 import com.opinta.dao.PostcodePoolDao;
 import com.opinta.dto.BarcodeInnerNumberDto;
-import com.opinta.mapper.BarcodeInnerNumberMapper;
 import com.opinta.entity.BarcodeInnerNumber;
 import com.opinta.entity.PostcodePool;
+import com.opinta.mapper.BarcodeInnerNumberMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.opinta.entity.BarcodeStatus.USED;
 import static java.lang.String.format;
@@ -25,7 +25,7 @@ import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 public class BarcodeInnerNumberServiceImpl implements BarcodeInnerNumberService {
     // TODO delete after implementation stored procedure that generates innerNumbers
     private static final Map<String, Integer> POSTCODE_COUNTERS = new HashMap<>();
-    
+
     private final BarcodeInnerNumberDao barcodeInnerNumberDao;
     private final PostcodePoolDao postcodePoolDao;
     private final BarcodeInnerNumberMapper barcodeInnerNumberMapper;
@@ -57,7 +57,7 @@ public class BarcodeInnerNumberServiceImpl implements BarcodeInnerNumberService 
         log.info("Getting barcodeInnerNumber by id {}", id);
         return barcodeInnerNumberMapper.toDto(barcodeInnerNumberDao.getById(id));
     }
-    
+
     @Override
     @Transactional
     public BarcodeInnerNumberDto save(long postcodeId, BarcodeInnerNumberDto barcodeInnerNumberDto) {
@@ -86,7 +86,9 @@ public class BarcodeInnerNumberServiceImpl implements BarcodeInnerNumberService 
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException e) {
+            log.error("Can't get properties from object to updatable object for barcodeInnerNumber", e);
+        } catch (InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for barcodeInnerNumber", e);
         }
         target.setId(id);
