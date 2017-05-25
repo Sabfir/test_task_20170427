@@ -78,12 +78,6 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
             if (acroForm != null) {
                 generateClientsData(shipment, acroForm);
 
-                field = (PDTextField) acroForm.getField("mass");
-                field.setValue(String.valueOf(shipment.getWeight()));
-
-                field = (PDTextField) acroForm.getField("value");
-                field.setValue(String.valueOf(shipment.getDeclaredPrice()));
-
                 field = (PDTextField) acroForm.getField("sendingCost");
                 field.setValue(String.valueOf(shipment.getPrice()));
 

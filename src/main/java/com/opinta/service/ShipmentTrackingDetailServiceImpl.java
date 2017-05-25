@@ -4,10 +4,14 @@ import com.opinta.dao.ShipmentTrackingDetailDao;
 import com.opinta.dto.ShipmentTrackingDetailDto;
 import com.opinta.mapper.ShipmentTrackingDetailMapper;
 import com.opinta.entity.ShipmentTrackingDetail;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import javax.transaction.Transactional;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import static org.apache.commons.beanutils.BeanUtils.copyProperties;
@@ -59,7 +63,9 @@ public class ShipmentTrackingDetailServiceImpl implements ShipmentTrackingDetail
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException e) {
+            log.error("Can't get properties from object to updatable object for shipmentTrackingDetail", e);
+        } catch (InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for shipmentTrackingDetail", e);
         }
         target.setId(id);

@@ -1,49 +1,18 @@
 package com.opinta.temp;
 
-import com.opinta.dto.PostOfficeDto;
-import com.opinta.dto.ShipmentDto;
-import com.opinta.entity.Counterparty;
-import com.opinta.mapper.ShipmentTrackingDetailMapper;
-import com.opinta.entity.ShipmentStatus;
-import com.opinta.entity.ShipmentTrackingDetail;
-import com.opinta.entity.TariffGrid;
-import com.opinta.entity.W2wVariation;
-import com.opinta.service.ShipmentTrackingDetailService;
-import com.opinta.service.TariffGridService;
+
+import com.opinta.dto.*;
+import com.opinta.entity.*;
+import com.opinta.mapper.*;
+import com.opinta.service.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import javax.annotation.PostConstruct;
-
-import com.opinta.dto.AddressDto;
-import com.opinta.dto.BarcodeInnerNumberDto;
-import com.opinta.dto.PostcodePoolDto;
-import com.opinta.dto.CounterpartyDto;
-import com.opinta.mapper.AddressMapper;
-import com.opinta.mapper.BarcodeInnerNumberMapper;
-import com.opinta.mapper.ClientMapper;
-import com.opinta.mapper.PostOfficeMapper;
-import com.opinta.mapper.PostcodePoolMapper;
-import com.opinta.mapper.ShipmentMapper;
-import com.opinta.mapper.CounterpartyMapper;
-import com.opinta.entity.Address;
-import com.opinta.entity.BarcodeInnerNumber;
-import com.opinta.entity.Client;
-import com.opinta.entity.DeliveryType;
-import com.opinta.entity.PostOffice;
-import com.opinta.entity.PostcodePool;
-import com.opinta.entity.Shipment;
-import com.opinta.service.AddressService;
-import com.opinta.service.BarcodeInnerNumberService;
-import com.opinta.service.ClientService;
-import com.opinta.service.PostOfficeService;
-import com.opinta.service.PostcodePoolService;
-import com.opinta.service.ShipmentService;
-import com.opinta.service.CounterpartyService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import static com.opinta.entity.BarcodeStatus.RESERVED;
 import static com.opinta.entity.BarcodeStatus.USED;
@@ -140,19 +109,60 @@ public class InitDbService {
         clients.add(new Client("Petrov PP", "002",
                 addressMapper.toEntity(addressesSaved.get(1)), counterparty));
         clients.forEach((Client client) ->
-            clientsSaved.add(this.clientMapper.toEntity(clientService.save(this.clientMapper.toDto(client))))
+                clientsSaved.add(this.clientMapper.toEntity(clientService.save(this.clientMapper.toDto(client))))
         );
 
         // create Shipment
         List<ShipmentDto> shipmentsSaved = new ArrayList<>();
-        Shipment shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(1), DeliveryType.W2W, 1, 1,
-                new BigDecimal("12.5"), new BigDecimal("2.5"), new BigDecimal("15"));
+        Shipment shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(1), DeliveryType.W2W, new BigDecimal(1), new BigDecimal(1));
+
+        List<ParcelItem> parcelItemDtos1 = new ArrayList<>();
+        parcelItemDtos1.add(new ParcelItem("LEGO City", 1.0f, 3.456f, new BigDecimal("3456.3")));
+        parcelItemDtos1.add(new ParcelItem("LEGO BIONICLE", 1.0f, 0.270f, new BigDecimal("142.34")));
+        parcelItemDtos1.add(new ParcelItem("LEGO DUPLO", 1.0f, 0.456f, new BigDecimal("459.99")));
+        parcelItemDtos1.add(new ParcelItem("LEGO Star Wars", 1.0f, 0.657f, new BigDecimal("756.3")));
+
+        List<ParcelItem> parcelItemDtos2 = new ArrayList<>();
+        parcelItemDtos2.add(new ParcelItem("Citric acid", 0.5f, 0.678f, new BigDecimal("140.56")));
+        parcelItemDtos2.add(new ParcelItem("Potassium oxide", 0.1f, 0.34f, new BigDecimal("160.56")));
+
+        List<ParcelItem> parcelItemDtos3 = new ArrayList<>();
+        parcelItemDtos3.add(new ParcelItem("Vollyball", 1.0f, 0.345f, new BigDecimal("245.5")));
+        parcelItemDtos3.add(new ParcelItem("Basketball", 1f, 0.647f, new BigDecimal("364.2")));
+
+        List<Parcel> parcels = new ArrayList<>();
+        parcels.add(new Parcel(4.876f, 12.45f, 45.32f, 0.57f, new BigDecimal("4230.33"), new BigDecimal("4500.00"), parcelItemDtos1));
+        parcels.add(new Parcel(1.0f, 0.25f, 0.25f, 0.25f, new BigDecimal("301.12"), new BigDecimal("310.00"), parcelItemDtos2));
+        parcels.add(new Parcel(1.240f, 1.2f, 2.4f, 1.2f, new BigDecimal("609.7"), new BigDecimal("630.00"), parcelItemDtos3));
+
+        shipment.setParcels(parcels);
+
         shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
-        shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(0), DeliveryType.W2D, 2, 2,
-                new BigDecimal("19.5"), new BigDecimal("0.5"), new BigDecimal("20.5"));
+
+        parcelItemDtos1 = new ArrayList<>();
+        parcelItemDtos1.add(new ParcelItem("House of Toys", 2.0f, 0.356f, new BigDecimal("400.0")));
+        parcelItemDtos1.add(new ParcelItem("NA-NA Toy Store", 3.0f, 0.470f, new BigDecimal("1042.34")));
+        parcelItemDtos1.add(new ParcelItem("Super Kids", 5.0f, 0.256f, new BigDecimal("800.99")));
+        parcelItemDtos1.add(new ParcelItem("Kinder-shop", 1.0f, 0.250f, new BigDecimal("1756.3")));
+
+        parcelItemDtos2 = new ArrayList<>();
+        parcelItemDtos2.add(new ParcelItem("Designer LEGO City Passenger Terminal (60104)", 10f, 0.18f, new BigDecimal("140.56")));
+        parcelItemDtos2.add(new ParcelItem("Designer LEGO City Swift pursuit 294 details (60138)", 43f, 0.34f, new BigDecimal("1600.56")));
+        parcelItemDtos2.add(new ParcelItem("Designer LEGO City Servicing of VIPs (60102)", 14f, 0.610f, new BigDecimal("140.56")));
+
+        parcelItemDtos3 = new ArrayList<>();
+        parcelItemDtos3.add(new ParcelItem("Designer LEGO BIONICLE Storm Monster (71314)", 1.0f, 0.155f, new BigDecimal("245.5")));
+        parcelItemDtos3.add(new ParcelItem("Designer LEGO Star Wars Imperial Deathtroat 106 details (75121)", 1f, 0.155f, new BigDecimal("364.2")));
+
+        parcels = new ArrayList<>();
+        parcels.add(new Parcel(1.65f, 0.245f, 0.15f, 0.117f, new BigDecimal("3430.33"), new BigDecimal("3600.00"), parcelItemDtos1));
+        parcels.add(new Parcel(1f, 0.15f, 0.05f, 0.15f, new BigDecimal("1840.12"), new BigDecimal("1900.00"), parcelItemDtos2));
+        parcels.add(new Parcel(1.240f, 1.2f, 2.4f, 1.2f, new BigDecimal("6103.70"), new BigDecimal("6103.70"), parcelItemDtos3));
+
+        shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(0), DeliveryType.D2D, new BigDecimal(200), new BigDecimal(205));
+        shipment.setParcels(parcels);
         shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
-        shipment = new Shipment(clientsSaved.get(1), clientsSaved.get(0), DeliveryType.D2D, 3, 3,
-                new BigDecimal("8.5"), new BigDecimal("2.25"), new BigDecimal("13.5"));
+        shipment = new Shipment(clientsSaved.get(1), clientsSaved.get(0), DeliveryType.D2D, new BigDecimal("2.25"), new BigDecimal("13.5"));
         shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
 
         // create PostOffice
