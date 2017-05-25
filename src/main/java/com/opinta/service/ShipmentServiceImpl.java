@@ -1,28 +1,19 @@
 package com.opinta.service;
 
-import com.opinta.dao.TariffGridDao;
-import com.opinta.entity.Address;
-import com.opinta.entity.DeliveryType;
-import com.opinta.entity.TariffGrid;
-import com.opinta.entity.W2wVariation;
-import com.opinta.util.AddressUtil;
-import java.math.BigDecimal;
-import java.util.List;
-
-import javax.transaction.Transactional;
-
 import com.opinta.dao.ClientDao;
 import com.opinta.dao.ShipmentDao;
+import com.opinta.dao.TariffGridDao;
 import com.opinta.dto.ShipmentDto;
+import com.opinta.entity.*;
 import com.opinta.mapper.ShipmentMapper;
-import com.opinta.entity.BarcodeInnerNumber;
-import com.opinta.entity.Client;
-import com.opinta.entity.PostcodePool;
-import com.opinta.entity.Shipment;
-import com.opinta.entity.Counterparty;
+import com.opinta.util.AddressUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.util.List;
 
 import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 
@@ -118,13 +109,14 @@ public class ShipmentServiceImpl implements ShipmentService {
             log.debug("Can't update shipment. Shipment doesn't exist {}", id);
             return null;
         }
-        target.setPrice(calculatePrice(target));
+
         try {
             copyProperties(target, source);
         } catch (Exception e) {
             log.error("Can't get properties from object to updatable object for shipment", e);
         }
         target.setId(id);
+        target.setPrice(calculatePrice(target));
         log.info("Updating shipment {}", target);
         shipmentDao.update(target);
         return shipmentMapper.toDto(target);
