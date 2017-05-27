@@ -4,13 +4,19 @@ import com.opinta.dao.ParcelDao;
 import com.opinta.dao.ShipmentDao;
 import com.opinta.dao.TariffGridDao;
 import com.opinta.dto.ParcelDto;
-import com.opinta.entity.*;
+import com.opinta.entity.Address;
+import com.opinta.entity.DeliveryType;
+import com.opinta.entity.Parcel;
+import com.opinta.entity.Shipment;
+import com.opinta.entity.TariffGrid;
+import com.opinta.entity.W2wVariation;
 import com.opinta.mapper.ParcelMapper;
 import com.opinta.util.AddressUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +36,8 @@ public class ParcelServiceImpl implements ParcelService {
     private final TariffGridDao tariffGridDao;
 
     @Autowired
-    public ParcelServiceImpl(ParcelDao parcelDao, ParcelMapper parcelMapper, ShipmentDao shipmentDao, TariffGridDao tariffGridDao) {
+    public ParcelServiceImpl(ParcelDao parcelDao, ParcelMapper parcelMapper,
+                             ShipmentDao shipmentDao, TariffGridDao tariffGridDao) {
         this.parcelDao = parcelDao;
         this.parcelMapper = parcelMapper;
         this.shipmentDao = shipmentDao;
@@ -60,8 +67,8 @@ public class ParcelServiceImpl implements ParcelService {
     @Transactional
     public List<ParcelDto> getAll(long shipmentId) {
         Shipment shipment = shipmentDao.getById(shipmentId);
-        if(shipment == null){
-            return null;
+        if (shipment == null) {
+            return new ArrayList<>();
         }
         return parcelMapper.toDto(getAllEntities(shipmentId));
     }
@@ -76,7 +83,7 @@ public class ParcelServiceImpl implements ParcelService {
     @Transactional
     public ParcelDto save(long shipmentId, ParcelDto parcelDto) {
         Shipment shipment = shipmentDao.getById(shipmentId);
-        if(shipment==null){
+        if (shipment == null) {
             return null;
         }
         Parcel parcel = parcelMapper.toEntity(parcelDto);
@@ -93,12 +100,12 @@ public class ParcelServiceImpl implements ParcelService {
     public ParcelDto update(long shipmentId, long id, ParcelDto parcelDto) {
         Parcel source = parcelMapper.toEntity(parcelDto);
         Parcel target = parcelDao.getById(id);
-        if(target==null){
+        if (target == null) {
             return null;
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for barcodeInnerNumber", e);
         }
         target.setId(id);
@@ -114,7 +121,7 @@ public class ParcelServiceImpl implements ParcelService {
     @Transactional
     public boolean delete(long shipmentId, long id) {
         Parcel parcel = parcelDao.getById(id);
-        if(parcel==null) {
+        if (parcel == null) {
             return false;
         }
         parcelDao.delete(parcel);
@@ -138,7 +145,7 @@ public class ParcelServiceImpl implements ParcelService {
 
     @Override
     @Transactional
-    public List<Parcel> calculatePrices(Shipment shipment){
+    public List<Parcel> calculatePrices(Shipment shipment) {
         List<Parcel> parcels = shipment.getParcels();
         for (Parcel parcel: parcels) {
             log.info("Calculating price for shipment {}", shipment);
@@ -157,9 +164,8 @@ public class ParcelServiceImpl implements ParcelService {
                     parcel.getLength() < tariffGrid.getLength()) {
                 tariffGrid = tariffGridDao.getByDimension(parcel.getWeight(), parcel.getLength(), w2wVariation);
             }
-
-             log.info("TariffGrid for weight {} per length {} and type {}: {}",
-                    parcel.getWeight(), parcel.getLength(), w2wVariation, tariffGrid);
+            log.info("TariffGrid for weight {} per length {} and type {}: {}",
+                     parcel.getWeight(), parcel.getLength(), w2wVariation, tariffGrid);
 
             if (tariffGrid == null) {
                 return new ArrayList<>();

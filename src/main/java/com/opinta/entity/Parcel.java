@@ -5,7 +5,13 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -26,13 +32,13 @@ public class Parcel {
     private BigDecimal declaredPrice;
     private BigDecimal price;
 
-    @OneToMany(cascade= CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "parcel_item_id")
     @Fetch(value = FetchMode.SUBSELECT)
     private List<ParcelItem> parcelItems;
 
-
-    public Parcel(float weight, float length, float width, float height, BigDecimal declaredPrice, BigDecimal price, List<ParcelItem> parcelItems) {
+    public Parcel(float weight, float length, float width, float height, BigDecimal declaredPrice,
+                  BigDecimal price, List<ParcelItem> parcelItems) {
         this.weight = weight;
         this.length = length;
         this.width = width;

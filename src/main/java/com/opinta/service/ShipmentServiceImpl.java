@@ -1,5 +1,6 @@
 package com.opinta.service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,11 @@ import javax.transaction.Transactional;
 import com.opinta.dao.ClientDao;
 import com.opinta.dao.ShipmentDao;
 import com.opinta.dto.ShipmentDto;
-import com.opinta.entity.*;
+import com.opinta.entity.BarcodeInnerNumber;
+import com.opinta.entity.Client;
+import com.opinta.entity.Counterparty;
+import com.opinta.entity.PostcodePool;
+import com.opinta.entity.Shipment;
 import com.opinta.mapper.ShipmentMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +32,8 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Autowired
     public ShipmentServiceImpl(ShipmentDao shipmentDao, ClientDao clientDao,
-                               ShipmentMapper shipmentMapper, BarcodeInnerNumberService barcodeInnerNumberService, ParcelService parcelService) {
+                               ShipmentMapper shipmentMapper, BarcodeInnerNumberService barcodeInnerNumberService,
+                               ParcelService parcelService) {
         this.shipmentDao = shipmentDao;
         this.clientDao = clientDao;
         this.shipmentMapper = shipmentMapper;
@@ -68,7 +74,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         Client client = clientDao.getById(clientId);
         if (client == null) {
             log.debug("Can't get shipment list by client. Client {} doesn't exist", clientId);
-            return null;
+            return new ArrayList<>();
         }
         log.info("Getting all shipments by client {}", client);
         return shipmentMapper.toDto(shipmentDao.getAllByClient(client));
@@ -111,7 +117,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for shipment", e);
         }
         target.setId(id);

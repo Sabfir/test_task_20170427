@@ -27,7 +27,7 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
     @Autowired
     public PDFGeneratorServiceImpl(ShipmentService shipmentService) {
         this.shipmentService = shipmentService;
-   }
+    }
 
     @Override
     public byte[] generatePostpay(long shipmentId) {

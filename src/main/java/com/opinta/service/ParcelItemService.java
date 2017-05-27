@@ -1,8 +1,6 @@
 package com.opinta.service;
 
-import com.opinta.dto.ParcelDto;
 import com.opinta.dto.ParcelItemDto;
-import com.opinta.entity.Parcel;
 import com.opinta.entity.ParcelItem;
 
 import java.util.List;

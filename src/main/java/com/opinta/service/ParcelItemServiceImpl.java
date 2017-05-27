@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.beanutils.BeanUtils.copyProperties;
@@ -55,8 +57,8 @@ public class ParcelItemServiceImpl implements ParcelItemService {
     @Transactional
     public List<ParcelItemDto> getAll(long parcelId) {
         Parcel parcel = parcelDao.getById(parcelId);
-        if(parcel == null){
-            return null;
+        if (parcel == null) {
+            return new ArrayList<>();
         }
         return parcelItemMapper.toDto(getAllEntities(parcelId));
     }
@@ -71,7 +73,7 @@ public class ParcelItemServiceImpl implements ParcelItemService {
     @Transactional
     public ParcelItemDto save(long parcelId, ParcelItemDto parcelItemDto) {
         Parcel parcel = parcelDao.getById(parcelId);
-        if (parcel==null){
+        if (parcel == null) {
             return null;
         }
         ParcelItem parcelItem = parcelItemMapper.toEntity(parcelItemDto);
@@ -86,12 +88,12 @@ public class ParcelItemServiceImpl implements ParcelItemService {
     public ParcelItemDto update(long parcelId, long id, ParcelItemDto parcelItemDto) {
         ParcelItem source = parcelItemMapper.toEntity(parcelItemDto);
         ParcelItem target = parcelItemDao.getById(id);
-        if(target==null){
+        if (target == null) {
             return null;
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for barcodeInnerNumber", e);
         }
         target.setId(id);
@@ -105,7 +107,7 @@ public class ParcelItemServiceImpl implements ParcelItemService {
     @Transactional
     public boolean delete(long parcelId, long id) {
         ParcelItem parcelItem = parcelItemDao.getById(id);
-        if (parcelItem==null){
+        if (parcelItem == null) {
             return false;
         }
         parcelItemDao.delete(parcelItem);

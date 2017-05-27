@@ -8,6 +8,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,8 +28,8 @@ public class ParcelItemDaoImpl implements ParcelItemDao {
     public List<ParcelItem> getAll(long parcelId) {
         Session session = sessionFactory.getCurrentSession();
         Parcel currentParcel = (Parcel) session.get(Parcel.class, parcelId);
-        if(currentParcel == null){
-            return null;
+        if (currentParcel == null) {
+            return new ArrayList<>();
         }
         return currentParcel.getParcelItems();
     }
