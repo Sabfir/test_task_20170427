@@ -24,7 +24,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
-
 @RestController
 @RequestMapping("/counterparties")
 public class CounterpartyController {
@@ -47,7 +46,7 @@ public class CounterpartyController {
     public ResponseEntity<?> getPostOffice(@PathVariable("id") long id) {
         CounterpartyDto counterpartyDto = counterpartyService.getById(id);
         if (counterpartyDto == null) {
-            return new ResponseEntity<>(format("No Counterparty found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format("Get: No Counterparty found for ID %d", id), NOT_FOUND);
         }
         return new ResponseEntity<>(counterpartyDto, OK);
     }
@@ -56,7 +55,7 @@ public class CounterpartyController {
     public ResponseEntity<?> getClientsByCounterpartyId(@PathVariable long counterpartyId) {
         List<ClientDto> clientDtos = clientService.getAllByCounterpartyId(counterpartyId);
         if (clientDtos == null) {
-            return new ResponseEntity<>(format("No Counterparty found for ID %d", counterpartyId), NOT_FOUND);
+            return new ResponseEntity<>(format("No Client found for Counterparty ID %d", counterpartyId), NOT_FOUND);
         }
         return new ResponseEntity<>(clientDtos, OK);
     }
@@ -75,7 +74,7 @@ public class CounterpartyController {
                                                   @RequestBody CounterpartyDto counterpartyDto) {
         counterpartyDto = counterpartyService.update(id, counterpartyDto);
         if (counterpartyDto == null) {
-            return new ResponseEntity<>(format("No Counterparty found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format("Update: No Counterparty found for ID %d", id), NOT_FOUND);
         }
         return new ResponseEntity<>(counterpartyDto, OK);
     }
@@ -83,7 +82,7 @@ public class CounterpartyController {
     @DeleteMapping("{id}")
     public ResponseEntity<?> deletePostOfficeById(@PathVariable("id") long id) {
         if (!this.counterpartyService.delete(id)) {
-            return new ResponseEntity<>(format("No Counterparty found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format("Delete: No Counterparty found for ID %d", id), NOT_FOUND);
         }
         return new ResponseEntity<>(OK);
     }

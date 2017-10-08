@@ -1,6 +1,9 @@
 package com.opinta.service;
 
 import com.opinta.entity.Counterparty;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -55,7 +58,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional
     public List<ClientDto> getAll() {
-        log.info("Getting all clients");
+        log.info("Getting all client-DTOs");
         List<Client> allClients = clientDao.getAll();
         return clientMapper.toDto(allClients);
     }
@@ -66,7 +69,7 @@ public class ClientServiceImpl implements ClientService {
         Counterparty counterparty = counterpartyDao.getById(counterpartyId);
         if (counterparty == null) {
             log.debug("Can't get client list by counterparty. Counterparty {} doesn't exist", counterpartyId);
-            return null;
+            return new ArrayList<>();
         }
         log.info("Getting all clients by counterparty {}", counterparty);
         return clientMapper.toDto(clientDao.getAllByCounterparty(counterparty));
@@ -100,7 +103,7 @@ public class ClientServiceImpl implements ClientService {
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for client", e);
         }
         target.setId(id);

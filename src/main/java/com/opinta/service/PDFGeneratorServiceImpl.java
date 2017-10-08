@@ -67,6 +67,7 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
     @Override
     public byte[] generateLabel(long shipmentId) {
         Shipment shipment = shipmentService.getEntityById(shipmentId);
+        shipment.setPrice(shipment.calculateTotalPrice());
         byte[] data = null;
         try {
             File file = new File(getClass()
@@ -79,10 +80,10 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
                 generateClientsData(shipment, acroForm);
 
                 field = (PDTextField) acroForm.getField("mass");
-                field.setValue(String.valueOf(shipment.getWeight()));
+                field.setValue(String.valueOf(shipment.calculateTotalWeight(shipment.getParcels())));
 
                 field = (PDTextField) acroForm.getField("value");
-                field.setValue(String.valueOf(shipment.getDeclaredPrice()));
+                field.setValue(String.valueOf(shipment.calculateTotalDeclaredPrice(shipment.getParcels())));
 
                 field = (PDTextField) acroForm.getField("sendingCost");
                 field.setValue(String.valueOf(shipment.getPrice()));

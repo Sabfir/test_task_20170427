@@ -2,6 +2,8 @@ package com.opinta.service;
 
 import com.opinta.entity.Counterparty;
 import com.opinta.entity.PostcodePool;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -65,8 +67,8 @@ public class CounterpartyServiceImpl implements CounterpartyService {
     @Override
     @Transactional
     public List<CounterpartyDto> getAll() {
-        log.info("Getting all counterparties");
-        List<Counterparty> counterparties =  counterpartyDao.getAll();
+        log.info("Getting all counterparty-DTOs");
+        List<Counterparty> counterparties = counterpartyDao.getAll();
         return counterpartyMapper.toDto(counterparties);
     }
 
@@ -81,7 +83,7 @@ public class CounterpartyServiceImpl implements CounterpartyService {
     @Override
     @Transactional
     public CounterpartyDto save(CounterpartyDto counterpartyDto) {
-        log.info("Saving counterparty {}", counterpartyDto);
+        log.info("Saving counterparty-DTO {}", counterpartyDto);
         Counterparty counterparty = counterpartyMapper.toEntity(counterpartyDto);
         return counterpartyMapper.toDto(saveEntity(counterparty));
     }
@@ -97,7 +99,7 @@ public class CounterpartyServiceImpl implements CounterpartyService {
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for counterparty", e);
         }
         target.setId(id);

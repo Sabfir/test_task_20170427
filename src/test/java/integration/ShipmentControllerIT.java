@@ -5,6 +5,7 @@ import com.opinta.dto.ShipmentDto;
 import com.opinta.entity.Shipment;
 import com.opinta.mapper.ShipmentMapper;
 import com.opinta.service.ShipmentService;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -12,6 +13,7 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import integration.helper.TestHelper;
+
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.when;
@@ -23,6 +25,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class ShipmentControllerIT extends BaseControllerIT {
     private Shipment shipment;
     private int shipmentId = MIN_VALUE;
+
     @Autowired
     private ShipmentMapper shipmentMapper;
     @Autowired
@@ -119,6 +122,11 @@ public class ShipmentControllerIT extends BaseControllerIT {
         String actualJson = mapper.writeValueAsString(shipmentDto);
 
         jsonObject.put("price", 45);
+        JSONArray parcelsArr = (JSONArray) jsonObject.get("parcels");
+        JSONObject parcels = (JSONObject) parcelsArr.get(0);
+        parcels.put("price", 45);
+        parcelsArr.set(0, parcels);
+        jsonObject.put("parcels", parcelsArr);
         expectedJson = jsonObject.toString();
 
         JSONAssert.assertEquals(expectedJson, actualJson, false);

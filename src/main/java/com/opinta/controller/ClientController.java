@@ -46,7 +46,7 @@ public class ClientController {
     public ResponseEntity<?> getClient(@PathVariable("id") long id) {
         ClientDto clientDto = clientService.getById(id);
         if (clientDto == null) {
-            return new ResponseEntity<>(format("No Client found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format("Get: No Client found for ID %d", id), NOT_FOUND);
         }
         return new ResponseEntity<>(clientDto, OK);
     }
@@ -75,14 +75,14 @@ public class ClientController {
         if (clientDto != null) {
             return new ResponseEntity<>(clientDto, OK);
         } else {
-            return new ResponseEntity<>(format("No Client found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format("Update: No Client found for ID %d", id), NOT_FOUND);
         }
     }
     
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteClient(@PathVariable long id) {
         if (!clientService.delete(id)) {
-            return new ResponseEntity<>(format("No Client found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format("Delete: No Client found for ID %d", id), NOT_FOUND);
         }
         return new ResponseEntity<>(OK);
     }

@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class TestHelper {
@@ -28,6 +30,7 @@ public class TestHelper {
     @Autowired
     private PostOfficeService postOfficeService;
 
+
     public PostOffice createPostOffice() {
         PostOffice postOffice = new PostOffice("Lviv post office", createAddress(), createPostcodePool());
         return postOfficeService.saveEntity(postOffice);
@@ -39,8 +42,12 @@ public class TestHelper {
     }
 
     public Shipment createShipment() {
+        List<ParcelItem> parcelItems = new ArrayList<>();
+        parcelItems.add((new ParcelItem("parcelItem", 1f, 1f, new BigDecimal("1"))));
+        List<Parcel> parcels = new ArrayList<>();
+        parcels.add(new Parcel(1f, 1f, 1f, 1f, new BigDecimal("15.5"), new BigDecimal("2.5"), parcelItems));
         Shipment shipment = new Shipment(createClient(), createClient(),
-                DeliveryType.D2D, 1.0F, 1.0F, new BigDecimal(200), new BigDecimal(30), new BigDecimal(35.2));
+                DeliveryType.D2D, new BigDecimal("15.25"), parcels);
         return shipmentService.saveEntity(shipment);
     }
 
