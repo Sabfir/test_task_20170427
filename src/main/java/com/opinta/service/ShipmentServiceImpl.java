@@ -1,10 +1,9 @@
 package com.opinta.service;
 
 import com.opinta.dao.TariffGridDao;
-import com.opinta.entity.Address;
-import com.opinta.entity.DeliveryType;
-import com.opinta.entity.TariffGrid;
-import com.opinta.entity.W2wVariation;
+import com.opinta.dto.ParcelDto;
+import com.opinta.entity.*;
+import com.opinta.mapper.ParcelMapper;
 import com.opinta.util.AddressUtil;
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,11 +14,6 @@ import com.opinta.dao.ClientDao;
 import com.opinta.dao.ShipmentDao;
 import com.opinta.dto.ShipmentDto;
 import com.opinta.mapper.ShipmentMapper;
-import com.opinta.entity.BarcodeInnerNumber;
-import com.opinta.entity.Client;
-import com.opinta.entity.PostcodePool;
-import com.opinta.entity.Shipment;
-import com.opinta.entity.Counterparty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,15 +28,17 @@ public class ShipmentServiceImpl implements ShipmentService {
     private final TariffGridDao tariffGridDao;
     private final ShipmentMapper shipmentMapper;
     private final BarcodeInnerNumberService barcodeInnerNumberService;
+    private final ParcelMapper parcelMapper;
 
     @Autowired
     public ShipmentServiceImpl(ShipmentDao shipmentDao, ClientDao clientDao, TariffGridDao tariffGridDao,
-                               ShipmentMapper shipmentMapper, BarcodeInnerNumberService barcodeInnerNumberService) {
+                               ShipmentMapper shipmentMapper, BarcodeInnerNumberService barcodeInnerNumberService, ParcelMapper parcelMapper) {
         this.shipmentDao = shipmentDao;
         this.clientDao = clientDao;
         this.tariffGridDao = tariffGridDao;
         this.shipmentMapper = shipmentMapper;
         this.barcodeInnerNumberService = barcodeInnerNumberService;
+        this.parcelMapper = parcelMapper;
     }
 
     @Override
@@ -118,7 +114,7 @@ public class ShipmentServiceImpl implements ShipmentService {
             log.debug("Can't update shipment. Shipment doesn't exist {}", id);
             return null;
         }
-        target.setPrice(calculatePrice(target));
+        source.setPrice(calculatePrice(source));
         try {
             copyProperties(target, source);
         } catch (Exception e) {
@@ -144,8 +140,33 @@ public class ShipmentServiceImpl implements ShipmentService {
         return true;
     }
 
+    @Override
+    @Transactional
+    public boolean addParcels(long shipmentId, List<ParcelDto> parcelDtos) {
+        Shipment shipment = shipmentDao.getById(shipmentId);
+        if (shipment == null) {
+            log.debug("Can't add ParcelDto list to shipment. Shipment doesn't exist {}", shipmentId);
+            return false;
+        }
+        shipment.getParcels().addAll(parcelMapper.toEntity(parcelDtos));
+        shipment.setPrice(calculatePrice(shipment));
+        log.info("Adding ParcelDto list to shipment {}", shipment);
+        shipmentDao.update(shipment);
+        return true;
+    }
+
     private BigDecimal calculatePrice(Shipment shipment) {
-        log.info("Calculating price for shipment {}", shipment);
+        List<Parcel> parcels = shipment.getParcels();
+        BigDecimal price = BigDecimal.ZERO;
+        if (parcels == null) {
+            return price;
+        }
+        for (Parcel parcel : parcels) {
+            BigDecimal parcelPrice = parcel.getPrice();
+            price = price.add(parcelPrice);
+        }
+        return price;
+        /*log.info("Calculating price for shipment {}", shipment);
 
         Address senderAddress = shipment.getSender().getAddress();
         Address recipientAddress = shipment.getRecipient().getAddress();
@@ -171,7 +192,7 @@ public class ShipmentServiceImpl implements ShipmentService {
 
         float price = tariffGrid.getPrice() + getSurcharges(shipment);
 
-        return new BigDecimal(Float.toString(price));
+        return new BigDecimal(Float.toString(price));*/
     }
 
     private float getSurcharges(Shipment shipment) {

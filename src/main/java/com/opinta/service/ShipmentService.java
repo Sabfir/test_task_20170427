@@ -2,6 +2,7 @@ package com.opinta.service;
 
 import java.util.List;
 
+import com.opinta.dto.ParcelDto;
 import com.opinta.dto.ShipmentDto;
 import com.opinta.entity.Shipment;
 
@@ -24,4 +25,6 @@ public interface ShipmentService {
     ShipmentDto update(long id, ShipmentDto shipmentDto);
     
     boolean delete(long id);
+
+    boolean addParcels(long shipmentId, List<ParcelDto> parcelDtos);
 }

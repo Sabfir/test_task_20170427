@@ -44,8 +44,8 @@ public class PDFGeneratorServiceTest {
                 new PostcodePool("00003", false));
         Client sender = new Client("FOP Ivanov", "001", senderAddress, counterparty);
         Client recipient = new Client("Petrov PP", "002", recipientAddress, counterparty);
-        shipment = new Shipment(sender, recipient, DeliveryType.W2W, 1, 1,
-                new BigDecimal("12.5"), new BigDecimal("2.5"), new BigDecimal("15.25"));
+        shipment = new Shipment(sender, recipient, DeliveryType.W2W,
+                new BigDecimal("2.5"), new BigDecimal("15.25"));
     }
 
     @Test
@@ -80,12 +80,6 @@ public class PDFGeneratorServiceTest {
         field = (PDTextField) acroForm.getField("recipientAddress");
         assertEquals("Expected recipientAddress form to contain Khreschatik st., 121, Kiev\n00002",
                 field.getValue(), "Khreschatik st., 121, Kiev\n00002");
-
-        field = (PDTextField) acroForm.getField("mass");
-        assertEquals("Expected mass to be 1.0", field.getValue(), "1.0");
-
-        field = (PDTextField) acroForm.getField("value");
-        assertEquals("Expected value to be 12.5", field.getValue(), "12.5");
 
         field = (PDTextField) acroForm.getField("sendingCost");
         assertEquals("Expected sendingCost to be 2.5", field.getValue(), "2.5");

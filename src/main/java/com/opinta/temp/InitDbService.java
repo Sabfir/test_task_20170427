@@ -1,13 +1,8 @@
 package com.opinta.temp;
 
-import com.opinta.dto.PostOfficeDto;
-import com.opinta.dto.ShipmentDto;
-import com.opinta.entity.Counterparty;
-import com.opinta.mapper.ShipmentTrackingDetailMapper;
-import com.opinta.entity.ShipmentStatus;
-import com.opinta.entity.ShipmentTrackingDetail;
-import com.opinta.entity.TariffGrid;
-import com.opinta.entity.W2wVariation;
+import com.opinta.dto.*;
+import com.opinta.entity.*;
+import com.opinta.mapper.*;
 import com.opinta.service.ShipmentTrackingDetailService;
 import com.opinta.service.TariffGridService;
 import java.math.BigDecimal;
@@ -17,24 +12,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import com.opinta.dto.AddressDto;
-import com.opinta.dto.BarcodeInnerNumberDto;
-import com.opinta.dto.PostcodePoolDto;
-import com.opinta.dto.CounterpartyDto;
-import com.opinta.mapper.AddressMapper;
-import com.opinta.mapper.BarcodeInnerNumberMapper;
-import com.opinta.mapper.ClientMapper;
-import com.opinta.mapper.PostOfficeMapper;
-import com.opinta.mapper.PostcodePoolMapper;
-import com.opinta.mapper.ShipmentMapper;
-import com.opinta.mapper.CounterpartyMapper;
-import com.opinta.entity.Address;
-import com.opinta.entity.BarcodeInnerNumber;
-import com.opinta.entity.Client;
-import com.opinta.entity.DeliveryType;
-import com.opinta.entity.PostOffice;
-import com.opinta.entity.PostcodePool;
-import com.opinta.entity.Shipment;
 import com.opinta.service.AddressService;
 import com.opinta.service.BarcodeInnerNumberService;
 import com.opinta.service.ClientService;
@@ -68,6 +45,7 @@ public class InitDbService {
     private PostOfficeMapper postOfficeMapper;
     private CounterpartyMapper counterpartyMapper;
     private ShipmentTrackingDetailMapper shipmentTrackingDetailMapper;
+    private ParcelMapper parcelMapper;
 
     @Autowired
     public InitDbService(
@@ -78,7 +56,7 @@ public class InitDbService {
             ClientMapper clientMapper, AddressMapper addressMapper, PostcodePoolMapper postcodePoolMapper,
             BarcodeInnerNumberMapper barcodeInnerNumberMapper, ShipmentMapper shipmentMapper,
             PostOfficeMapper postOfficeMapper, CounterpartyMapper counterpartyMapper,
-            ShipmentTrackingDetailMapper shipmentTrackingDetailMapper) {
+            ShipmentTrackingDetailMapper shipmentTrackingDetailMapper, ParcelMapper parcelMapper) {
         this.barcodeInnerNumberService = barcodeInnerNumberService;
         this.postcodePoolService = postcodePoolService;
         this.clientService = clientService;
@@ -96,6 +74,7 @@ public class InitDbService {
         this.postOfficeMapper = postOfficeMapper;
         this.counterpartyMapper = counterpartyMapper;
         this.shipmentTrackingDetailMapper = shipmentTrackingDetailMapper;
+        this.parcelMapper = parcelMapper;
     }
 
     @PostConstruct
@@ -143,17 +122,35 @@ public class InitDbService {
             clientsSaved.add(this.clientMapper.toEntity(clientService.save(this.clientMapper.toDto(client))))
         );
 
-        // create Shipment
+        // create Shipments with Parcels
         List<ShipmentDto> shipmentsSaved = new ArrayList<>();
-        Shipment shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(1), DeliveryType.W2W, 1, 1,
-                new BigDecimal("12.5"), new BigDecimal("2.5"), new BigDecimal("15"));
-        shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
-        shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(0), DeliveryType.W2D, 2, 2,
-                new BigDecimal("19.5"), new BigDecimal("0.5"), new BigDecimal("20.5"));
-        shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
-        shipment = new Shipment(clientsSaved.get(1), clientsSaved.get(0), DeliveryType.D2D, 3, 3,
-                new BigDecimal("8.5"), new BigDecimal("2.25"), new BigDecimal("13.5"));
-        shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
+        Shipment shipment1 = new Shipment(clientsSaved.get(0), clientsSaved.get(1), DeliveryType.W2W,
+                new BigDecimal("2.5"), new BigDecimal("15"));
+        shipment1 = shipmentService.saveEntity(shipment1);
+        List<ParcelDto> parcelDtos1 = new ArrayList<>();
+        parcelDtos1.add(parcelMapper.toDto(new Parcel(shipment1, 1, 1, new BigDecimal("12.5"), new BigDecimal("2.5"))));
+        parcelDtos1.add(parcelMapper.toDto(new Parcel(shipment1, 1, 2, new BigDecimal("10"), new BigDecimal("3"))));
+        parcelDtos1.add(parcelMapper.toDto(new Parcel(shipment1, 1, 3, new BigDecimal("5"), new BigDecimal("10"))));
+        shipmentService.addParcels(shipment1.getId(), parcelDtos1);
+        shipmentsSaved.add(shipmentMapper.toDto(shipment1));
+        Shipment shipment2 = new Shipment(clientsSaved.get(0), clientsSaved.get(0), DeliveryType.W2D,
+                new BigDecimal("0.5"), new BigDecimal("20.5"));
+        shipment2 = shipmentService.saveEntity(shipment2);
+        List<ParcelDto> parcelDtos2 = new ArrayList<>();
+        parcelDtos2.add(parcelMapper.toDto(new Parcel(shipment2, 2, 1, new BigDecimal("15"), new BigDecimal("8"))));
+        parcelDtos2.add(parcelMapper.toDto(new Parcel(shipment2, 2, 2, new BigDecimal("8"), new BigDecimal("6"))));
+        parcelDtos2.add(parcelMapper.toDto(new Parcel(shipment2, 2, 3, new BigDecimal("12"), new BigDecimal("3"))));
+        shipmentService.addParcels(shipment2.getId(), parcelDtos2);
+        shipmentsSaved.add(shipmentMapper.toDto(shipment2));
+        Shipment shipment3 = new Shipment(clientsSaved.get(1), clientsSaved.get(0), DeliveryType.D2D,
+                new BigDecimal("2.25"), new BigDecimal("13.5"));
+        shipment3 = shipmentService.saveEntity(shipment3);
+        List<ParcelDto> parcels3 = new ArrayList<>();
+        parcels3.add(parcelMapper.toDto(new Parcel(shipment3, 3, 1, new BigDecimal("20"), new BigDecimal("1"))));
+        parcels3.add(parcelMapper.toDto(new Parcel(shipment3, 3, 2, new BigDecimal("13"), new BigDecimal("21"))));
+        parcels3.add(parcelMapper.toDto(new Parcel(shipment3, 3, 3, new BigDecimal("4"), new BigDecimal("20"))));
+        shipmentService.addParcels(shipment3.getId(), parcels3);
+        shipmentsSaved.add(shipmentMapper.toDto(shipment3));
 
         // create PostOffice
         PostcodePoolDto postcodePoolDto2 = postcodePoolMapper.toDto(new PostcodePool("00002", false));
