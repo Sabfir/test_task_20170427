@@ -15,9 +15,6 @@ public class Parcel {
     @Id
     @GeneratedValue
     private long id;
-    @ManyToOne
-    @JoinColumn(name = "shipment_id")
-    private Shipment shipment;
     private float weight;
     private float length;
     private float width;
@@ -28,8 +25,7 @@ public class Parcel {
     @JoinColumn(name = "parcel_id")
     private List<ParcelItem> parcelItems = new ArrayList<>();
 
-    public Parcel(Shipment shipment, float weight, float length, BigDecimal declaredPrice, BigDecimal price) {
-        this.shipment = shipment;
+    public Parcel(float weight, float length, BigDecimal declaredPrice, BigDecimal price) {
         this.weight = weight;
         this.length = length;
         this.declaredPrice = declaredPrice;

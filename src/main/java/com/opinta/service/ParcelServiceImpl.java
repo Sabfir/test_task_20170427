@@ -4,9 +4,9 @@ import com.opinta.dao.ParcelDao;
 import com.opinta.dao.ShipmentDao;
 import com.opinta.dao.TariffGridDao;
 import com.opinta.dto.ParcelDto;
-import com.opinta.entity.Parcel;
-import com.opinta.entity.Shipment;
+import com.opinta.entity.*;
 import com.opinta.mapper.ParcelMapper;
+import com.opinta.util.AddressUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,14 +19,12 @@ import java.util.List;
 @Slf4j
 public class ParcelServiceImpl implements ParcelService {
     private final ParcelDao parcelDao;
-    private final ShipmentDao shipmentDao;
     private final TariffGridDao tariffGridDao;
     private final ParcelMapper parcelMapper;
 
     @Autowired
-    public ParcelServiceImpl(ParcelDao parcelDao, ShipmentDao shipmentDao, TariffGridDao tariffGridDao, ParcelMapper parcelMapper) {
+    public ParcelServiceImpl(ParcelDao parcelDao, TariffGridDao tariffGridDao, ParcelMapper parcelMapper) {
         this.parcelDao = parcelDao;
-        this.shipmentDao = shipmentDao;
         this.tariffGridDao = tariffGridDao;
         this.parcelMapper = parcelMapper;
     }
@@ -47,53 +45,14 @@ public class ParcelServiceImpl implements ParcelService {
 
     @Override
     @Transactional
-    public Parcel saveEntity(Parcel parcel) {
-        log.info("Saving parcel {}", parcel);
-        return parcelDao.save(parcel);
-    }
-
-    @Override
-    @Transactional
     public List<ParcelDto> getAll() {
         return parcelMapper.toDto(getAllEntities());
     }
 
     @Override
     @Transactional
-    public List<ParcelDto> getAllByShipmentId(long shipmentId) {
-        Shipment shipment = shipmentDao.getById(shipmentId);
-        if (shipment == null) {
-            log.debug("Can't get parcel list by shipment. Shipment {} doesn't exist", shipmentId);
-            return null;
-        }
-        log.info("Getting all parcels by shipment {}", shipment);
-        return parcelMapper.toDto(parcelDao.getAllByShipment(shipment));
-    }
-
-    @Override
-    @Transactional
     public ParcelDto getById(long id) {
         return parcelMapper.toDto(getEntityById(id));
-    }
-
-    @Override
-    @Transactional
-    public ParcelDto save(ParcelDto parcelDto) {
-        Parcel parcel = parcelMapper.toEntity(parcelDto);
-        parcel.setPrice(calculatePrice(parcel));
-        return parcelMapper.toDto(parcelDao.save(parcel));
-    }
-
-    @Override
-    @Transactional
-    public ParcelDto update(long id, ParcelDto parcelDto) {
-        Parcel source = parcelMapper.toEntity(parcelDto);
-        Parcel target = parcelDao.getById(id);
-        if (target == null) {
-            log.debug("Can't update parcel. Parcel doesn't exist {}", id);
-            return null;
-        }
-        return null;
     }
 
     @Override
@@ -109,7 +68,42 @@ public class ParcelServiceImpl implements ParcelService {
         return true;
     }
 
-    private BigDecimal calculatePrice(Parcel parcel) {
-        return new BigDecimal("33");
+    public void fillFields(Shipment shipment, Parcel parcel) {
+        parcel.setPrice(calculatePrice(shipment, parcel));
+    }
+
+    private BigDecimal calculatePrice(Shipment shipment, Parcel parcel) {
+        log.info("Calculating price for parcel {}", parcel);
+        Address senderAddress = shipment.getSender().getAddress();
+        Address recipientAddress = shipment.getRecipient().getAddress();
+        W2wVariation w2wVariation = W2wVariation.COUNTRY;
+        if (AddressUtil.isSameTown(senderAddress, recipientAddress)) {
+            w2wVariation = W2wVariation.TOWN;
+        } else if (AddressUtil.isSameRegion(senderAddress, recipientAddress)) {
+            w2wVariation = W2wVariation.REGION;
+        }
+        TariffGrid tariffGrid = tariffGridDao.getLast(w2wVariation);
+        if (parcel.getWeight() < tariffGrid.getWeight() &&
+                parcel.getLength() < tariffGrid.getLength()) {
+            tariffGrid = tariffGridDao.getByDimension(parcel.getWeight(), parcel.getLength(), w2wVariation);
+        }
+        log.info("TariffGrid for weight {} per length {} and type {}: {}",
+                parcel.getWeight(), parcel.getLength(), w2wVariation, tariffGrid);
+        if (tariffGrid == null) {
+            return BigDecimal.ZERO;
+        }
+        float price = tariffGrid.getPrice() + getSurcharges(shipment);
+        return new BigDecimal(Float.toString(price));
+    }
+
+    private float getSurcharges(Shipment shipment) {
+        float surcharges = 0;
+        if (shipment.getDeliveryType().equals(DeliveryType.D2W) ||
+                shipment.getDeliveryType().equals(DeliveryType.W2D)) {
+            surcharges += 9;
+        } else if (shipment.getDeliveryType().equals(DeliveryType.D2D)) {
+            surcharges += 12;
+        }
+        return surcharges;
     }
 }

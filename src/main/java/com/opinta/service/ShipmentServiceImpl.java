@@ -1,10 +1,7 @@
 package com.opinta.service;
 
-import com.opinta.dao.TariffGridDao;
-import com.opinta.dto.ParcelDto;
 import com.opinta.entity.*;
-import com.opinta.mapper.ParcelMapper;
-import com.opinta.util.AddressUtil;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -25,27 +22,26 @@ import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 public class ShipmentServiceImpl implements ShipmentService {
     private final ShipmentDao shipmentDao;
     private final ClientDao clientDao;
-    private final TariffGridDao tariffGridDao;
     private final ShipmentMapper shipmentMapper;
     private final BarcodeInnerNumberService barcodeInnerNumberService;
-    private final ParcelMapper parcelMapper;
+    private final ParcelService parcelService;
 
     @Autowired
-    public ShipmentServiceImpl(ShipmentDao shipmentDao, ClientDao clientDao, TariffGridDao tariffGridDao,
-                               ShipmentMapper shipmentMapper, BarcodeInnerNumberService barcodeInnerNumberService, ParcelMapper parcelMapper) {
+    public ShipmentServiceImpl(ShipmentDao shipmentDao, ClientDao clientDao,
+                               ShipmentMapper shipmentMapper, BarcodeInnerNumberService barcodeInnerNumberService, ParcelService parcelService) {
         this.shipmentDao = shipmentDao;
         this.clientDao = clientDao;
-        this.tariffGridDao = tariffGridDao;
         this.shipmentMapper = shipmentMapper;
         this.barcodeInnerNumberService = barcodeInnerNumberService;
-        this.parcelMapper = parcelMapper;
+        this.parcelService = parcelService;
     }
 
     @Override
     @Transactional
     public List<Shipment> getAllEntities() {
         log.info("Getting all shipments");
-        return shipmentDao.getAll();
+        List<Shipment> shipments = shipmentDao.getAll();
+        return shipments;
     }
 
     @Override
@@ -97,11 +93,9 @@ public class ShipmentServiceImpl implements ShipmentService {
         Shipment shipment = shipmentMapper.toEntity(shipmentDto);
         shipment.setBarcode(newBarcode);
         log.info("Saving shipment with assigned barcode", shipmentMapper.toDto(shipment));
-
         shipment.setSender(clientDao.getById(shipment.getSender().getId()));
         shipment.setRecipient(clientDao.getById(shipment.getRecipient().getId()));
         shipment.setPrice(calculatePrice(shipment));
-
         return shipmentMapper.toDto(shipmentDao.save(shipment));
     }
 
@@ -140,21 +134,6 @@ public class ShipmentServiceImpl implements ShipmentService {
         return true;
     }
 
-    @Override
-    @Transactional
-    public boolean addParcels(long shipmentId, List<ParcelDto> parcelDtos) {
-        Shipment shipment = shipmentDao.getById(shipmentId);
-        if (shipment == null) {
-            log.debug("Can't add ParcelDto list to shipment. Shipment doesn't exist {}", shipmentId);
-            return false;
-        }
-        shipment.getParcels().addAll(parcelMapper.toEntity(parcelDtos));
-        shipment.setPrice(calculatePrice(shipment));
-        log.info("Adding ParcelDto list to shipment {}", shipment);
-        shipmentDao.update(shipment);
-        return true;
-    }
-
     private BigDecimal calculatePrice(Shipment shipment) {
         List<Parcel> parcels = shipment.getParcels();
         BigDecimal price = BigDecimal.ZERO;
@@ -162,47 +141,10 @@ public class ShipmentServiceImpl implements ShipmentService {
             return price;
         }
         for (Parcel parcel : parcels) {
+            parcelService.fillFields(shipment, parcel);
             BigDecimal parcelPrice = parcel.getPrice();
             price = price.add(parcelPrice);
         }
         return price;
-        /*log.info("Calculating price for shipment {}", shipment);
-
-        Address senderAddress = shipment.getSender().getAddress();
-        Address recipientAddress = shipment.getRecipient().getAddress();
-        W2wVariation w2wVariation = W2wVariation.COUNTRY;
-        if (AddressUtil.isSameTown(senderAddress, recipientAddress)) {
-            w2wVariation = W2wVariation.TOWN;
-        } else if (AddressUtil.isSameRegion(senderAddress, recipientAddress)) {
-            w2wVariation = W2wVariation.REGION;
-        }
-
-        TariffGrid tariffGrid = tariffGridDao.getLast(w2wVariation);
-        if (shipment.getWeight() < tariffGrid.getWeight() &&
-                shipment.getLength() < tariffGrid.getLength()) {
-            tariffGrid = tariffGridDao.getByDimension(shipment.getWeight(), shipment.getLength(), w2wVariation);
-        }
-
-        log.info("TariffGrid for weight {} per length {} and type {}: {}",
-                shipment.getWeight(), shipment.getLength(), w2wVariation, tariffGrid);
-
-        if (tariffGrid == null) {
-            return BigDecimal.ZERO;
-        }
-
-        float price = tariffGrid.getPrice() + getSurcharges(shipment);
-
-        return new BigDecimal(Float.toString(price));*/
-    }
-
-    private float getSurcharges(Shipment shipment) {
-        float surcharges = 0;
-        if (shipment.getDeliveryType().equals(DeliveryType.D2W) ||
-                shipment.getDeliveryType().equals(DeliveryType.W2D)) {
-            surcharges += 9;
-        } else if (shipment.getDeliveryType().equals(DeliveryType.D2D)) {
-            surcharges += 12;
-        }
-        return surcharges;
     }
 }

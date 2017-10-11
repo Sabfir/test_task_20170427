@@ -1,11 +1,9 @@
 package com.opinta.dao;
 
 import com.opinta.entity.Parcel;
-import com.opinta.entity.Shipment;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -25,16 +23,6 @@ public class ParcelDaoImpl implements ParcelDao {
     public List<Parcel> getAll() {
         Session session = sessionFactory.getCurrentSession();
         return session.createCriteria(Parcel.class)
-                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
-                .list();
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<Parcel> getAllByShipment(Shipment shipment) {
-        Session session = sessionFactory.getCurrentSession();
-        return session.createCriteria(Parcel.class)
-                .add(Restrictions.eq("shipment", shipment))
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
                 .list();
     }

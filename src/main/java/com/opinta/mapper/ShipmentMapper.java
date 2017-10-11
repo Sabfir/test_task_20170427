@@ -7,20 +7,22 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "spring")
+@Mapper(uses = { ParcelMapper.class }, componentModel = "spring")
 public interface ShipmentMapper extends BaseMapper<ShipmentDto, Shipment> {
 
     @Override
     @Mappings({
             @Mapping(source = "sender.id", target = "senderId"),
-            @Mapping(source = "recipient.id", target = "recipientId")
+            @Mapping(source = "recipient.id", target = "recipientId"),
+            @Mapping(source = "parcels", target = "parcels")
     })
     ShipmentDto toDto(Shipment shipment);
 
     @Override
     @Mappings({
             @Mapping(target = "sender", expression = "java(createClientById(shipmentDto.getSenderId()))"),
-            @Mapping(target = "recipient", expression = "java(createClientById(shipmentDto.getRecipientId()))")
+            @Mapping(target = "recipient", expression = "java(createClientById(shipmentDto.getRecipientId()))"),
+            @Mapping(source = "parcels", target = "parcels")
     })
     Shipment toEntity(ShipmentDto shipmentDto);
 

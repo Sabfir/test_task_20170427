@@ -19,4 +19,11 @@ public class ParcelItem {
     private int quantity;
     private float weight;
     private BigDecimal price;
+
+    public ParcelItem(String name, int quantity, float weight, BigDecimal price) {
+        this.name = name;
+        this.quantity = quantity;
+        this.weight = weight;
+        this.price = price;
+    }
 }
