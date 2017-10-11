@@ -1,8 +1,33 @@
 package com.opinta.temp;
 
-import com.opinta.dto.*;
-import com.opinta.entity.*;
-import com.opinta.mapper.*;
+import com.opinta.dto.AddressDto;
+import com.opinta.dto.BarcodeInnerNumberDto;
+import com.opinta.dto.CounterpartyDto;
+import com.opinta.dto.PostOfficeDto;
+import com.opinta.dto.PostcodePoolDto;
+import com.opinta.dto.ShipmentDto;
+import com.opinta.entity.Address;
+import com.opinta.entity.BarcodeInnerNumber;
+import com.opinta.entity.Client;
+import com.opinta.entity.Counterparty;
+import com.opinta.entity.DeliveryType;
+import com.opinta.entity.Parcel;
+import com.opinta.entity.ParcelItem;
+import com.opinta.entity.PostOffice;
+import com.opinta.entity.PostcodePool;
+import com.opinta.entity.Shipment;
+import com.opinta.entity.ShipmentStatus;
+import com.opinta.entity.ShipmentTrackingDetail;
+import com.opinta.entity.TariffGrid;
+import com.opinta.entity.W2wVariation;
+import com.opinta.mapper.AddressMapper;
+import com.opinta.mapper.BarcodeInnerNumberMapper;
+import com.opinta.mapper.ClientMapper;
+import com.opinta.mapper.CounterpartyMapper;
+import com.opinta.mapper.PostOfficeMapper;
+import com.opinta.mapper.PostcodePoolMapper;
+import com.opinta.mapper.ShipmentMapper;
+import com.opinta.mapper.ShipmentTrackingDetailMapper;
 import com.opinta.service.ShipmentTrackingDetailService;
 import com.opinta.service.TariffGridService;
 import java.math.BigDecimal;
@@ -98,8 +123,10 @@ public class InitDbService {
         // create Address
         List<AddressDto> addresses = new ArrayList<>();
         List<AddressDto> addressesSaved = new ArrayList<>();
-        addresses.add(addressMapper.toDto(new Address("00001", "Ternopil", "Monastiriska", "Monastiriska", "Sadova", "51", "")));
-        addresses.add(addressMapper.toDto(new Address("00002", "Kiev", "", "Kiev", "Khreschatik", "121", "37")));
+        addresses.add(addressMapper.toDto(new Address("00001", "Ternopil", "Monastiriska",
+                "Monastiriska", "Sadova", "51", "")));
+        addresses.add(addressMapper.toDto(new Address("00002", "Kiev", "",
+                "Kiev", "Khreschatik", "121", "37")));
         addresses.forEach((AddressDto addressDto) -> addressesSaved.add(addressService.save(addressDto)));
 
         // create Client with Counterparty

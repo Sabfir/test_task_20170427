@@ -1,7 +1,6 @@
 package com.opinta.service;
 
-import com.opinta.entity.*;
-
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -10,6 +9,12 @@ import javax.transaction.Transactional;
 import com.opinta.dao.ClientDao;
 import com.opinta.dao.ShipmentDao;
 import com.opinta.dto.ShipmentDto;
+import com.opinta.entity.BarcodeInnerNumber;
+import com.opinta.entity.Client;
+import com.opinta.entity.Counterparty;
+import com.opinta.entity.Parcel;
+import com.opinta.entity.PostcodePool;
+import com.opinta.entity.Shipment;
 import com.opinta.mapper.ShipmentMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +32,11 @@ public class ShipmentServiceImpl implements ShipmentService {
     private final ParcelService parcelService;
 
     @Autowired
-    public ShipmentServiceImpl(ShipmentDao shipmentDao, ClientDao clientDao,
-                               ShipmentMapper shipmentMapper, BarcodeInnerNumberService barcodeInnerNumberService, ParcelService parcelService) {
+    public ShipmentServiceImpl(ShipmentDao shipmentDao,
+                               ClientDao clientDao,
+                               ShipmentMapper shipmentMapper,
+                               BarcodeInnerNumberService barcodeInnerNumberService,
+                               ParcelService parcelService) {
         this.shipmentDao = shipmentDao;
         this.clientDao = clientDao;
         this.shipmentMapper = shipmentMapper;
@@ -111,7 +119,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         source.setPrice(calculatePrice(source));
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (InvocationTargetException | IllegalAccessException e) {
             log.error("Can't get properties from object to updatable object for shipment", e);
         }
         target.setId(id);
@@ -132,6 +140,24 @@ public class ShipmentServiceImpl implements ShipmentService {
         log.info("Deleting shipment {}", shipment);
         shipmentDao.delete(shipment);
         return true;
+    }
+
+    public float getWeight(Shipment shipment) {
+        float weight = 0;
+        List<Parcel> parcels = shipment.getParcels();
+        for (Parcel parcel : parcels) {
+            weight += parcel.getWeight();
+        }
+        return weight;
+    }
+
+    public BigDecimal getDeclaredPrice(Shipment shipment) {
+        BigDecimal declaredPrice = BigDecimal.ZERO;
+        List<Parcel> parcels = shipment.getParcels();
+        for (Parcel parcel : parcels) {
+            declaredPrice.add(parcel.getDeclaredPrice());
+        }
+        return declaredPrice;
     }
 
     private BigDecimal calculatePrice(Shipment shipment) {

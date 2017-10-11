@@ -5,5 +5,5 @@ import com.opinta.entity.ParcelItem;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface ParcelItemMapper extends BaseMapper<ParcelItemDto, ParcelItem>{
+public interface ParcelItemMapper extends BaseMapper<ParcelItemDto, ParcelItem> {
 }

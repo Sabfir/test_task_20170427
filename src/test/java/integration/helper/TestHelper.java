@@ -1,12 +1,24 @@
 package integration.helper;
 
-import com.opinta.dto.ParcelDto;
-import com.opinta.entity.*;
+import com.opinta.entity.Address;
+import com.opinta.entity.Client;
+import com.opinta.entity.Counterparty;
+import com.opinta.entity.DeliveryType;
+import com.opinta.entity.PostOffice;
+import com.opinta.entity.PostcodePool;
+import com.opinta.entity.Shipment;
 import com.opinta.mapper.ParcelMapper;
-import com.opinta.service.*;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+
+import com.opinta.service.AddressService;
+import com.opinta.service.ClientService;
+import com.opinta.service.CounterpartyService;
+import com.opinta.service.PostOfficeService;
+import com.opinta.service.PostcodePoolService;
+import com.opinta.service.ShipmentService;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -14,8 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class TestHelper {
