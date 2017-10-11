@@ -1,10 +1,24 @@
 package integration.helper;
 
-import com.opinta.entity.*;
-import com.opinta.service.*;
+import com.opinta.entity.Address;
+import com.opinta.entity.Client;
+import com.opinta.entity.Counterparty;
+import com.opinta.entity.DeliveryType;
+import com.opinta.entity.PostOffice;
+import com.opinta.entity.PostcodePool;
+import com.opinta.entity.Shipment;
+import com.opinta.mapper.ParcelMapper;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+
+import com.opinta.service.AddressService;
+import com.opinta.service.ClientService;
+import com.opinta.service.CounterpartyService;
+import com.opinta.service.PostOfficeService;
+import com.opinta.service.PostcodePoolService;
+import com.opinta.service.ShipmentService;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -27,6 +41,8 @@ public class TestHelper {
     private ShipmentService shipmentService;
     @Autowired
     private PostOfficeService postOfficeService;
+    @Autowired
+    private ParcelMapper parcelMapper;
 
     public PostOffice createPostOffice() {
         PostOffice postOffice = new PostOffice("Lviv post office", createAddress(), createPostcodePool());
@@ -40,7 +56,7 @@ public class TestHelper {
 
     public Shipment createShipment() {
         Shipment shipment = new Shipment(createClient(), createClient(),
-                DeliveryType.D2D, 1.0F, 1.0F, new BigDecimal(200), new BigDecimal(30), new BigDecimal(35.2));
+                DeliveryType.D2D, new BigDecimal(30), new BigDecimal(35.2));
         return shipmentService.saveEntity(shipment);
     }
 

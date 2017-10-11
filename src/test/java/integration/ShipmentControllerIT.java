@@ -5,6 +5,7 @@ import com.opinta.dto.ShipmentDto;
 import com.opinta.entity.Shipment;
 import com.opinta.mapper.ShipmentMapper;
 import com.opinta.service.ShipmentService;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -70,10 +71,14 @@ public class ShipmentControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void createClient() throws Exception {
         // create
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/shipment.json");
-        jsonObject.put("senderId", (int) testHelper.createClient().getId());
-        jsonObject.put("recipientId", (int) testHelper.createClient().getId());
-        String expectedJson = jsonObject.toString();
+        JSONObject jsonObjectShipment = testHelper.getJsonObjectFromFile("json/shipment.json");
+        JSONObject jsonObjectParcel = testHelper.getJsonObjectFromFile("json/parcel.json");
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.add(jsonObjectParcel);
+        jsonObjectShipment.put("parcels", jsonArray);
+        jsonObjectShipment.put("senderId", (int) testHelper.createClient().getId());
+        jsonObjectShipment.put("recipientId", (int) testHelper.createClient().getId());
+        String expectedJson = jsonObjectShipment.toString();
 
         int newShipmentId =
                 given().
@@ -90,6 +95,11 @@ public class ShipmentControllerIT extends BaseControllerIT {
         ObjectMapper mapper = new ObjectMapper();
         String actualJson = mapper.writeValueAsString(shipmentMapper.toDto(createdShipment));
 
+        jsonObjectShipment.put("price", 33);
+        jsonObjectParcel.put("price", 33);
+        jsonObjectShipment.put("parcels", jsonArray);
+        expectedJson = jsonObjectShipment.toString();
+
         JSONAssert.assertEquals(expectedJson, actualJson, false);
 
         // delete
@@ -100,10 +110,16 @@ public class ShipmentControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void updateShipment() throws Exception {
         // update
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/shipment.json");
-        jsonObject.put("senderId", (int) testHelper.createClient().getId());
-        jsonObject.put("recipientId", (int) testHelper.createClient().getId());
-        String expectedJson = jsonObject.toString();
+        JSONObject jsonObjectShipment = testHelper.getJsonObjectFromFile("json/shipment.json");
+        JSONObject jsonObjectParcel = testHelper.getJsonObjectFromFile("json/parcel.json");
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.add(jsonObjectParcel);
+        jsonObjectShipment.put("parcels", jsonArray);
+
+        jsonObjectShipment.put("senderId", (int) testHelper.createClient().getId());
+        jsonObjectShipment.put("recipientId", (int) testHelper.createClient().getId());
+        String expectedJson = jsonObjectShipment.toString();
+        System.out.println(expectedJson);
 
         given().
                 contentType("application/json;charset=UTF-8").
@@ -118,8 +134,10 @@ public class ShipmentControllerIT extends BaseControllerIT {
         ObjectMapper mapper = new ObjectMapper();
         String actualJson = mapper.writeValueAsString(shipmentDto);
 
-        jsonObject.put("price", 45);
-        expectedJson = jsonObject.toString();
+        jsonObjectShipment.put("price", 45);
+        jsonObjectParcel.put("price", 45);
+        jsonObjectShipment.put("parcels", jsonArray);
+        expectedJson = jsonObjectShipment.toString();
 
         JSONAssert.assertEquals(expectedJson, actualJson, false);
     }
