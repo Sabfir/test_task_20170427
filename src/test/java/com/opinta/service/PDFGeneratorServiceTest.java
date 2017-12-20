@@ -1,12 +1,8 @@
 package com.opinta.service;
 
-import com.opinta.entity.Address;
+import com.opinta.entity.*;
 import com.opinta.entity.Counterparty;
-import com.opinta.entity.PostcodePool;
-import com.opinta.entity.Shipment;
-import com.opinta.entity.Counterparty;
-import com.opinta.entity.Client;
-import com.opinta.entity.DeliveryType;
+import com.opinta.mapper.ParcelMapper;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
@@ -18,6 +14,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -32,6 +30,8 @@ public class PDFGeneratorServiceTest {
 
     private PDFGeneratorService pdfGeneratorService;
     private Shipment shipment;
+    private ParcelService parcelService;
+    private ParcelMapper parcelMapper;
 
     @Before
     public void setUp() throws Exception {
@@ -44,8 +44,13 @@ public class PDFGeneratorServiceTest {
                 new PostcodePool("00003", false));
         Client sender = new Client("FOP Ivanov", "001", senderAddress, counterparty);
         Client recipient = new Client("Petrov PP", "002", recipientAddress, counterparty);
-        shipment = new Shipment(sender, recipient, DeliveryType.W2W, 1, 1,
-                new BigDecimal("12.5"), new BigDecimal("2.5"), new BigDecimal("15.25"));
+        shipment = new Shipment(sender, recipient, DeliveryType.W2W, new BigDecimal("2.5"), new BigDecimal("15.25"));
+        List<Parcel> parcelList = new ArrayList<>();
+        Parcel parcel1 = new Parcel(1,1,1,1, new BigDecimal(110));
+        Parcel parcel2 = new Parcel(2,2,2,2, new BigDecimal(40));
+        parcelList.add(parcel1);
+        parcelList.add(parcel2);
+        shipment.setParcelList(parcelList);
     }
 
     @Test
@@ -61,6 +66,8 @@ public class PDFGeneratorServiceTest {
     @Test
     public void generateLabel_ShouldReturnValidAcroForms() throws Exception {
         when(shipmentService.getEntityById(1L)).thenReturn(shipment);
+        when(shipmentService.getWeight(shipment)).thenReturn(3f);
+        when(shipmentService.getDeclaredPrice(shipment)).thenReturn(new BigDecimal(150));
 
         byte[] labelForm = pdfGeneratorService.generateLabel(1L);
 
@@ -82,10 +89,10 @@ public class PDFGeneratorServiceTest {
                 field.getValue(), "Khreschatik st., 121, Kiev\n00002");
 
         field = (PDTextField) acroForm.getField("mass");
-        assertEquals("Expected mass to be 1.0", field.getValue(), "1.0");
+        assertEquals("Expected mass to be 3.0", field.getValue(), "3.0");
 
         field = (PDTextField) acroForm.getField("value");
-        assertEquals("Expected value to be 12.5", field.getValue(), "12.5");
+        assertEquals("Expected value to be 150", field.getValue(), "150");
 
         field = (PDTextField) acroForm.getField("sendingCost");
         assertEquals("Expected sendingCost to be 2.5", field.getValue(), "2.5");

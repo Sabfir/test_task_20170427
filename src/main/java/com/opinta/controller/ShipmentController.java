@@ -2,8 +2,12 @@ package com.opinta.controller;
 
 import java.util.List;
 
+import com.opinta.dto.ParcelDto;
+import com.opinta.dto.ParcelItemDto;
 import com.opinta.dto.ShipmentDto;
 import com.opinta.service.PDFGeneratorService;
+import com.opinta.service.ParcelItemService;
+import com.opinta.service.ParcelService;
 import com.opinta.service.ShipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -29,17 +33,34 @@ import static org.springframework.http.HttpStatus.OK;
 public class ShipmentController {
     private ShipmentService shipmentService;
     private PDFGeneratorService pdfGeneratorService;
+    private ParcelService parcelService;
+    private ParcelItemService parcelItemService;
+
 
     @Autowired
-    public ShipmentController(ShipmentService shipmentService, PDFGeneratorService pdfGeneratorService) {
+    public ShipmentController(ShipmentService shipmentService, PDFGeneratorService pdfGeneratorService,
+                              ParcelService parcelService, ParcelItemService parcelItemService) {
         this.shipmentService = shipmentService;
         this.pdfGeneratorService = pdfGeneratorService;
+        this.parcelService = parcelService;
+        this.parcelItemService = parcelItemService;
     }
 
     @GetMapping
     @ResponseStatus(OK)
     public List<ShipmentDto> getShipments() {
-        return shipmentService.getAll();
+        List<ShipmentDto> allShipments = shipmentService.getAll();
+        for (ShipmentDto element : allShipments) {
+            long shipmentId = element.getId();
+            List<ParcelDto> allByShipment = parcelService.getAllByShipment(shipmentId);
+            element.setParcelDtoList(allByShipment);
+                for (ParcelDto elem: allByShipment) {
+                    long parcelId = elem.getId();
+                    List<ParcelItemDto> allByParcel = parcelItemService.getAllByParcel(parcelId);
+                    elem.setParcelItemDtoList(allByParcel);
+                }
+        }
+        return allShipments;
     }
 
     @GetMapping("{id}")
