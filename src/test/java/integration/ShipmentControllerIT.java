@@ -2,9 +2,13 @@ package integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opinta.dto.ShipmentDto;
+import com.opinta.entity.Parcel;
 import com.opinta.entity.Shipment;
+import com.opinta.mapper.ParcelMapper;
 import com.opinta.mapper.ShipmentMapper;
+import com.opinta.service.ParcelService;
 import com.opinta.service.ShipmentService;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -12,6 +16,9 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import integration.helper.TestHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.when;
@@ -29,6 +36,10 @@ public class ShipmentControllerIT extends BaseControllerIT {
     private ShipmentService shipmentService;
     @Autowired
     private TestHelper testHelper;
+    @Autowired
+    private ParcelService parcelService;
+    @Autowired
+    private ParcelMapper parcelMapper;
 
     @Before
     public void setUp() throws Exception {
@@ -78,7 +89,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
         int newShipmentId =
                 given().
                         contentType("application/json;charset=UTF-8").
-                        body(expectedJson).
+                        body(jsonObject).
                 when().
                         post("/shipments").
                 then().
@@ -86,6 +97,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
                         path("id");
 
         // check created data
+
         Shipment createdShipment = shipmentService.getEntityById(newShipmentId);
         ObjectMapper mapper = new ObjectMapper();
         String actualJson = mapper.writeValueAsString(shipmentMapper.toDto(createdShipment));
