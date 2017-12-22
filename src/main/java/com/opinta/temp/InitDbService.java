@@ -2,12 +2,21 @@ package com.opinta.temp;
 
 import com.opinta.dto.PostOfficeDto;
 import com.opinta.dto.ShipmentDto;
+import com.opinta.entity.Address;
+import com.opinta.entity.BarcodeInnerNumber;
 import com.opinta.entity.Counterparty;
-import com.opinta.mapper.ShipmentTrackingDetailMapper;
-import com.opinta.entity.ShipmentStatus;
+import com.opinta.entity.PostcodePool;
+import com.opinta.entity.Client;
+import com.opinta.entity.Shipment;
+import com.opinta.entity.Parcel;
+import com.opinta.entity.ParcelItem;
+import com.opinta.entity.DeliveryType;
+import com.opinta.entity.PostOffice;
 import com.opinta.entity.ShipmentTrackingDetail;
 import com.opinta.entity.TariffGrid;
+import com.opinta.entity.ShipmentStatus;
 import com.opinta.entity.W2wVariation;
+import com.opinta.mapper.ShipmentTrackingDetailMapper;
 import com.opinta.service.ShipmentTrackingDetailService;
 import com.opinta.service.TariffGridService;
 import java.math.BigDecimal;
@@ -28,13 +37,6 @@ import com.opinta.mapper.PostOfficeMapper;
 import com.opinta.mapper.PostcodePoolMapper;
 import com.opinta.mapper.ShipmentMapper;
 import com.opinta.mapper.CounterpartyMapper;
-import com.opinta.entity.Address;
-import com.opinta.entity.BarcodeInnerNumber;
-import com.opinta.entity.Client;
-import com.opinta.entity.DeliveryType;
-import com.opinta.entity.PostOffice;
-import com.opinta.entity.PostcodePool;
-import com.opinta.entity.Shipment;
 import com.opinta.service.AddressService;
 import com.opinta.service.BarcodeInnerNumberService;
 import com.opinta.service.ClientService;
@@ -108,7 +110,8 @@ public class InitDbService {
         populateTariffGrid();
 
         // create PostcodePool with BarcodeInnerNumber
-        PostcodePoolDto postcodePoolDto = postcodePoolMapper.toDto(new PostcodePool("00001", false));
+        PostcodePool postCodePool = new PostcodePool("00001", false);
+        PostcodePoolDto postcodePoolDto = postcodePoolMapper.toDto(postCodePool);
         final long postcodePoolId = postcodePoolService.save(postcodePoolDto).getId();
 
         List<BarcodeInnerNumberDto> barcodeInnerNumbers = new ArrayList<>();
@@ -145,14 +148,23 @@ public class InitDbService {
 
         // create Shipment
         List<ShipmentDto> shipmentsSaved = new ArrayList<>();
-        Shipment shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(1), DeliveryType.W2W, 1, 1,
-                new BigDecimal("12.5"), new BigDecimal("2.5"), new BigDecimal("15"));
+        Shipment shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(1), DeliveryType.W2W, new BigDecimal("15"));
+        Parcel parcel = new Parcel(3, 2, 0, 0, new BigDecimal(5.23), new BigDecimal(7));
+        ParcelItem item = new ParcelItem("test", 2, 1, 5);
+        parcel.addItem(item);
+        shipment.addParcel(parcel);
         shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
-        shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(0), DeliveryType.W2D, 2, 2,
-                new BigDecimal("19.5"), new BigDecimal("0.5"), new BigDecimal("20.5"));
+        shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(0), DeliveryType.W2D, new BigDecimal("20.5"));
+        parcel = new Parcel(1, 1, 0, 0, new BigDecimal(5.5), new BigDecimal(9));
+        item = new ParcelItem("test2", 3, 3, 10);
+        parcel.addItem(item);
+        shipment.addParcel(parcel);
         shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
-        shipment = new Shipment(clientsSaved.get(1), clientsSaved.get(0), DeliveryType.D2D, 3, 3,
-                new BigDecimal("8.5"), new BigDecimal("2.25"), new BigDecimal("13.5"));
+        shipment = new Shipment(clientsSaved.get(1), clientsSaved.get(0), DeliveryType.D2D, new BigDecimal("13.5"));
+        parcel = new Parcel(2, 1, 0, 0, new BigDecimal(7.6), new BigDecimal(10.6));
+        item = new ParcelItem("test3", 1, 5, 25);
+        parcel.addItem(item);
+        shipment.addParcel(parcel);
         shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
 
         // create PostOffice

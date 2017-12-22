@@ -68,7 +68,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void createClient() throws Exception {
+    public void createShipment() throws Exception {
         // create
         JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/shipment.json");
         jsonObject.put("senderId", (int) testHelper.createClient().getId());
@@ -117,9 +117,6 @@ public class ShipmentControllerIT extends BaseControllerIT {
         ShipmentDto shipmentDto = shipmentMapper.toDto(shipmentService.getEntityById(shipmentId));
         ObjectMapper mapper = new ObjectMapper();
         String actualJson = mapper.writeValueAsString(shipmentDto);
-
-        jsonObject.put("price", 45);
-        expectedJson = jsonObject.toString();
 
         JSONAssert.assertEquals(expectedJson, actualJson, false);
     }
