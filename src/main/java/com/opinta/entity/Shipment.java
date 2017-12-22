@@ -7,6 +7,8 @@ import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -38,8 +40,9 @@ public class Shipment {
     private BarcodeInnerNumber barcode;
     @Enumerated(EnumType.STRING)
     private DeliveryType deliveryType;
-    @OneToMany(mappedBy = "shipment", cascade = CascadeType.ALL)
-    private List<Parcel> parcels = new ArrayList();
+    @OneToMany(mappedBy = "shipment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<Parcel> parcels = new ArrayList<>();
     private BigDecimal price;
     private BigDecimal postPay;
     private String description;
