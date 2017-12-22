@@ -70,7 +70,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void createShipment() throws Exception {
         // create
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/shipment.json");
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/new_shipment.json");
         jsonObject.put("senderId", (int) testHelper.createClient().getId());
         jsonObject.put("recipientId", (int) testHelper.createClient().getId());
         String expectedJson = jsonObject.toString();
@@ -100,7 +100,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void updateShipment() throws Exception {
         // update
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/shipment.json");
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/edit_shipment.json");
         jsonObject.put("senderId", (int) testHelper.createClient().getId());
         jsonObject.put("recipientId", (int) testHelper.createClient().getId());
         String expectedJson = jsonObject.toString();

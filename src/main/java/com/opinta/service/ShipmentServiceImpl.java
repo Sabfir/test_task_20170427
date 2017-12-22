@@ -115,6 +115,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         Shipment source = shipmentMapper.toEntity(shipmentDto);
         source.setSender(clientDao.getById(source.getSender().getId()));
         source.setRecipient(clientDao.getById(source.getRecipient().getId()));
+        //TODO check parcels and items for updates by their id fields
         try {
             copyProperties(target, source);
         } catch (Exception e) {
