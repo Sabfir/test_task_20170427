@@ -158,4 +158,27 @@ public class ShipmentServiceImpl implements ShipmentService {
         shipmentDao.delete(shipment);
         return true;
     }
+
+    @Override
+    public float getWeight(Shipment shipment) {
+        float sum = 0;
+        for (Parcel parcel : shipment.getParcels()) {
+            sum += parcel.getWeight();
+        }
+        return sum;
+    }
+
+    @Override
+    public BigDecimal getDeclaredPrice(Shipment shipment) {
+        BigDecimal sum = new BigDecimal(0.0);
+        for (Parcel parcel : shipment.getParcels()) {
+            sum = sum.add(parcel.getDeclaredPrice());
+        }
+        return sum;
+    }
+
+    @Override
+    public BigDecimal getPrice(Shipment shipment) {
+        return calculatePrice(shipment);
+    }
 }

@@ -83,13 +83,13 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
                 generateClientsData(shipment, acroForm);
 
                 field = (PDTextField) acroForm.getField("mass");
-                field.setValue(String.valueOf(calculateWeight(shipment)));
+                field.setValue(String.valueOf(shipmentService.getWeight(shipment)));
 
                 field = (PDTextField) acroForm.getField("value");
-                field.setValue(String.valueOf(calculateDeclaredPrice(shipment)));
+                field.setValue(String.valueOf(shipmentService.getDeclaredPrice(shipment)));
 
                 field = (PDTextField) acroForm.getField("sendingCost");
-                field.setValue(String.valueOf(shipment.getPrice()));
+                field.setValue(String.valueOf(shipmentService.getPrice(shipment)));
 
                 field = (PDTextField) acroForm.getField("postPrice");
                 field.setValue(String.valueOf(shipment.getPostPay()));
@@ -106,22 +106,6 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
             log.error(ERROR_READING_MESSSGE, PDF_LABEL_TEMPLATE);
         }
         return data;
-    }
-
-    private float calculateWeight(Shipment shipment) {
-        float sum = 0;
-        for (Parcel parcel : shipment.getParcels()) {
-            sum += parcel.getWeight();
-        }
-        return sum;
-    }
-
-    private BigDecimal calculateDeclaredPrice(Shipment shipment) {
-        BigDecimal sum = new BigDecimal(0.0);
-        for (Parcel parcel : shipment.getParcels()) {
-            sum = sum.add(parcel.getDeclaredPrice());
-        }
-        return sum;
     }
 
     private void generateClientsData(Shipment shipment, PDAcroForm acroForm) throws IOException {
