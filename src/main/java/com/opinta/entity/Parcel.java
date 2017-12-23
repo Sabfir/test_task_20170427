@@ -35,9 +35,9 @@ public class Parcel {
     @ManyToOne
     @JoinColumn(name = "shipment_id")
     private Shipment shipment;
-    //@OneToMany(mappedBy = "parcel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    //@Fetch(value = FetchMode.SUBSELECT)
-    //private List<ParcelItem> items = new ArrayList<>();
+    @OneToMany(mappedBy = "parcel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<ParcelItem> items = new ArrayList<>();
 
     public Parcel(float weight, float length, float width, float height, BigDecimal declaredPrice, BigDecimal price) {
         this.weight = weight;
@@ -48,7 +48,7 @@ public class Parcel {
         this.price = price;
     }
 
-    /*public void addItem(ParcelItem item) {
+    public void addItem(ParcelItem item) {
         items.add(item);
         item.setParcel(this);
     }
@@ -61,7 +61,7 @@ public class Parcel {
         items.remove(item);
         item.setParcel(null);
         return true;
-    }*/
+    }
 
     @Override
     public String toString() {
@@ -74,5 +74,14 @@ public class Parcel {
                 ", declaredPrice=" + declaredPrice +
                 ", price=" + price +
                 '}';
+    }
+
+    public List<ParcelItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ParcelItem> items) {
+        this.items.clear();
+        this.items.addAll(items);
     }
 }

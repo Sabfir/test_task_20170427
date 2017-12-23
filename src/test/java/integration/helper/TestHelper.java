@@ -44,7 +44,7 @@ public class TestHelper {
         Shipment shipment = new Shipment(createClient(), createClient(), DeliveryType.D2D, new BigDecimal(35.2));
         Parcel parcel = new Parcel(1, 1, 0, 0, new BigDecimal(9.5), new BigDecimal(11.3));
         ParcelItem item = new ParcelItem("book", 5, 1, 120);
-        //parcel.addItem(item);
+        parcel.addItem(item);
         shipment.addParcel(parcel);
         return shipmentService.saveEntity(shipment);
     }

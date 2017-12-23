@@ -18,9 +18,9 @@ public abstract class ShipmentMapperDecorator implements ShipmentMapper {
         Shipment shipment = delegate.toEntity(shipmentDto);
         for (Parcel parcel : shipment.getParcels()) {
             parcel.setShipment(shipment);
-            /*for (ParcelItem item : parcel.getItems()) {
+            for (ParcelItem item : parcel.getItems()) {
                 item.setParcel(parcel);
-            }*/
+            }
         }
         return shipment;
     }

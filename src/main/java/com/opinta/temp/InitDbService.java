@@ -151,19 +151,19 @@ public class InitDbService {
         Shipment shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(1), DeliveryType.W2W, new BigDecimal("15"));
         Parcel parcel = new Parcel(3, 2, 0, 0, new BigDecimal(5.23), new BigDecimal(7));
         ParcelItem item = new ParcelItem("test", 2, 1, 5);
-        //parcel.addItem(item);
+        parcel.addItem(item);
         shipment.addParcel(parcel);
         shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
         shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(0), DeliveryType.W2D, new BigDecimal("20.5"));
         parcel = new Parcel(1, 1, 0, 0, new BigDecimal(5.5), new BigDecimal(9));
         item = new ParcelItem("test2", 3, 3, 10);
-        //parcel.addItem(item);
+        parcel.addItem(item);
         shipment.addParcel(parcel);
         shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
         shipment = new Shipment(clientsSaved.get(1), clientsSaved.get(0), DeliveryType.D2D, new BigDecimal("13.5"));
         parcel = new Parcel(2, 1, 0, 0, new BigDecimal(7.6), new BigDecimal(10.6));
         item = new ParcelItem("test3", 1, 5, 25);
-        //parcel.addItem(item);
+        parcel.addItem(item);
         shipment.addParcel(parcel);
         shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
 
