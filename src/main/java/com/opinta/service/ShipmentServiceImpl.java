@@ -2,6 +2,7 @@ package com.opinta.service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -74,7 +75,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         Client client = clientDao.getById(clientId);
         if (client == null) {
             log.debug("Can't get shipment list by client. Client {} doesn't exist", clientId);
-            return null;
+            return new ArrayList<>();
         }
         log.info("Getting all shipments by client {}", client);
         return shipmentMapper.toDto(shipmentDao.getAllByClient(client));
