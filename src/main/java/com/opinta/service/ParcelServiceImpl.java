@@ -29,6 +29,12 @@ public class ParcelServiceImpl implements ParcelService {
     }
 
     @Override
+    public List<Parcel> getAll() {
+        log.info("Getting all parcels");
+        return parcelDao.getAll();
+    }
+
+    @Override
     public List<Parcel> getAllByShipment(Shipment shipment) {
         log.info("Getting parcels by shipment {}", shipment);
         return parcelDao.getAllByShipment(shipment);

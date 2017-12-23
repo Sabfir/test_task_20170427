@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface ParcelService {
 
+    List<Parcel> getAll();
+
     List<Parcel> getAllByShipment(Shipment shipment);
 
     BigDecimal calculatePrice(Parcel parcel);

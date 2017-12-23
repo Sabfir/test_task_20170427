@@ -48,7 +48,7 @@ public class PDFGeneratorServiceTest {
         shipment = new Shipment(sender, recipient, DeliveryType.W2W, new BigDecimal("15.25"));
         Parcel parcel = new Parcel(1, 3, 0, 0, new BigDecimal(12.5), new BigDecimal(2.5));
         ParcelItem item = new ParcelItem("test", 1, 1, 25);
-        parcel.addItem(item);
+        //parcel.addItem(item);
         shipment.addParcel(parcel);
     }
 

@@ -40,7 +40,7 @@ public class Shipment {
     private BarcodeInnerNumber barcode;
     @Enumerated(EnumType.STRING)
     private DeliveryType deliveryType;
-    @OneToMany(mappedBy = "shipment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "shipment", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<Parcel> parcels = new ArrayList<>();
     private BigDecimal price;
@@ -67,5 +67,14 @@ public class Shipment {
         parcels.remove(parcel);
         parcel.setShipment(null);
         return true;
+    }
+
+    public List<Parcel> getParcels() {
+        return parcels;
+    }
+
+    public void setParcels(List<Parcel> parcels) {
+        this.parcels.clear();
+        this.parcels.addAll(parcels);
     }
 }

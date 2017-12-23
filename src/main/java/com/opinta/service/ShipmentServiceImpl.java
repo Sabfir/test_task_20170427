@@ -1,5 +1,6 @@
 package com.opinta.service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -107,25 +108,31 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     @Transactional
     public ShipmentDto update(long id, ShipmentDto shipmentDto) {
+        Shipment source = shipmentMapper.toEntity(shipmentDto);
         Shipment target = shipmentDao.getById(id);
         if (target == null) {
             log.debug("Can't update shipment. Shipment doesn't exist {}", id);
             return null;
         }
-        Shipment source = shipmentMapper.toEntity(shipmentDto);
-        source.setSender(clientDao.getById(source.getSender().getId()));
-        source.setRecipient(clientDao.getById(source.getRecipient().getId()));
-        //TODO check parcels and items for updates by their id fields
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for shipment", e);
         }
         target.setId(id);
+        target.setSender(clientDao.getById(target.getSender().getId()));
+        target.setRecipient(clientDao.getById(target.getRecipient().getId()));
+        setRelations(target);
         target.setPrice(calculatePrice(target));
         log.info("Updating shipment {}", target);
         shipmentDao.update(target);
         return shipmentMapper.toDto(target);
+    }
+
+    private void setRelations(Shipment shipment) {
+        for (Parcel parcel : shipment.getParcels()) {
+            parcel.setShipment(shipment);
+        }
     }
 
     private BigDecimal calculatePrice(Shipment shipment) {
