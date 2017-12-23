@@ -65,6 +65,9 @@ public class PDFGeneratorServiceTest {
     @Test
     public void generateLabel_ShouldReturnValidAcroForms() throws Exception {
         when(shipmentService.getEntityById(1L)).thenReturn(shipment);
+        when(shipmentService.getWeight(shipment)).thenReturn(1f);
+        when(shipmentService.getDeclaredPrice(shipment)).thenReturn(new BigDecimal(12.5));
+        when(shipmentService.getPrice(shipment)).thenReturn(new BigDecimal(2.5));
 
         byte[] labelForm = pdfGeneratorService.generateLabel(1L);
 
