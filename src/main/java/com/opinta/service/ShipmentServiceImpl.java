@@ -6,6 +6,7 @@ import com.opinta.entity.DeliveryType;
 import com.opinta.entity.TariffGrid;
 import com.opinta.entity.W2wVariation;
 import com.opinta.util.AddressUtil;
+
 import java.math.BigDecimal;
 import java.util.List;
 
