@@ -137,13 +137,11 @@ public class ShipmentServiceImpl implements ShipmentService {
     }
 
     private BigDecimal calculatePrice(Shipment shipment) {
-        BigDecimal sum = new BigDecimal(0.0);
-        for (Parcel parcel : shipment.getParcels()) {
-            BigDecimal parcelPrice = parcelService.calculatePrice(parcel);
-            parcel.setPrice(parcelPrice);
-            sum = sum.add(parcelPrice);
-        }
-        return sum;
+        return shipment.getParcels().stream().map(p -> {
+            BigDecimal parcelPrice = parcelService.calculatePrice(p);
+            p.setPrice(parcelPrice);
+            return parcelPrice;
+        }).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @Override
