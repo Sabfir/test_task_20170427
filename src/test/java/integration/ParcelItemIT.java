@@ -6,11 +6,7 @@ import com.opinta.entity.Parcel;
 import com.opinta.entity.ParcelItem;
 import com.opinta.entity.Shipment;
 import com.opinta.mapper.ParcelItemMapper;
-import com.opinta.mapper.ParcelMapper;
-import com.opinta.mapper.ShipmentMapper;
 import com.opinta.service.ParcelItemService;
-import com.opinta.service.ParcelService;
-import com.opinta.service.ShipmentService;
 import integration.helper.TestHelper;
 import org.junit.After;
 import org.junit.Before;
@@ -21,14 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 public class ParcelItemIT extends BaseControllerIT {
-    @Autowired
-    private ShipmentService shipmentService;
-    @Autowired
-    private ShipmentMapper shipmentMapper;
-    @Autowired
-    private ParcelMapper parcelMapper;
-    @Autowired
-    private ParcelService parcelService;
     @Autowired
     private ParcelItemService parcelItemService;
     @Autowired
