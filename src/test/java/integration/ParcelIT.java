@@ -11,6 +11,7 @@ import com.opinta.mapper.ShipmentMapper;
 import com.opinta.service.ParcelService;
 import com.opinta.service.ShipmentService;
 import integration.helper.TestHelper;
+import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static java.lang.Integer.MIN_VALUE;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 public class ParcelIT extends BaseControllerIT {
     @Autowired
@@ -93,6 +96,29 @@ public class ParcelIT extends BaseControllerIT {
 
         ShipmentDto updatedShipment = shipmentService.update(shipmentId, shipmentMapper.toDto(shipment));
         String actualJson = objectMapper.writeValueAsString(updatedShipment.getParcels().get(0));
+
+        JSONAssert.assertEquals(expectedJson, actualJson, false);
+    }
+
+    @Test
+    public void updateParcels() throws Exception {
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/edit_parcels.json");
+        jsonObject.put("senderId", (int) testHelper.createClient().getId());
+        jsonObject.put("recipientId", (int) testHelper.createClient().getId());
+        String expectedJson = jsonObject.toString();
+
+        given().
+                contentType("application/json;charset=UTF-8").
+                body(expectedJson).
+                when().
+                put("/shipments/{id}", shipmentId).
+                then().
+                statusCode(SC_OK);
+
+        // check updated data
+        ShipmentDto shipmentDto = shipmentMapper.toDto(shipmentService.getEntityById(shipmentId));
+        ObjectMapper mapper = new ObjectMapper();
+        String actualJson = mapper.writeValueAsString(shipmentDto);
 
         JSONAssert.assertEquals(expectedJson, actualJson, false);
     }

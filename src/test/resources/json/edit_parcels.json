@@ -1,0 +1,56 @@
+{
+  "senderId": [],
+  "recipientId": [],
+  "deliveryType": "D2W",
+  "parcels": [
+    {
+      "id": 4,
+      "weight": 5,
+      "length": 4,
+      "width": 0,
+      "height": 0,
+      "declaredPrice": 23.5,
+      "price": 33,
+      "items": [
+        {
+          "id": 4,
+          "name": "book",
+          "quantity": 5,
+          "weight": 1,
+          "price": 20
+        },
+        {
+          "name": "paper",
+          "quantity": 1,
+          "weight": 3,
+          "price": 13
+        }
+      ]
+    },
+    {
+      "weight": 6,
+      "length": 5,
+      "width": 0,
+      "height": 0,
+      "declaredPrice": 33.2,
+      "price": 36,
+      "items": [
+        {
+          "name": "iron",
+          "quantity": 1,
+          "weight": 4,
+          "price": 15
+        },
+        {
+          "name": "test",
+          "quantity": 1,
+          "weight": 2,
+          "price": 21
+        }
+      ]
+    }
+  ],
+  "price": 69,
+  "postPay": 71,
+  "description": null
+}
