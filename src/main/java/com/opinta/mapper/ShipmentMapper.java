@@ -3,7 +3,6 @@ package com.opinta.mapper;
 import com.opinta.dto.ShipmentDto;
 import com.opinta.entity.Client;
 import com.opinta.entity.Shipment;
-import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;

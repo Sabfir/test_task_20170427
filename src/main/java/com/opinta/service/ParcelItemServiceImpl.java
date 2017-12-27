@@ -4,7 +4,6 @@ import com.opinta.dao.ParcelItemDAO;
 import com.opinta.dto.ParcelItemDto;
 import com.opinta.entity.Parcel;
 import com.opinta.entity.ParcelItem;
-import com.opinta.entity.Shipment;
 import com.opinta.mapper.ParcelItemMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
