@@ -83,5 +83,6 @@ public class Parcel {
     public void setItems(List<ParcelItem> items) {
         this.items.clear();
         this.items.addAll(items);
+        this.items.forEach(i -> i.setParcel(this));
     }
 }

@@ -76,5 +76,6 @@ public class Shipment {
     public void setParcels(List<Parcel> parcels) {
         this.parcels.clear();
         this.parcels.addAll(parcels);
+        this.parcels.forEach(p -> p.setShipment(this));
     }
 }

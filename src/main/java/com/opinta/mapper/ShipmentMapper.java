@@ -9,7 +9,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring", uses = {ParcelMapper.class})
-@DecoratedWith(ShipmentMapperDecorator.class)
 public interface ShipmentMapper extends BaseMapper<ShipmentDto, Shipment> {
 
     @Override

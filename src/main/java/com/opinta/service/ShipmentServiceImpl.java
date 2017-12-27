@@ -123,17 +123,10 @@ public class ShipmentServiceImpl implements ShipmentService {
         target.setId(id);
         target.setSender(clientDao.getById(target.getSender().getId()));
         target.setRecipient(clientDao.getById(target.getRecipient().getId()));
-        setRelations(target);
         target.setPrice(calculatePrice(target));
         log.info("Updating shipment {}", target);
         shipmentDao.update(target);
         return shipmentMapper.toDto(target);
-    }
-
-    private void setRelations(Shipment shipment) {
-        for (Parcel parcel : shipment.getParcels()) {
-            parcel.setShipment(shipment);
-        }
     }
 
     private BigDecimal calculatePrice(Shipment shipment) {

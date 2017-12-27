@@ -2,17 +2,20 @@ package com.opinta.service;
 
 import com.opinta.dao.ParcelDAO;
 import com.opinta.dao.TariffGridDao;
+import com.opinta.dto.ParcelDto;
 import com.opinta.entity.Parcel;
 import com.opinta.entity.Shipment;
 import com.opinta.entity.Address;
 import com.opinta.entity.W2wVariation;
 import com.opinta.entity.TariffGrid;
 import com.opinta.entity.DeliveryType;
+import com.opinta.mapper.ParcelMapper;
 import com.opinta.util.AddressUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -21,26 +24,38 @@ import java.util.List;
 public class ParcelServiceImpl implements ParcelService {
     private final ParcelDAO parcelDao;
     private final TariffGridDao tariffGridDao;
+    private final ParcelMapper parcelMapper;
 
     @Autowired
-    public ParcelServiceImpl(ParcelDAO parcelDao, TariffGridDao tariffGridDao) {
+    public ParcelServiceImpl(ParcelDAO parcelDao, TariffGridDao tariffGridDao, ParcelMapper parcelMapper) {
         this.parcelDao = parcelDao;
         this.tariffGridDao = tariffGridDao;
+        this.parcelMapper = parcelMapper;
     }
 
     @Override
-    public List<Parcel> getAll() {
+    @Transactional
+    public List<ParcelDto> getAll() {
         log.info("Getting all parcels");
-        return parcelDao.getAll();
+        return parcelMapper.toDto(parcelDao.getAll());
     }
 
     @Override
-    public List<Parcel> getAllByShipment(Shipment shipment) {
+    @Transactional
+    public List<ParcelDto> getAllByShipment(Shipment shipment) {
         log.info("Getting parcels by shipment {}", shipment);
-        return parcelDao.getAllByShipment(shipment);
+        return parcelMapper.toDto(parcelDao.getAllByShipment(shipment));
     }
 
     @Override
+    @Transactional
+    public ParcelDto getById(long id) {
+        log.info("Getting parcel by id {}", id);
+        return parcelMapper.toDto(parcelDao.getById(id));
+    }
+
+    @Override
+    @Transactional
     public BigDecimal calculatePrice(Parcel parcel) {
         log.info("Calculating price for parcel {}", parcel);
 

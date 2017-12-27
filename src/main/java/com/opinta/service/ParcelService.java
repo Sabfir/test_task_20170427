@@ -1,5 +1,6 @@
 package com.opinta.service;
 
+import com.opinta.dto.ParcelDto;
 import com.opinta.entity.Parcel;
 import com.opinta.entity.Shipment;
 
@@ -8,9 +9,11 @@ import java.util.List;
 
 public interface ParcelService {
 
-    List<Parcel> getAll();
+    List<ParcelDto> getAll();
 
-    List<Parcel> getAllByShipment(Shipment shipment);
+    List<ParcelDto> getAllByShipment(Shipment shipment);
+
+    ParcelDto getById(long id);
 
     BigDecimal calculatePrice(Parcel parcel);
 }
