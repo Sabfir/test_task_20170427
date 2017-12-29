@@ -13,6 +13,10 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import integration.helper.TestHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
+
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.when;
 import static java.lang.Integer.MIN_VALUE;
@@ -45,7 +49,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
     public void getShipments() throws Exception {
         when().
                 get("/shipments").
-        then().
+                then().
                 statusCode(SC_OK);
     }
 
@@ -53,7 +57,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
     public void getShipment() throws Exception {
         when().
                 get("shipments/{id}", shipmentId).
-        then().
+                then().
                 statusCode(SC_OK).
                 body("id", equalTo(shipmentId));
     }
@@ -62,7 +66,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
     public void getShipment_notFound() throws Exception {
         when().
                 get("/shipments/{id}", shipmentId + 1).
-        then().
+                then().
                 statusCode(SC_NOT_FOUND);
     }
 
@@ -79,9 +83,9 @@ public class ShipmentControllerIT extends BaseControllerIT {
                 given().
                         contentType("application/json;charset=UTF-8").
                         body(expectedJson).
-                when().
+                        when().
                         post("/shipments").
-                then().
+                        then().
                         extract().
                         path("id");
 
@@ -108,9 +112,9 @@ public class ShipmentControllerIT extends BaseControllerIT {
         given().
                 contentType("application/json;charset=UTF-8").
                 body(expectedJson).
-        when().
+                when().
                 put("/shipments/{id}", shipmentId).
-        then().
+                then().
                 statusCode(SC_OK);
 
         // check updated data
@@ -122,10 +126,34 @@ public class ShipmentControllerIT extends BaseControllerIT {
     }
 
     @Test
+    public void updateShipmentConcurrent() throws Exception {
+        int size = 3;
+        ExecutorService executor = Executors.newFixedThreadPool(size);
+        List<Callable<Boolean>> tasks = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            tasks.add(new Callable<Boolean>() {
+                public Boolean call() throws Exception {
+                    updateShipment();
+                    return true;
+                }
+            });
+        }
+        executor.invokeAll(tasks);
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+        }
+    }
+
+    @Test
     public void deleteShipment() throws Exception {
         when().
                 delete("/shipments/{id}", shipmentId).
-        then().
+                then().
                 statusCode(SC_OK);
     }
 
@@ -133,7 +161,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
     public void deleteShipment_notFound() throws Exception {
         when().
                 delete("/shipments/{id}", shipmentId + 1).
-        then().
+                then().
                 statusCode(SC_NOT_FOUND);
     }
 }
