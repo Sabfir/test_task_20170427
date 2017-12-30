@@ -52,9 +52,9 @@ public class ParcelDAOImpl implements ParcelDAO {
     }
 
     @Override
-    public void update(Parcel parcel) {
+    public Parcel merge(Parcel parcel) {
         Session session = sessionFactory.getCurrentSession();
-        session.update(parcel);
+        return (Parcel) session.merge(parcel);
     }
 
     @Override

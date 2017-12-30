@@ -1,12 +1,15 @@
 package integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opinta.dto.ParcelDto;
 import com.opinta.dto.ParcelItemDto;
 import com.opinta.entity.Parcel;
 import com.opinta.entity.ParcelItem;
 import com.opinta.entity.Shipment;
 import com.opinta.mapper.ParcelItemMapper;
+import com.opinta.mapper.ParcelMapper;
 import com.opinta.service.ParcelItemService;
+import com.opinta.service.ParcelService;
 import integration.helper.TestHelper;
 import org.junit.After;
 import org.junit.Before;
@@ -17,6 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 public class ParcelItemIT extends BaseControllerIT {
+    @Autowired
+    private ParcelService parcelService;
+    @Autowired
+    private ParcelMapper parcelMapper;
     @Autowired
     private ParcelItemService parcelItemService;
     @Autowired
@@ -65,11 +72,13 @@ public class ParcelItemIT extends BaseControllerIT {
     public void addParcelItem() throws Exception {
         ParcelItem newItem = new ParcelItem("comp", 1, 0.2f, 10000);
         currentParcel.addItem(newItem);
-        String expectedJson = objectMapper.writeValueAsString(parcelItemMapper.toDto(currentParcel.getItems()));
 
-        parcelItemService.save(parcelItemMapper.toDto(newItem));
-        List<ParcelItemDto> items = parcelItemService.getAllByParcel(currentParcel);
-        String actualJson = objectMapper.writeValueAsString(items);
+        ParcelDto updatedParcel = parcelService.update(currentParcel.getId(), parcelMapper.toDto(currentParcel));
+        String actualJson = objectMapper.writeValueAsString(updatedParcel.getItems());
+
+        int itemsCount = updatedParcel.getItems().size();
+        newItem.setId(updatedParcel.getItems().get(itemsCount - 1).getId()); //just cam't find the way to ignore id field in JSONAssert
+        String expectedJson = objectMapper.writeValueAsString(parcelItemMapper.toDto(currentParcel.getItems()));
 
         JSONAssert.assertEquals(expectedJson, actualJson, false);
     }
@@ -77,11 +86,10 @@ public class ParcelItemIT extends BaseControllerIT {
     @Test
     public void updateParcelItem() throws Exception {
         currentItem.setName("notepad");
-        ParcelItemDto dto = parcelItemMapper.toDto(currentItem);
-        String expectedJson = objectMapper.writeValueAsString(dto);
+        String expectedJson = objectMapper.writeValueAsString(parcelItemMapper.toDto(currentParcel.getItems()));
 
-        dto = parcelItemService.update(currentItem.getId(), dto);
-        String actualJson = objectMapper.writeValueAsString(dto);
+        ParcelDto updatedParcel = parcelService.update(currentParcel.getId(), parcelMapper.toDto(currentParcel));
+        String actualJson = objectMapper.writeValueAsString(updatedParcel.getItems());
 
         JSONAssert.assertEquals(expectedJson, actualJson, false);
     }
@@ -91,9 +99,8 @@ public class ParcelItemIT extends BaseControllerIT {
         currentParcel.removeItem(currentItem);
         String expectedJson = objectMapper.writeValueAsString(parcelItemMapper.toDto(currentParcel.getItems()));
 
-        parcelItemService.delete(currentItem.getId());
-        List<ParcelItemDto> items = parcelItemService.getAllByParcel(currentParcel);
-        String actualJson = objectMapper.writeValueAsString(items);
+        ParcelDto updatedParcel = parcelService.update(currentParcel.getId(), parcelMapper.toDto(currentParcel));
+        String actualJson = objectMapper.writeValueAsString(updatedParcel.getItems());
 
         JSONAssert.assertEquals(expectedJson, actualJson, false);
     }

@@ -1,6 +1,5 @@
 package com.opinta.service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +19,6 @@ import com.opinta.mapper.ShipmentMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 
 @Service
 @Slf4j
@@ -109,24 +106,13 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     @Transactional
     public ShipmentDto update(long id, ShipmentDto shipmentDto) {
-        Shipment source = shipmentMapper.toEntity(shipmentDto);
-        Shipment target = shipmentDao.getById(id);
-        if (target == null) {
-            log.debug("Can't update shipment. Shipment doesn't exist {}", id);
-            return null;
-        }
-        try {
-            copyProperties(target, source);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            log.error("Can't get properties from object to updatable object for shipment", e);
-        }
-        target.setId(id);
-        target.setSender(clientDao.getById(target.getSender().getId()));
-        target.setRecipient(clientDao.getById(target.getRecipient().getId()));
-        target.setPrice(calculatePrice(target));
-        log.info("Updating shipment {}", target);
-        shipmentDao.update(target);
-        return shipmentMapper.toDto(target);
+        Shipment shipment = shipmentMapper.toEntity(shipmentDto);
+        shipment.setId(id);
+        shipment.setSender(clientDao.getById(shipment.getSender().getId()));
+        shipment.setRecipient(clientDao.getById(shipment.getRecipient().getId()));
+        shipment.setPrice(calculatePrice(shipment));
+        log.info("Updating shipment {}", shipment);
+        return shipmentMapper.toDto(shipmentDao.merge(shipment));
     }
 
     private BigDecimal calculatePrice(Shipment shipment) {

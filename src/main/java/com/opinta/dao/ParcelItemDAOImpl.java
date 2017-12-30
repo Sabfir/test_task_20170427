@@ -52,9 +52,9 @@ public class ParcelItemDAOImpl implements ParcelItemDAO {
     }
 
     @Override
-    public void update(ParcelItem item) {
+    public ParcelItem merge(ParcelItem item) {
         Session session = sessionFactory.getCurrentSession();
-        session.update(item);
+        return (ParcelItem) session.merge(item);
     }
 
     @Override

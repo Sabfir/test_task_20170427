@@ -56,6 +56,15 @@ public class ParcelServiceImpl implements ParcelService {
 
     @Override
     @Transactional
+    public ParcelDto update(long id, ParcelDto parcelDto) {
+        Parcel parcel = parcelMapper.toEntity(parcelDto);
+        parcel.setId(id);
+        log.info("Updating parcel {}", parcel);
+        return parcelMapper.toDto(parcelDao.merge(parcel));
+    }
+
+    @Override
+    @Transactional
     public BigDecimal calculatePrice(Parcel parcel) {
         log.info("Calculating price for parcel {}", parcel);
 

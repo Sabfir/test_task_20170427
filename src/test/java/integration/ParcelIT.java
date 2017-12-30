@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opinta.dto.ParcelDto;
 import com.opinta.dto.ShipmentDto;
 import com.opinta.entity.Parcel;
-import com.opinta.entity.ParcelItem;
 import com.opinta.entity.Shipment;
 import com.opinta.mapper.ParcelMapper;
 import com.opinta.mapper.ShipmentMapper;
@@ -76,13 +75,14 @@ public class ParcelIT extends BaseControllerIT {
     @Test
     public void addParcel() throws Exception {
         Parcel newParcel = new Parcel(3, 2, 0.5f, 0.2f, new BigDecimal(10), new BigDecimal(36));
-        ParcelItem item = new ParcelItem("pan", 2, 1.5f, 5);
-        newParcel.addItem(item);
         shipment.addParcel(newParcel);
-        String expectedJson = objectMapper.writeValueAsString(parcelMapper.toDto(shipment.getParcels()));
 
         ShipmentDto updatedShipment = shipmentService.update(shipmentId, shipmentMapper.toDto(shipment));
         String actualJson = objectMapper.writeValueAsString(updatedShipment.getParcels());
+
+        int parcelsCount = shipment.getParcels().size();
+        newParcel.setId(updatedShipment.getParcels().get(parcelsCount - 1).getId()); //just cam't find the way to ignore id field in JSONAssert
+        String expectedJson = objectMapper.writeValueAsString(parcelMapper.toDto(shipment.getParcels()));
 
         JSONAssert.assertEquals(expectedJson, actualJson, false);
     }
@@ -91,7 +91,7 @@ public class ParcelIT extends BaseControllerIT {
     public void updateParcel() throws Exception {
         Parcel currentParcel = shipment.getParcels().get(0);
         currentParcel.setWeight(3);
-        //currentParcel.setPrice(?);
+        currentParcel.setPrice(new BigDecimal(36));
         String expectedJson = objectMapper.writeValueAsString(parcelMapper.toDto(currentParcel));
 
         ShipmentDto updatedShipment = shipmentService.update(shipmentId, shipmentMapper.toDto(shipment));

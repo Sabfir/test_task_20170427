@@ -15,5 +15,7 @@ public interface ParcelService {
 
     ParcelDto getById(long id);
 
+    ParcelDto update(long id, ParcelDto parcelDto);
+
     BigDecimal calculatePrice(Parcel parcel);
 }
