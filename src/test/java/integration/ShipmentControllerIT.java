@@ -2,6 +2,8 @@ package integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opinta.dto.ShipmentDto;
+import com.opinta.entity.Parcel;
+import com.opinta.entity.ParcelItem;
 import com.opinta.entity.Shipment;
 import com.opinta.mapper.ShipmentMapper;
 import com.opinta.service.ShipmentService;
@@ -13,6 +15,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import integration.helper.TestHelper;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -30,6 +33,10 @@ import static org.hamcrest.Matchers.equalTo;
 public class ShipmentControllerIT extends BaseControllerIT {
     private Shipment shipment;
     private int shipmentId = MIN_VALUE;
+    private Parcel parcel;
+    private int parcelId = MIN_VALUE;
+    private ParcelItem parcelItem;
+    private ObjectMapper mapper = new ObjectMapper();
     @Autowired
     private ShipmentMapper shipmentMapper;
     @Autowired
@@ -41,6 +48,9 @@ public class ShipmentControllerIT extends BaseControllerIT {
     public void setUp() throws Exception {
         shipment = testHelper.createShipment();
         shipmentId = (int) shipment.getId();
+        parcel = shipment.getParcels().get(0);
+        parcelId = (int) parcel.getId();
+        parcelItem = parcel.getItems().get(0);
     }
 
     @After
@@ -94,7 +104,6 @@ public class ShipmentControllerIT extends BaseControllerIT {
 
         // check created data
         Shipment createdShipment = shipmentService.getEntityById(newShipmentId);
-        ObjectMapper mapper = new ObjectMapper();
         String actualJson = mapper.writeValueAsString(shipmentMapper.toDto(createdShipment));
 
         JSONAssert.assertEquals(expectedJson, actualJson, false);
@@ -105,27 +114,28 @@ public class ShipmentControllerIT extends BaseControllerIT {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void updateShipment() throws Exception {
-        // update
+    public void updateShipmentFromFile() throws Exception {
         JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/shipment.json");
         jsonObject.put("senderId", (int) testHelper.createClient().getId());
         jsonObject.put("recipientId", (int) testHelper.createClient().getId());
-        String expectedJson = jsonObject.toString();
+        updateShipment(jsonObject.toString());
+    }
 
+    private void updateShipment(String jsonBody) throws Exception {
+        // update
         given().
                 contentType("application/json;charset=UTF-8").
-                body(expectedJson).
+                body(jsonBody).
                 when().
                 put("/shipments/{id}", shipmentId).
                 then().
                 statusCode(SC_OK);
 
         // check updated data
-        ShipmentDto shipmentDto = shipmentMapper.toDto(shipmentService.getEntityById(shipmentId));
-        ObjectMapper mapper = new ObjectMapper();
+        ShipmentDto shipmentDto = shipmentService.getById(shipmentId);
         String actualJson = mapper.writeValueAsString(shipmentDto);
 
-        JSONAssert.assertEquals(expectedJson, actualJson, false);
+        JSONAssert.assertEquals(jsonBody, actualJson, false);
     }
 
     @Test
@@ -136,7 +146,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
         for (int i = 0; i < size; i++) {
             tasks.add(new Callable<Boolean>() {
                 public Boolean call() throws Exception {
-                    updateShipment();
+                    updateShipmentFromFile();
                     return true;
                 }
             });
@@ -166,5 +176,109 @@ public class ShipmentControllerIT extends BaseControllerIT {
                 delete("/shipments/{id}", shipmentId + 1).
                 then().
                 statusCode(SC_NOT_FOUND);
+    }
+
+    @Test
+    public void getParcels() throws Exception {
+        when().
+                get("/shipments/{id}/parcels", shipmentId).
+                then().
+                statusCode(SC_OK);
+    }
+
+    @Test
+    public void getParcel() throws Exception {
+        when().
+                get("/shipments/{id}/parcels/{parcel_id}", shipmentId, parcelId).
+                then().
+                statusCode(SC_OK);
+    }
+
+    @Test
+    public void getParcel_notFound() throws Exception {
+        when().
+                get("/shipments/{id}/parcels/{parcel_id}", shipmentId, parcelId + 1).
+                then().
+                statusCode(SC_NOT_FOUND);
+    }
+
+    @Test
+    public void addParcel() throws Exception {
+        Parcel newParcel = new Parcel(3, 2, 0.5f, 0.2f, new BigDecimal(10.00), new BigDecimal(36.00));
+        shipment.addParcel(newParcel);
+        shipment.setPrice(new BigDecimal(66));
+        String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
+        updateShipment(jsonBody);
+    }
+
+    @Test
+    public void updateParcel() throws Exception {
+        parcel.setWeight(5);
+        parcel.setPrice(new BigDecimal(36));
+        shipment.setPrice(new BigDecimal(36));
+        String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
+        updateShipment(jsonBody);
+    }
+
+    @Test
+    public void updateParcels() throws Exception {
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/edit_parcels.json");
+        jsonObject.put("senderId", (int) testHelper.createClient().getId());
+        jsonObject.put("recipientId", (int) testHelper.createClient().getId());
+        updateShipment(jsonObject.toString());
+    }
+
+    @Test
+    public void deleteParcel() throws Exception {
+        shipment.removeParcel(parcel);
+        shipment.setPrice(new BigDecimal(0));
+        String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
+        updateShipment(jsonBody);
+    }
+
+    @Test
+    public void getParcelItems() throws Exception {
+        when().
+                get("/shipments/{id}/parcels/{parcel_id}/items", shipmentId, parcelId).
+                then().
+                statusCode(SC_OK);
+    }
+
+    @Test
+    public void getParcelItem() throws Exception {
+        when().
+                get("/shipments/{id}/parcels/{parcel_id}/items/{item_id}", shipmentId, parcelId, parcelItem.getId()).
+                then().
+                statusCode(SC_OK);
+    }
+
+    @Test
+    public void getParcelItem_notFound() throws Exception {
+        when().
+                get("/shipments/{id}/parcels/{parcel_id}/items/{item_id}", shipmentId, parcelId, parcelItem.getId() + 1).
+                then().
+                statusCode(SC_NOT_FOUND);
+    }
+
+    @Test
+    public void addParcelItem() throws Exception {
+        ParcelItem newItem = new ParcelItem("paper", 2, 5, 10.5f);
+        parcel.addItem(newItem);
+        String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
+        updateShipment(jsonBody);
+    }
+
+    @Test
+    public void updateParcelItem() throws Exception {
+        parcelItem.setPrice(12.8f);
+        String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
+        updateShipment(jsonBody);
+    }
+
+    @Test
+    public void deleteParcelItem() throws Exception {
+        parcel.removeItem(parcelItem);
+        String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
+        updateShipment(jsonBody);
     }
 }

@@ -19,6 +19,7 @@ import com.opinta.entity.W2wVariation;
 import com.opinta.mapper.ShipmentTrackingDetailMapper;
 import com.opinta.service.ShipmentTrackingDetailService;
 import com.opinta.service.TariffGridService;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -144,26 +145,26 @@ public class InitDbService {
         clients.add(new Client("Petrov PP", "002",
                 addressMapper.toEntity(addressesSaved.get(1)), counterparty));
         clients.forEach((Client client) ->
-            clientsSaved.add(this.clientMapper.toEntity(clientService.save(this.clientMapper.toDto(client))))
+                clientsSaved.add(this.clientMapper.toEntity(clientService.save(this.clientMapper.toDto(client))))
         );
 
         // create Shipment
         List<ShipmentDto> shipmentsSaved = new ArrayList<>();
         Client client1 = clientsSaved.get(0);
         Client client2 = clientsSaved.get(1);
-        Shipment shipment = new Shipment(client1, client2, DeliveryType.W2W, new BigDecimal("15"));
+        Shipment shipment = new Shipment(client1, client2, DeliveryType.W2W, new BigDecimal(12.5), new BigDecimal("15"));
         Parcel parcel = new Parcel(3, 2, 0, 0, new BigDecimal(5.23), new BigDecimal(7));
         ParcelItem item = new ParcelItem("test", 2, 1, 5);
         parcel.addItem(item);
         shipment.addParcel(parcel);
         shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
-        shipment = new Shipment(client1, client1, DeliveryType.W2D, new BigDecimal("20.5"));
+        shipment = new Shipment(client1, client1, DeliveryType.W2D, new BigDecimal(15), new BigDecimal("20.5"));
         parcel = new Parcel(1, 1, 0, 0, new BigDecimal(5.5), new BigDecimal(9));
         item = new ParcelItem("test2", 3, 3, 10);
         parcel.addItem(item);
         shipment.addParcel(parcel);
         shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
-        shipment = new Shipment(client2, client1, DeliveryType.D2D, new BigDecimal("13.5"));
+        shipment = new Shipment(client2, client1, DeliveryType.D2D, new BigDecimal(9.58), new BigDecimal("13.5"));
         parcel = new Parcel(2, 1, 0, 0, new BigDecimal(7.6), new BigDecimal(10.6));
         item = new ParcelItem("test3", 1, 5, 25);
         parcel.addItem(item);

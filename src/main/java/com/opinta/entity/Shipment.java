@@ -47,10 +47,11 @@ public class Shipment {
     private BigDecimal postPay;
     private String description;
 
-    public Shipment(Client sender, Client recipient, DeliveryType deliveryType, BigDecimal postPay) {
+    public Shipment(Client sender, Client recipient, DeliveryType deliveryType, BigDecimal price, BigDecimal postPay) {
         this.sender = sender;
         this.recipient = recipient;
         this.deliveryType = deliveryType;
+        this.price = price;
         this.postPay = postPay;
     }
 

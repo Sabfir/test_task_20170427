@@ -45,7 +45,7 @@ public class PDFGeneratorServiceTest {
                 new PostcodePool("00003", false));
         Client sender = new Client("FOP Ivanov", "001", senderAddress, counterparty);
         Client recipient = new Client("Petrov PP", "002", recipientAddress, counterparty);
-        shipment = new Shipment(sender, recipient, DeliveryType.W2W, new BigDecimal("15.25"));
+        shipment = new Shipment(sender, recipient, DeliveryType.W2W, new BigDecimal(12.5), new BigDecimal("15.25"));
         Parcel parcel = new Parcel(1, 3, 0, 0, new BigDecimal(12.5), new BigDecimal(2.5));
         ParcelItem item = new ParcelItem("test", 1, 1, 25);
         parcel.addItem(item);

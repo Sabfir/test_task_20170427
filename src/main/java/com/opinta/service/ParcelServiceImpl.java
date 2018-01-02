@@ -35,6 +35,19 @@ public class ParcelServiceImpl implements ParcelService {
 
     @Override
     @Transactional
+    public Parcel getEntityById(long id) {
+        log.info("Getting parcel by id {}", id);
+        return parcelDao.getById(id);
+    }
+
+    @Override
+    @Transactional
+    public ParcelDto getById(long id) {
+        return parcelMapper.toDto(getEntityById(id));
+    }
+
+    @Override
+    @Transactional
     public List<ParcelDto> getAll() {
         log.info("Getting all parcels");
         return parcelMapper.toDto(parcelDao.getAll());
@@ -45,22 +58,6 @@ public class ParcelServiceImpl implements ParcelService {
     public List<ParcelDto> getAllByShipment(Shipment shipment) {
         log.info("Getting parcels by shipment {}", shipment);
         return parcelMapper.toDto(parcelDao.getAllByShipment(shipment));
-    }
-
-    @Override
-    @Transactional
-    public ParcelDto getById(long id) {
-        log.info("Getting parcel by id {}", id);
-        return parcelMapper.toDto(parcelDao.getById(id));
-    }
-
-    @Override
-    @Transactional
-    public ParcelDto update(long id, ParcelDto parcelDto) {
-        Parcel parcel = parcelMapper.toEntity(parcelDto);
-        parcel.setId(id);
-        log.info("Updating parcel {}", parcel);
-        return parcelMapper.toDto(parcelDao.merge(parcel));
     }
 
     @Override

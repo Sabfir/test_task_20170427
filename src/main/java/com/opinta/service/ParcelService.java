@@ -9,13 +9,13 @@ import java.util.List;
 
 public interface ParcelService {
 
-    List<ParcelDto> getAll();
-
-    List<ParcelDto> getAllByShipment(Shipment shipment);
+    Parcel getEntityById(long id);
 
     ParcelDto getById(long id);
 
-    ParcelDto update(long id, ParcelDto parcelDto);
+    List<ParcelDto> getAll();
+
+    List<ParcelDto> getAllByShipment(Shipment shipment);
 
     BigDecimal calculatePrice(Parcel parcel);
 }
