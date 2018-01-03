@@ -207,9 +207,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
         Parcel newParcel = new Parcel(3, 2, 0.5f, 0.2f, new BigDecimal(10).setScale(2), new BigDecimal(36));
         shipment.addParcel(newParcel);
         shipment.setPrice(new BigDecimal(66));
-        ShipmentDto shipmentDto = shipmentMapper.toDto(shipment);
-        String jsonBody = mapper.writeValueAsString(shipmentDto);
-        update(jsonBody);
+        update(shipment);
     }
 
     @Test
@@ -217,8 +215,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
         parcel.setWeight(5);
         parcel.setPrice(new BigDecimal(36));
         shipment.setPrice(new BigDecimal(36));
-        String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
-        update(jsonBody);
+        update(shipment);
     }
 
     @Test
@@ -246,8 +243,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
     public void deleteParcel() throws Exception {
         shipment.removeParcel(parcel);
         shipment.setPrice(new BigDecimal(0));
-        String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
-        update(jsonBody);
+        update(shipment);
     }
 
     @Test
@@ -291,7 +287,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
         ShipmentDto shipmentDto = shipmentService.getById(shipmentId);
         String actualJson = mapper.writeValueAsString(shipmentDto);
 
-        newItem.setId(shipmentDto.getParcels().get(0).getItems().get(1).getId());
+        newItem.setId(shipmentDto.getParcels().get(0).getItems().get(1).getId()); //can't ignore item id field in JSONAssert
         String expectedJson = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
 
         JSONAssert.assertEquals(expectedJson, actualJson, false);
@@ -300,32 +296,33 @@ public class ShipmentControllerIT extends BaseControllerIT {
     @Test
     public void updateParcelItem() throws Exception {
         parcelItem.setPrice(12.8f);
-        String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
-        update(jsonBody);
+        update(shipment);
     }
 
     @Test
     public void deleteParcelItem() throws Exception {
         parcel.removeItem(parcelItem);
-        String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
-        update(jsonBody);
+        update(shipment);
     }
 
-    private void update(String jsonBody) throws Exception {
+    private void update(Shipment shipment) throws Exception {
+        ShipmentDto shipmentDto = shipmentMapper.toDto(shipment);
+        String expectedJson = mapper.writeValueAsString(shipmentDto);
+
         // update
         given().
                 contentType("application/json;charset=UTF-8").
-                body(jsonBody).
+                body(expectedJson).
                 when().
                 put("/shipments/{id}", shipmentId).
                 then().
                 statusCode(SC_OK);
 
         // check updated
-        ShipmentDto shipmentDto = shipmentService.getById(shipmentId);
-        String actualJson = mapper.writeValueAsString(shipmentDto);
+        ShipmentDto updatedShipment = shipmentService.getById(shipmentId);
+        String actualJson = mapper.writeValueAsString(updatedShipment);
 
         // compare ignoring id fields
-        JSONAssert.assertEquals(jsonBody, actualJson, new IgnoreIdComparator(JSONCompareMode.LENIENT));
+        JSONAssert.assertEquals(expectedJson, actualJson, new IgnoreIdComparator(JSONCompareMode.LENIENT));
     }
 }
