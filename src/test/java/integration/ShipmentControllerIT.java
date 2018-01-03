@@ -291,7 +291,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
         ShipmentDto shipmentDto = shipmentService.getById(shipmentId);
         String actualJson = mapper.writeValueAsString(shipmentDto);
 
-        newItem.setId(5);
+        newItem.setId(shipmentDto.getParcels().get(0).getItems().get(1).getId());
         String expectedJson = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
 
         JSONAssert.assertEquals(expectedJson, actualJson, false);
