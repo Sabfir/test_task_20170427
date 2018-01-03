@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
+import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 
 @Service
 @Slf4j
@@ -56,10 +59,20 @@ public class ParcelItemServiceImpl implements ParcelItemService {
     @Override
     @Transactional
     public ParcelItemDto update(long id, ParcelItemDto parcelItemDto) {
-        ParcelItem parcelItem = parcelItemMapper.toEntity(parcelItemDto);
-        parcelItem.setId(id);
-        log.info("Updating parcel item {}", parcelItem);
-        return parcelItemMapper.toDto(parcelItemDAO.merge(parcelItem));
+        ParcelItem source = parcelItemMapper.toEntity(parcelItemDto);
+        ParcelItem target = getEntityById(id);
+        if (target == null) {
+            log.debug("Can't update parcel item. Item doesn't exist {}", id);
+            return null;
+        }
+        try {
+            copyProperties(target, source);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            log.error("Can't get properties from object to updatable object for shipment", e);
+        }
+        log.info("Updating parcel item {}", target);
+        parcelItemDAO.update(target);
+        return parcelItemMapper.toDto(target);
     }
 
     @Override

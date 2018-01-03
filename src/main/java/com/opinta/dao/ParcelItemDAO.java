@@ -15,7 +15,7 @@ public interface ParcelItemDAO {
 
     ParcelItem save(ParcelItem item);
 
-    ParcelItem merge(ParcelItem item);
+    void update(ParcelItem item);
 
     void delete(ParcelItem item);
 }

@@ -15,7 +15,7 @@ public interface ParcelDAO {
 
     Parcel save(Parcel parcel);
 
-    Parcel merge(Parcel parcel);
+    void update(Parcel parcel);
 
     void delete(Parcel parcel);
 }

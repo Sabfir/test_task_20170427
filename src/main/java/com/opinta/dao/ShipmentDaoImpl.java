@@ -52,9 +52,9 @@ public class ShipmentDaoImpl implements ShipmentDao {
     }
 
     @Override
-    public Shipment merge(Shipment shipment) {
+    public void update(Shipment shipment) {
         Session session = sessionFactory.getCurrentSession();
-        return (Shipment) session.merge(shipment);
+        session.update(shipment);
     }
 
     @Override

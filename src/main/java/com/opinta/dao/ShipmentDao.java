@@ -15,7 +15,7 @@ public interface ShipmentDao {
 
     Shipment save(Shipment shipment);
 
-    Shipment merge(Shipment shipment);
+    void update(Shipment shipment);
 
     void delete(Shipment shipment);
 }
