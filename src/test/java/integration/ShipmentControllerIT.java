@@ -7,11 +7,13 @@ import com.opinta.entity.ParcelItem;
 import com.opinta.entity.Shipment;
 import com.opinta.mapper.ShipmentMapper;
 import com.opinta.service.ShipmentService;
+import integration.util.IgnoreIdComparator;
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import integration.helper.TestHelper;
 
@@ -114,18 +116,16 @@ public class ShipmentControllerIT extends BaseControllerIT {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void updateShipmentFromFile() throws Exception {
+    public void updateShipment() throws Exception {
         JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/shipment.json");
         jsonObject.put("senderId", (int) testHelper.createClient().getId());
         jsonObject.put("recipientId", (int) testHelper.createClient().getId());
-        updateShipment(jsonObject.toString());
-    }
+        String expectedJson = jsonObject.toString();
 
-    private void updateShipment(String jsonBody) throws Exception {
         // update
         given().
                 contentType("application/json;charset=UTF-8").
-                body(jsonBody).
+                body(expectedJson).
                 when().
                 put("/shipments/{id}", shipmentId).
                 then().
@@ -135,7 +135,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
         ShipmentDto shipmentDto = shipmentService.getById(shipmentId);
         String actualJson = mapper.writeValueAsString(shipmentDto);
 
-        JSONAssert.assertEquals(jsonBody, actualJson, false);
+        JSONAssert.assertEquals(expectedJson, actualJson, false);
     }
 
     @Test
@@ -146,7 +146,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
         for (int i = 0; i < size; i++) {
             tasks.add(new Callable<Boolean>() {
                 public Boolean call() throws Exception {
-                    updateShipmentFromFile();
+                    updateShipment();
                     return true;
                 }
             });
@@ -204,11 +204,12 @@ public class ShipmentControllerIT extends BaseControllerIT {
 
     @Test
     public void addParcel() throws Exception {
-        Parcel newParcel = new Parcel(3, 2, 0.5f, 0.2f, new BigDecimal(10.00), new BigDecimal(36.00));
+        Parcel newParcel = new Parcel(3, 2, 0.5f, 0.2f, new BigDecimal(10).setScale(2), new BigDecimal(36));
         shipment.addParcel(newParcel);
         shipment.setPrice(new BigDecimal(66));
-        String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
-        updateShipment(jsonBody);
+        ShipmentDto shipmentDto = shipmentMapper.toDto(shipment);
+        String jsonBody = mapper.writeValueAsString(shipmentDto);
+        update(jsonBody);
     }
 
     @Test
@@ -217,7 +218,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
         parcel.setPrice(new BigDecimal(36));
         shipment.setPrice(new BigDecimal(36));
         String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
-        updateShipment(jsonBody);
+        update(jsonBody);
     }
 
     @Test
@@ -225,7 +226,20 @@ public class ShipmentControllerIT extends BaseControllerIT {
         JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/edit_parcels.json");
         jsonObject.put("senderId", (int) testHelper.createClient().getId());
         jsonObject.put("recipientId", (int) testHelper.createClient().getId());
-        updateShipment(jsonObject.toString());
+        String expectedJson = jsonObject.toString();
+
+        given().
+                contentType("application/json;charset=UTF-8").
+                body(expectedJson).
+                when().
+                put("/shipments/{id}", shipmentId).
+                then().
+                statusCode(SC_OK);
+
+        ShipmentDto shipmentDto = shipmentService.getById(shipmentId);
+        String actualJson = mapper.writeValueAsString(shipmentDto);
+
+        JSONAssert.assertEquals(expectedJson, actualJson, false);
     }
 
     @Test
@@ -233,7 +247,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
         shipment.removeParcel(parcel);
         shipment.setPrice(new BigDecimal(0));
         String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
-        updateShipment(jsonBody);
+        update(jsonBody);
     }
 
     @Test
@@ -265,20 +279,53 @@ public class ShipmentControllerIT extends BaseControllerIT {
         ParcelItem newItem = new ParcelItem("paper", 2, 5, 10.5f);
         parcel.addItem(newItem);
         String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
-        updateShipment(jsonBody);
+
+        given().
+                contentType("application/json;charset=UTF-8").
+                body(jsonBody).
+                when().
+                put("/shipments/{id}", shipmentId).
+                then().
+                statusCode(SC_OK);
+
+        ShipmentDto shipmentDto = shipmentService.getById(shipmentId);
+        String actualJson = mapper.writeValueAsString(shipmentDto);
+
+        newItem.setId(5);
+        String expectedJson = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
+
+        JSONAssert.assertEquals(expectedJson, actualJson, false);
     }
 
     @Test
     public void updateParcelItem() throws Exception {
         parcelItem.setPrice(12.8f);
         String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
-        updateShipment(jsonBody);
+        update(jsonBody);
     }
 
     @Test
     public void deleteParcelItem() throws Exception {
         parcel.removeItem(parcelItem);
         String jsonBody = mapper.writeValueAsString(shipmentMapper.toDto(shipment));
-        updateShipment(jsonBody);
+        update(jsonBody);
+    }
+
+    private void update(String jsonBody) throws Exception {
+        // update
+        given().
+                contentType("application/json;charset=UTF-8").
+                body(jsonBody).
+                when().
+                put("/shipments/{id}", shipmentId).
+                then().
+                statusCode(SC_OK);
+
+        // check updated
+        ShipmentDto shipmentDto = shipmentService.getById(shipmentId);
+        String actualJson = mapper.writeValueAsString(shipmentDto);
+
+        // compare ignoring id fields
+        JSONAssert.assertEquals(jsonBody, actualJson, new IgnoreIdComparator(JSONCompareMode.LENIENT));
     }
 }
