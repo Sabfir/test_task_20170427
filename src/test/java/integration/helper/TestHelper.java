@@ -2,9 +2,11 @@ package integration.helper;
 
 import com.opinta.entity.*;
 import com.opinta.service.*;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -39,8 +41,11 @@ public class TestHelper {
     }
 
     public Shipment createShipment() {
-        Shipment shipment = new Shipment(createClient(), createClient(),
-                DeliveryType.D2D, 1.0F, 1.0F, new BigDecimal(200), new BigDecimal(30), new BigDecimal(35.2));
+        Shipment shipment = new Shipment(createClient(), createClient(), DeliveryType.D2D, new BigDecimal(30), new BigDecimal(35.2));
+        Parcel parcel = new Parcel(1, 1, 0, 0, new BigDecimal(9.5), new BigDecimal(30));
+        ParcelItem item = new ParcelItem("book", 5, 1, 120);
+        parcel.addItem(item);
+        shipment.addParcel(parcel);
         return shipmentService.saveEntity(shipment);
     }
 

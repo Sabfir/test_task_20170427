@@ -4,9 +4,10 @@ import com.opinta.entity.Address;
 import com.opinta.entity.Counterparty;
 import com.opinta.entity.PostcodePool;
 import com.opinta.entity.Shipment;
-import com.opinta.entity.Counterparty;
 import com.opinta.entity.Client;
 import com.opinta.entity.DeliveryType;
+import com.opinta.entity.Parcel;
+import com.opinta.entity.ParcelItem;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
@@ -38,14 +39,17 @@ public class PDFGeneratorServiceTest {
         pdfGeneratorService = new PDFGeneratorServiceImpl(shipmentService);
 
         Address senderAddress = new Address("00001", "Ternopil", "Monastiriska",
-                        "Monastiriska", "Sadova", "51", "");
+                "Monastiriska", "Sadova", "51", "");
         Address recipientAddress = new Address("00002", "Kiev", "", "Kiev", "Khreschatik", "121", "37");
         Counterparty counterparty = new Counterparty("Modna kasta",
                 new PostcodePool("00003", false));
         Client sender = new Client("FOP Ivanov", "001", senderAddress, counterparty);
         Client recipient = new Client("Petrov PP", "002", recipientAddress, counterparty);
-        shipment = new Shipment(sender, recipient, DeliveryType.W2W, 1, 1,
-                new BigDecimal("12.5"), new BigDecimal("2.5"), new BigDecimal("15.25"));
+        shipment = new Shipment(sender, recipient, DeliveryType.W2W, new BigDecimal(12.5), new BigDecimal("15.25"));
+        Parcel parcel = new Parcel(1, 3, 0, 0, new BigDecimal(12.5), new BigDecimal(2.5));
+        ParcelItem item = new ParcelItem("test", 1, 1, 25);
+        parcel.addItem(item);
+        shipment.addParcel(parcel);
     }
 
     @Test
@@ -61,6 +65,9 @@ public class PDFGeneratorServiceTest {
     @Test
     public void generateLabel_ShouldReturnValidAcroForms() throws Exception {
         when(shipmentService.getEntityById(1L)).thenReturn(shipment);
+        when(shipmentService.getWeight(shipment)).thenReturn(1f);
+        when(shipmentService.getDeclaredPrice(shipment)).thenReturn(new BigDecimal(12.5));
+        when(shipmentService.getPrice(shipment)).thenReturn(new BigDecimal(2.5));
 
         byte[] labelForm = pdfGeneratorService.generateLabel(1L);
 

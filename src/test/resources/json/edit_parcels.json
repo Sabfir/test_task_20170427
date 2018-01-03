@@ -4,6 +4,7 @@
   "deliveryType": "D2W",
   "parcels": [
     {
+      "id": 4,
       "weight": 5,
       "length": 4,
       "width": 0,
@@ -12,9 +13,10 @@
       "price": 33,
       "items": [
         {
-          "name": "books",
-          "quantity": 1,
-          "weight": 2,
+          "id": 4,
+          "name": "book",
+          "quantity": 5,
+          "weight": 1,
           "price": 20
         },
         {
