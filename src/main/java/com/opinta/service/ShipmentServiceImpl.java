@@ -1,28 +1,19 @@
 package com.opinta.service;
 
-import com.opinta.dao.TariffGridDao;
-import com.opinta.entity.Address;
-import com.opinta.entity.DeliveryType;
-import com.opinta.entity.TariffGrid;
-import com.opinta.entity.W2wVariation;
-import com.opinta.util.AddressUtil;
-import java.math.BigDecimal;
-import java.util.List;
-
-import javax.transaction.Transactional;
-
 import com.opinta.dao.ClientDao;
 import com.opinta.dao.ShipmentDao;
+import com.opinta.dao.TariffGridDao;
 import com.opinta.dto.ShipmentDto;
+import com.opinta.entity.*;
 import com.opinta.mapper.ShipmentMapper;
-import com.opinta.entity.BarcodeInnerNumber;
-import com.opinta.entity.Client;
-import com.opinta.entity.PostcodePool;
-import com.opinta.entity.Shipment;
-import com.opinta.entity.Counterparty;
+import com.opinta.util.AddressUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.util.List;
 
 import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 
@@ -147,6 +138,35 @@ public class ShipmentServiceImpl implements ShipmentService {
     private BigDecimal calculatePrice(Shipment shipment) {
         log.info("Calculating price for shipment {}", shipment);
 
+        W2wVariation w2wVariation = defineW2wVariation(shipment);
+
+        BigDecimal shipmentPrice = shipment.getParcels()
+                .stream()
+                .map(x -> calculateParcelPrice(x, w2wVariation))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return shipmentPrice.add(new BigDecimal(getSurcharges(shipment)));
+    }
+
+    private BigDecimal calculateParcelPrice(Parcel parcel, W2wVariation w2wVariation) {
+        log.info("Calculating price for parcel {}", parcel);
+
+        TariffGrid tariffGrid = tariffGridDao.getLast(w2wVariation);
+        if (parcel.getWeight() < tariffGrid.getWeight() &&
+                parcel.getLength() < tariffGrid.getLength()) {
+            tariffGrid = tariffGridDao.getByDimension(parcel.getWeight(), parcel.getLength(), w2wVariation);
+        }
+
+        log.info("TariffGrid for weight {} per length {} and type {}: {}",
+                parcel.getWeight(), parcel.getLength(), w2wVariation, tariffGrid);
+
+        if (tariffGrid == null) {
+            return BigDecimal.ZERO;
+        }
+
+        return new BigDecimal(tariffGrid.getPrice());
+    }
+
+    private W2wVariation defineW2wVariation(Shipment shipment) {
         Address senderAddress = shipment.getSender().getAddress();
         Address recipientAddress = shipment.getRecipient().getAddress();
         W2wVariation w2wVariation = W2wVariation.COUNTRY;
@@ -155,23 +175,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         } else if (AddressUtil.isSameRegion(senderAddress, recipientAddress)) {
             w2wVariation = W2wVariation.REGION;
         }
-
-        TariffGrid tariffGrid = tariffGridDao.getLast(w2wVariation);
-        if (shipment.getWeight() < tariffGrid.getWeight() &&
-                shipment.getLength() < tariffGrid.getLength()) {
-            tariffGrid = tariffGridDao.getByDimension(shipment.getWeight(), shipment.getLength(), w2wVariation);
-        }
-
-        log.info("TariffGrid for weight {} per length {} and type {}: {}",
-                shipment.getWeight(), shipment.getLength(), w2wVariation, tariffGrid);
-
-        if (tariffGrid == null) {
-            return BigDecimal.ZERO;
-        }
-
-        float price = tariffGrid.getPrice() + getSurcharges(shipment);
-
-        return new BigDecimal(Float.toString(price));
+        return w2wVariation;
     }
 
     private float getSurcharges(Shipment shipment) {
