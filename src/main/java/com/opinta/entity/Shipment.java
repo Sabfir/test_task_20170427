@@ -1,18 +1,11 @@
 package com.opinta.entity;
 
-import java.math.BigDecimal;
-
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Data
@@ -31,24 +24,28 @@ public class Shipment {
     private BarcodeInnerNumber barcode;
     @Enumerated(EnumType.STRING)
     private DeliveryType deliveryType;
-    private float weight;
-    private float length;
-    private float width;
-    private float height;
-    private BigDecimal declaredPrice;
     private BigDecimal price;
     private BigDecimal postPay;
     private String description;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "parcel_id", nullable = false)
+    @OrderColumn(name = "parcel_position", nullable = false)
+    private List<Parcel> parcels;
 
-    public Shipment(Client sender, Client recipient, DeliveryType deliveryType, float weight, float length,
-                    BigDecimal declaredPrice, BigDecimal price, BigDecimal postPay) {
+    public Shipment(Client sender, Client recipient, DeliveryType deliveryType, BigDecimal postPay, List<Parcel> parcels) {
         this.sender = sender;
         this.recipient = recipient;
         this.deliveryType = deliveryType;
-        this.weight = weight;
-        this.length = length;
-        this.declaredPrice = declaredPrice;
-        this.price = price;
         this.postPay = postPay;
+        this.parcels = parcels;
+    }
+
+    public void setParcels(List<Parcel> parcels) {
+        if (this.parcels == null) {
+            this.parcels = parcels;
+        } else {
+            this.parcels.clear();
+            this.parcels.addAll(parcels);
+        }
     }
 }
