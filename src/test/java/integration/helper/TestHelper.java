@@ -2,16 +2,18 @@ package integration.helper;
 
 import com.opinta.entity.*;
 import com.opinta.service.*;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class TestHelper {
@@ -39,8 +41,15 @@ public class TestHelper {
     }
 
     public Shipment createShipment() {
-        Shipment shipment = new Shipment(createClient(), createClient(),
-                DeliveryType.D2D, 1.0F, 1.0F, new BigDecimal(200), new BigDecimal(30), new BigDecimal(35.2));
+        List<ParcelItem> parcelItems = new ArrayList<>();
+        ParcelItem parcelItem = new ParcelItem("parcelItemByTestHelper", 5, 1, new BigDecimal(11.2));
+        parcelItems.add(parcelItem);
+        List <Parcel> parcels = new ArrayList<>();
+        Parcel parcel = new Parcel(1, 1, new BigDecimal(520), new BigDecimal(52.9),parcelItems);
+        parcel.setParcelItems(parcelItems);
+        parcels.add(parcel);
+        Shipment shipment = new Shipment(createClient(), createClient(), DeliveryType.D2D,  new BigDecimal(35.2),parcels);
+
         return shipmentService.saveEntity(shipment);
     }
 
