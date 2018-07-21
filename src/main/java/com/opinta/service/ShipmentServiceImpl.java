@@ -1,28 +1,19 @@
 package com.opinta.service;
 
-import com.opinta.dao.TariffGridDao;
-import com.opinta.entity.Address;
-import com.opinta.entity.DeliveryType;
-import com.opinta.entity.TariffGrid;
-import com.opinta.entity.W2wVariation;
-import com.opinta.util.AddressUtil;
-import java.math.BigDecimal;
-import java.util.List;
-
-import javax.transaction.Transactional;
-
 import com.opinta.dao.ClientDao;
+import com.opinta.dao.ParcelDao;
 import com.opinta.dao.ShipmentDao;
+import com.opinta.dao.TariffGridDao;
 import com.opinta.dto.ShipmentDto;
+import com.opinta.entity.*;
 import com.opinta.mapper.ShipmentMapper;
-import com.opinta.entity.BarcodeInnerNumber;
-import com.opinta.entity.Client;
-import com.opinta.entity.PostcodePool;
-import com.opinta.entity.Shipment;
-import com.opinta.entity.Counterparty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.util.List;
 
 import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 
@@ -34,15 +25,20 @@ public class ShipmentServiceImpl implements ShipmentService {
     private final TariffGridDao tariffGridDao;
     private final ShipmentMapper shipmentMapper;
     private final BarcodeInnerNumberService barcodeInnerNumberService;
+    private final ParcelService parcelService;
+    private final ParcelDao parcelDao;
 
     @Autowired
     public ShipmentServiceImpl(ShipmentDao shipmentDao, ClientDao clientDao, TariffGridDao tariffGridDao,
-                               ShipmentMapper shipmentMapper, BarcodeInnerNumberService barcodeInnerNumberService) {
+                               ShipmentMapper shipmentMapper, BarcodeInnerNumberService barcodeInnerNumberService,
+                               ParcelService parcelService, ParcelDao parcelDao) {
         this.shipmentDao = shipmentDao;
         this.clientDao = clientDao;
         this.tariffGridDao = tariffGridDao;
         this.shipmentMapper = shipmentMapper;
         this.barcodeInnerNumberService = barcodeInnerNumberService;
+        this.parcelService = parcelService;
+        this.parcelDao = parcelDao;
     }
 
     @Override
@@ -55,7 +51,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     @Transactional
     public Shipment getEntityById(long id) {
-        log.info("Getting postcodePool by id {}", id);
+        log.info("Getting Shipment by id {}", id);
         return shipmentDao.getById(id);
     }
 
@@ -63,6 +59,9 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Transactional
     public Shipment saveEntity(Shipment shipment) {
         log.info("Saving shipment {}", shipment);
+        shipment.getParcels().forEach(parcel -> parcel.setShipment(shipment));
+        shipment.getParcels().forEach(parcel -> parcel.getParcelItems().forEach(parcelItem ->
+                parcelItem.setParcel(parcel)));
         return shipmentDao.save(shipment);
     }
 
@@ -101,11 +100,12 @@ public class ShipmentServiceImpl implements ShipmentService {
         Shipment shipment = shipmentMapper.toEntity(shipmentDto);
         shipment.setBarcode(newBarcode);
         log.info("Saving shipment with assigned barcode", shipmentMapper.toDto(shipment));
-
         shipment.setSender(clientDao.getById(shipment.getSender().getId()));
         shipment.setRecipient(clientDao.getById(shipment.getRecipient().getId()));
-        shipment.setPrice(calculatePrice(shipment));
-
+        shipment.setPrice(calculatingSum(shipment));
+        shipment.getParcels().forEach(parcel -> parcel.setShipment(shipment));
+        shipment.getParcels().forEach(parcel -> parcel.getParcelItems().forEach(parcelItem ->
+                parcelItem.setParcel(parcel)));
         return shipmentMapper.toDto(shipmentDao.save(shipment));
     }
 
@@ -114,17 +114,23 @@ public class ShipmentServiceImpl implements ShipmentService {
     public ShipmentDto update(long id, ShipmentDto shipmentDto) {
         Shipment source = shipmentMapper.toEntity(shipmentDto);
         Shipment target = shipmentDao.getById(id);
+        target.getParcels().forEach(parcel -> parcelService.delete(parcel.getId()));
         if (target == null) {
             log.debug("Can't update shipment. Shipment doesn't exist {}", id);
             return null;
         }
-        target.setPrice(calculatePrice(target));
+        target.setPrice(calculatingSum(target));
         try {
             copyProperties(target, source);
         } catch (Exception e) {
             log.error("Can't get properties from object to updatable object for shipment", e);
         }
         target.setId(id);
+        target.setSender(clientDao.getById(target.getSender().getId()));
+        target.setRecipient(clientDao.getById(target.getRecipient().getId()));
+        target.getParcels().forEach(parcel -> parcel.setShipment(target));
+        target.getParcels().forEach(parcel -> parcel.getParcelItems().forEach(parcelItem ->
+                parcelItem.setParcel(parcel)));
         log.info("Updating shipment {}", target);
         shipmentDao.update(target);
         return shipmentMapper.toDto(target);
@@ -144,44 +150,33 @@ public class ShipmentServiceImpl implements ShipmentService {
         return true;
     }
 
-    private BigDecimal calculatePrice(Shipment shipment) {
-        log.info("Calculating price for shipment {}", shipment);
-
-        Address senderAddress = shipment.getSender().getAddress();
-        Address recipientAddress = shipment.getRecipient().getAddress();
-        W2wVariation w2wVariation = W2wVariation.COUNTRY;
-        if (AddressUtil.isSameTown(senderAddress, recipientAddress)) {
-            w2wVariation = W2wVariation.TOWN;
-        } else if (AddressUtil.isSameRegion(senderAddress, recipientAddress)) {
-            w2wVariation = W2wVariation.REGION;
+    @Override
+    public BigDecimal calculatingSum(Shipment shipment) {
+        BigDecimal resultPrice = BigDecimal.ZERO;
+        List<Parcel> parcels = shipment.getParcels();
+        for (Parcel parcel : parcels) {
+            resultPrice = resultPrice.add(parcel.getPrice());
         }
-
-        TariffGrid tariffGrid = tariffGridDao.getLast(w2wVariation);
-        if (shipment.getWeight() < tariffGrid.getWeight() &&
-                shipment.getLength() < tariffGrid.getLength()) {
-            tariffGrid = tariffGridDao.getByDimension(shipment.getWeight(), shipment.getLength(), w2wVariation);
-        }
-
-        log.info("TariffGrid for weight {} per length {} and type {}: {}",
-                shipment.getWeight(), shipment.getLength(), w2wVariation, tariffGrid);
-
-        if (tariffGrid == null) {
-            return BigDecimal.ZERO;
-        }
-
-        float price = tariffGrid.getPrice() + getSurcharges(shipment);
-
-        return new BigDecimal(Float.toString(price));
+        return resultPrice;
     }
 
-    private float getSurcharges(Shipment shipment) {
-        float surcharges = 0;
-        if (shipment.getDeliveryType().equals(DeliveryType.D2W) ||
-                shipment.getDeliveryType().equals(DeliveryType.W2D)) {
-            surcharges += 9;
-        } else if (shipment.getDeliveryType().equals(DeliveryType.D2D)) {
-            surcharges += 12;
+    @Override
+    public float getWeight(Shipment shipment) {
+        float weight = 0;
+        List<Parcel> parcels = shipment.getParcels();
+        for (Parcel parcel: parcels){
+            weight += parcel.getWeight();
         }
-        return surcharges;
+        return weight;
+    }
+
+    @Override
+    public BigDecimal getDeclaredPrice(Shipment shipment) {
+        BigDecimal declaredPrice = BigDecimal.ZERO;
+        List<Parcel> parcels = shipment.getParcels();
+        for (Parcel parcel: parcels) {
+            declaredPrice = declaredPrice.add(parcel.getDeclaredPrice());
+        }
+        return declaredPrice;
     }
 }
