@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class TestHelper {
@@ -39,8 +41,20 @@ public class TestHelper {
     }
 
     public Shipment createShipment() {
+    	List<ParcelItem> parcelItems = new ArrayList<>();
+		ParcelItem parcelItem = new ParcelItem("goods 1", 1, 2, new BigDecimal(3));
+		parcelItems.add(parcelItem);
+		parcelItem = new ParcelItem("goods 2", 10, 20, new BigDecimal(30));
+		parcelItems.add(parcelItem);
+
+		List<Parcel> parcels = new ArrayList<>();
+		Parcel parcel = new Parcel(11, 12, 13, 14, new BigDecimal(15), parcelItems);
+		parcels.add(parcel);
+		parcel = new Parcel(110, 120, 130, 140, new BigDecimal(150), parcelItems);
+		parcels.add(parcel);
+    	
         Shipment shipment = new Shipment(createClient(), createClient(),
-                DeliveryType.D2D, 1.0F, 1.0F, new BigDecimal(200), new BigDecimal(30), new BigDecimal(35.2));
+                DeliveryType.D2D, parcels, new BigDecimal(35.2));
         return shipmentService.saveEntity(shipment);
     }
 

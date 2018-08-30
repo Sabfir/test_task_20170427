@@ -3,6 +3,7 @@ package com.opinta.service;
 import com.opinta.dao.TariffGridDao;
 import com.opinta.entity.Address;
 import com.opinta.entity.DeliveryType;
+import com.opinta.entity.Parcel;
 import com.opinta.entity.TariffGrid;
 import com.opinta.entity.W2wVariation;
 import com.opinta.util.AddressUtil;
@@ -104,7 +105,7 @@ public class ShipmentServiceImpl implements ShipmentService {
 
         shipment.setSender(clientDao.getById(shipment.getSender().getId()));
         shipment.setRecipient(clientDao.getById(shipment.getRecipient().getId()));
-        shipment.setPrice(calculatePrice(shipment));
+        calculatePrice(shipment);
 
         return shipmentMapper.toDto(shipmentDao.save(shipment));
     }
@@ -118,7 +119,9 @@ public class ShipmentServiceImpl implements ShipmentService {
             log.debug("Can't update shipment. Shipment doesn't exist {}", id);
             return null;
         }
-        target.setPrice(calculatePrice(target));
+        source.setSender(clientDao.getById(source.getSender().getId()));
+		source.setRecipient(clientDao.getById(source.getRecipient().getId()));
+		calculatePrice(source);
         try {
             copyProperties(target, source);
         } catch (Exception e) {
@@ -144,36 +147,55 @@ public class ShipmentServiceImpl implements ShipmentService {
         return true;
     }
 
-    private BigDecimal calculatePrice(Shipment shipment) {
+    private void calculatePrice(Shipment shipment) {
         log.info("Calculating price for shipment {}", shipment);
 
-        Address senderAddress = shipment.getSender().getAddress();
-        Address recipientAddress = shipment.getRecipient().getAddress();
-        W2wVariation w2wVariation = W2wVariation.COUNTRY;
-        if (AddressUtil.isSameTown(senderAddress, recipientAddress)) {
-            w2wVariation = W2wVariation.TOWN;
-        } else if (AddressUtil.isSameRegion(senderAddress, recipientAddress)) {
-            w2wVariation = W2wVariation.REGION;
-        }
+        shipment.setPrice(BigDecimal.ZERO);
+		if (shipment.getParcels() == null) {
+			return;
+		}
 
-        TariffGrid tariffGrid = tariffGridDao.getLast(w2wVariation);
-        if (shipment.getWeight() < tariffGrid.getWeight() &&
-                shipment.getLength() < tariffGrid.getLength()) {
-            tariffGrid = tariffGridDao.getByDimension(shipment.getWeight(), shipment.getLength(), w2wVariation);
-        }
+		W2wVariation w2wVariation = identifyW2wVariation(shipment);
 
-        log.info("TariffGrid for weight {} per length {} and type {}: {}",
-                shipment.getWeight(), shipment.getLength(), w2wVariation, tariffGrid);
+		shipment.getParcels().forEach(parcel -> calculatePrice(w2wVariation, parcel));
+		BigDecimal price = shipment.getParcels().stream().map(parcel -> parcel.getPrice()).reduce(BigDecimal.ZERO,
+				BigDecimal::add);
 
-        if (tariffGrid == null) {
-            return BigDecimal.ZERO;
-        }
-
-        float price = tariffGrid.getPrice() + getSurcharges(shipment);
-
-        return new BigDecimal(Float.toString(price));
+		shipment.setPrice(price.add(new BigDecimal(getSurcharges(shipment))));
     }
 
+    private void calculatePrice(W2wVariation w2wVariation, Parcel parcel) {
+		log.info("Calculating price for parcel {}", parcel);
+
+		TariffGrid tariffGrid = tariffGridDao.getLast(w2wVariation);
+		if (parcel.getWeight() < tariffGrid.getWeight() && parcel.getLength() < tariffGrid.getLength()) {
+			tariffGrid = tariffGridDao.getByDimension(parcel.getWeight(), parcel.getLength(), w2wVariation);
+		}
+
+		log.info("TariffGrid for weight {} per length {} and type {}: {}", parcel.getWeight(), parcel.getLength(),
+				w2wVariation, tariffGrid);
+
+		if (tariffGrid == null) {
+			parcel.setPrice(BigDecimal.ZERO);
+			return;
+		}
+
+		parcel.setPrice(new BigDecimal(tariffGrid.getPrice()));
+	}
+    
+    private W2wVariation identifyW2wVariation(Shipment shipment) {
+		Address senderAddress = shipment.getSender().getAddress();
+		Address recipientAddress = shipment.getRecipient().getAddress();
+		W2wVariation w2wVariation = W2wVariation.COUNTRY;
+		if (AddressUtil.isSameTown(senderAddress, recipientAddress)) {
+			w2wVariation = W2wVariation.TOWN;
+		} else if (AddressUtil.isSameRegion(senderAddress, recipientAddress)) {
+			w2wVariation = W2wVariation.REGION;
+		}
+
+		return w2wVariation;
+	}
+    
     private float getSurcharges(Shipment shipment) {
         float surcharges = 0;
         if (shipment.getDeliveryType().equals(DeliveryType.D2W) ||

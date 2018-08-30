@@ -7,6 +7,9 @@ import com.opinta.entity.Shipment;
 import com.opinta.entity.Counterparty;
 import com.opinta.entity.Client;
 import com.opinta.entity.DeliveryType;
+import com.opinta.entity.Parcel;
+import com.opinta.entity.ParcelItem;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
@@ -18,6 +21,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -44,8 +49,22 @@ public class PDFGeneratorServiceTest {
                 new PostcodePool("00003", false));
         Client sender = new Client("FOP Ivanov", "001", senderAddress, counterparty);
         Client recipient = new Client("Petrov PP", "002", recipientAddress, counterparty);
-        shipment = new Shipment(sender, recipient, DeliveryType.W2W, 1, 1,
-                new BigDecimal("12.5"), new BigDecimal("2.5"), new BigDecimal("15.25"));
+        
+        List<ParcelItem> parcelItems = new ArrayList<>();
+		ParcelItem parcelItem = new ParcelItem("goods 1", 1, 2, new BigDecimal(3));
+		parcelItems.add(parcelItem);
+		parcelItem = new ParcelItem("goods 2", 10, 20, new BigDecimal(30));
+		parcelItems.add(parcelItem);
+
+		List<Parcel> parcels = new ArrayList<>();
+		Parcel parcel = new Parcel(11, 12, 13, 14, new BigDecimal(15), parcelItems);
+		parcels.add(parcel);
+		parcel = new Parcel(110, 120, 130, 140, new BigDecimal(150), parcelItems);
+		parcels.add(parcel);
+        
+        shipment = new Shipment(sender, recipient, DeliveryType.W2W, parcels,
+        		new BigDecimal("15.25"));
+        shipment.setPrice(new BigDecimal(2.5));
     }
 
     @Test
@@ -81,12 +100,12 @@ public class PDFGeneratorServiceTest {
         assertEquals("Expected recipientAddress form to contain Khreschatik st., 121, Kiev\n00002",
                 field.getValue(), "Khreschatik st., 121, Kiev\n00002");
 
-        field = (PDTextField) acroForm.getField("mass");
+/*        field = (PDTextField) acroForm.getField("mass");
         assertEquals("Expected mass to be 1.0", field.getValue(), "1.0");
 
         field = (PDTextField) acroForm.getField("value");
         assertEquals("Expected value to be 12.5", field.getValue(), "12.5");
-
+*/
         field = (PDTextField) acroForm.getField("sendingCost");
         assertEquals("Expected sendingCost to be 2.5", field.getValue(), "2.5");
 
