@@ -2,6 +2,7 @@ package integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opinta.dto.ShipmentDto;
+import com.opinta.entity.ParcelItem;
 import com.opinta.entity.Shipment;
 import com.opinta.mapper.ShipmentMapper;
 import com.opinta.service.ShipmentService;
@@ -86,14 +87,14 @@ public class ShipmentControllerIT extends BaseControllerIT {
                         path("id");
 
         // check created data
-        Shipment createdShipment = shipmentService.getEntityById(newShipmentId);
+        ShipmentDto createdShipment = shipmentService.getById(newShipmentId);
         ObjectMapper mapper = new ObjectMapper();
-        String actualJson = mapper.writeValueAsString(shipmentMapper.toDto(createdShipment));
+        String actualJson = mapper.writeValueAsString(createdShipment);
 
         JSONAssert.assertEquals(expectedJson, actualJson, false);
 
         // delete
-        testHelper.deleteShipment(createdShipment);
+        testHelper.deleteShipment(shipmentMapper.toEntity(createdShipment));
     }
 
     @Test
@@ -114,7 +115,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
                 statusCode(SC_OK);
 
         // check updated data
-        ShipmentDto shipmentDto = shipmentMapper.toDto(shipmentService.getEntityById(shipmentId));
+        ShipmentDto shipmentDto =  shipmentService.getById(shipmentId);
         ObjectMapper mapper = new ObjectMapper();
         String actualJson = mapper.writeValueAsString(shipmentDto);
 

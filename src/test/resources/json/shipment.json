@@ -2,12 +2,57 @@
   "senderId": [],
   "recipientId": [],
   "deliveryType": "D2W",
-  "weight": 5,
-  "length": 4,
-  "width": 0,
-  "height": 0,
-  "declaredPrice": 23.5,
-  "price": 33,
+  "price": 45,
   "postPay": 71,
-  "description": null
+  "description": null,
+  "parcels" : [
+    {
+      "weight": 1,
+      "length": 30,
+      "width": 0,
+      "height": 0,
+      "declaredPrice": 8000,
+      "parcelItems" : [
+        {
+          "name" : "Thinking in Java",
+          "quantity" : "2",
+          "weight" : 3,
+          "price" : 1000
+        },
+        {
+          "name" : "Hibernate in Action",
+          "quantity" : "1",
+          "weight" : 2,
+          "price" : 900
+        },
+        {
+          "name" : "Effective Java",
+          "quantity" : "4",
+          "weight" : 5,
+          "price" : 6000
+        }
+      ]
+    },
+    {
+      "weight": 1,
+      "length": 30,
+      "width": 3,
+      "height": 4,
+      "declaredPrice": 3000,
+      "parcelItems" : [
+        {
+          "name" : "Playstation 4",
+          "quantity" : "1",
+          "weight" : 3,
+          "price" : 8000
+        },
+        {
+          "name" : "XBOX One",
+          "quantity" : "1",
+          "weight" : 2,
+          "price" : 10000
+        }
+      ]
+    }
+  ]
 }

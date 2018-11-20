@@ -12,6 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Component
 public class TestHelper {
@@ -26,6 +30,10 @@ public class TestHelper {
     @Autowired
     private ShipmentService shipmentService;
     @Autowired
+    private ParcelService parcelService;
+    @Autowired
+    private ParcelItemService parcelItemService;
+    @Autowired
     private PostOfficeService postOfficeService;
 
     public PostOffice createPostOffice() {
@@ -38,9 +46,26 @@ public class TestHelper {
         postcodePoolService.delete(postOffice.getPostcodePool().getId());
     }
 
+    public ParcelItem createParcelItem() {
+        ParcelItem parcelItem = new ParcelItem( "Thinking in Java", 2, 1f, new BigDecimal(900));
+        return parcelItemService.saveEntity(parcelItem);
+    }
+
+    public Parcel createParcel() {
+        List<ParcelItem> parcelItems = new ArrayList<>();
+        parcelItems.add(createParcelItem());
+        Parcel parcel = new Parcel(5, 3, 2, 1, new BigDecimal(10_000));
+        parcel.setParcelItems(parcelItems);
+        return parcelService.saveEntity(parcel);
+    }
+
     public Shipment createShipment() {
+        List<Parcel> parcels = new ArrayList<>();
+        parcels.add(createParcel());
         Shipment shipment = new Shipment(createClient(), createClient(),
-                DeliveryType.D2D, 1.0F, 1.0F, new BigDecimal(200), new BigDecimal(30), new BigDecimal(35.2));
+                DeliveryType.D2D, new BigDecimal(200), new BigDecimal(30),
+                new BigDecimal(35.2));
+        shipment.setParcels(parcels);
         return shipmentService.saveEntity(shipment);
     }
 

@@ -1,11 +1,11 @@
 package com.opinta.dao;
 
-import com.opinta.entity.Client;
 import com.opinta.entity.Parcel;
 import com.opinta.entity.Shipment;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -13,55 +13,57 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class ShipmentDaoImpl implements ShipmentDao {
+public class ParcelDaoImpl implements ParcelDao {
+
     private final SessionFactory sessionFactory;
 
     @Autowired
-    public ShipmentDaoImpl(SessionFactory sessionFactory) {
+    public ParcelDaoImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Shipment> getAll() {
+    public List<Parcel> getAll() {
         Session session = sessionFactory.getCurrentSession();
-        return session.createCriteria(Shipment.class)
-                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+        return session.createCriteria(Parcel.class)
+                .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
                 .list();
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Shipment> getAllByClient(Client client) {
+    public List<Parcel> getAllByShipment(Shipment shipment) {
         Session session = sessionFactory.getCurrentSession();
-        return session.createCriteria(Shipment.class)
-                .add(Restrictions.eq("sender", client))
+        return session.createCriteria(Parcel.class)
+                .add(Restrictions.eq("shipment", shipment))
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
                 .list();
     }
 
     @Override
-    public Shipment getById(long id) {
+    @SuppressWarnings("uncheked")
+    public Parcel getById(long id) {
         Session session = sessionFactory.getCurrentSession();
-        Shipment shipment = (Shipment) session.get(Shipment.class, id);
-        return shipment;
+        return (Parcel) session.get(Parcel.class, id);
     }
 
     @Override
-    public Shipment save(Shipment shipment) {
+    @SuppressWarnings("uncheked")
+    public Parcel save(Parcel parcel) {
         Session session = sessionFactory.getCurrentSession();
-        return (Shipment) session.merge(shipment);
+        return (Parcel) session.merge(parcel);
     }
 
     @Override
-    public void update(Shipment shipment) {
+    public void update(Parcel parcel) {
         Session session = sessionFactory.getCurrentSession();
-        session.update(shipment);
+        session.update(parcel);
     }
 
     @Override
-    public void delete(Shipment shipment) {
+    public void delete(Parcel parcel) {
         Session session = sessionFactory.getCurrentSession();
-        session.delete(shipment);
+        session.delete(parcel);
     }
 }
