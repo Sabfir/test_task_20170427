@@ -1,12 +1,6 @@
 package com.opinta.service;
 
-import com.opinta.entity.Address;
-import com.opinta.entity.Counterparty;
-import com.opinta.entity.PostcodePool;
-import com.opinta.entity.Shipment;
-import com.opinta.entity.Counterparty;
-import com.opinta.entity.Client;
-import com.opinta.entity.DeliveryType;
+import com.opinta.entity.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
@@ -18,6 +12,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -34,7 +30,7 @@ public class PDFGeneratorServiceTest {
     private Shipment shipment;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         pdfGeneratorService = new PDFGeneratorServiceImpl(shipmentService);
 
         Address senderAddress = new Address("00001", "Ternopil", "Monastiriska",
@@ -44,8 +40,29 @@ public class PDFGeneratorServiceTest {
                 new PostcodePool("00003", false));
         Client sender = new Client("FOP Ivanov", "001", senderAddress, counterparty);
         Client recipient = new Client("Petrov PP", "002", recipientAddress, counterparty);
-        shipment = new Shipment(sender, recipient, DeliveryType.W2W, 1, 1,
-                new BigDecimal("12.5"), new BigDecimal("2.5"), new BigDecimal("15.25"));
+
+        List<ParcelItem> parcelItemsPack1 = new ArrayList<>();
+        ParcelItem parcelItem1 = new ParcelItem("Sugar", 2, 0.3f, new BigDecimal("3.0"));
+        ParcelItem parcelItem2 = new ParcelItem("Salt", 1, 0.2f, new BigDecimal("3.5"));
+        parcelItemsPack1.add(parcelItem1);
+        parcelItemsPack1.add(parcelItem2);
+
+        List<ParcelItem> parcelItemsPack2 = new ArrayList<>();
+        ParcelItem parcelItem3 = new ParcelItem("Rice", 1, 0.3f, new BigDecimal("4.0"));
+        ParcelItem parcelItem4 = new ParcelItem("Buckwheat", 1, 0.2f, new BigDecimal("4.0"));
+        parcelItemsPack2.add(parcelItem3);
+        parcelItemsPack2.add(parcelItem4);
+
+        List<Parcel> parcelsForShipment1 = new ArrayList<>();
+        Parcel parcel1 = new Parcel(0.5f, 0.5f, new BigDecimal("6.5"),
+                new BigDecimal("1.5"), parcelItemsPack1);
+        Parcel parcel2 = new Parcel(0.5f, 0.5f, new BigDecimal("6.0"),
+                new BigDecimal("1.0"), parcelItemsPack2);
+        parcelsForShipment1.add(parcel1);
+        parcelsForShipment1.add(parcel2);
+
+        shipment = new Shipment(sender, recipient, DeliveryType.W2W,
+                new BigDecimal("15.25"), parcelsForShipment1);
     }
 
     @Test

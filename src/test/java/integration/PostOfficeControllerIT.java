@@ -31,18 +31,18 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     private TestHelper testHelper;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         postOffice = testHelper.createPostOffice();
         postOfficeId = (int) postOffice.getId();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         testHelper.deletePostOffice(postOffice);
     }
 
     @Test
-    public void getPostOffices() throws Exception {
+    public void getPostOffices() {
         when().
                 get("/post-offices").
         then().
@@ -50,7 +50,7 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void getPostOffice() throws Exception {
+    public void getPostOffice() {
         when().
                 get("/post-offices/{id}", postOfficeId).
         then().
@@ -59,7 +59,7 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void getPostOffice_notFound() throws Exception {
+    public void getPostOffice_notFound() {
         when().
                 get("/post-offices/{id}", postOfficeId + 1).
         then().
@@ -122,7 +122,7 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void deletePostOffice() throws Exception {
+    public void deletePostOffice() {
         when().
                 delete("/post-offices/{id}", postOfficeId).
         then().
@@ -130,7 +130,7 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void deletePostOffices_notFound() throws Exception {
+    public void deletePostOffices_notFound() {
         when().
                 delete("/post-offices/{id}", postOfficeId + 1).
         then().

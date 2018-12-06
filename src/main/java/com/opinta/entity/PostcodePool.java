@@ -39,4 +39,24 @@ public class PostcodePool {
         this.postcode = postcode;
         this.closed = closed;
     }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getPostcode() {
+        return postcode;
+    }
+
+    public List<BarcodeInnerNumber> getBarcodeInnerNumbers() {
+        return barcodeInnerNumbers;
+    }
+
+    public void setBarcodeInnerNumbers(List<BarcodeInnerNumber> barcodeInnerNumbers) {
+        this.barcodeInnerNumbers = barcodeInnerNumbers;
+    }
 }

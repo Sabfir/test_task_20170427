@@ -25,7 +25,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/post-offices")
 public class PostOfficeController {
-    private PostOfficeService postOfficeService;
+    private final PostOfficeService postOfficeService;
 
     @Autowired
     public PostOfficeController(PostOfficeService postOfficeService) {

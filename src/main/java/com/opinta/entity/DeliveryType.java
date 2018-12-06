@@ -6,7 +6,7 @@ public enum DeliveryType {
     D2W("Door to Warehouse"),
     D2D("Door to Door");
 
-    private String name;
+    private final String name;
 
     DeliveryType(String name){
         this.name = name;

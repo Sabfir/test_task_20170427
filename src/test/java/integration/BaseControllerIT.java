@@ -17,13 +17,12 @@ import org.springframework.web.context.WebApplicationContext;
 @ContextConfiguration(classes = {ApplicationConfigTest.class, HibernateConfigTest.class})
 @WebAppConfiguration
 public abstract class BaseControllerIT {
-    private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext context;
 
     @Before
     public final void initialize() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
         RestAssuredMockMvc.mockMvc(mockMvc);
     }
 }

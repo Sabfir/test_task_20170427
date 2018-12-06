@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Component
 public class TestHelper {
@@ -27,6 +30,8 @@ public class TestHelper {
     private ShipmentService shipmentService;
     @Autowired
     private PostOfficeService postOfficeService;
+    @Autowired
+    private ParcelService parcelService;
 
     public PostOffice createPostOffice() {
         PostOffice postOffice = new PostOffice("Lviv post office", createAddress(), createPostcodePool());
@@ -38,9 +43,30 @@ public class TestHelper {
         postcodePoolService.delete(postOffice.getPostcodePool().getId());
     }
 
+    private Parcel createParcel() {
+        List<ParcelItem> parcelItemsPack1 = new ArrayList<>();
+        ParcelItem parcelItem1 = new ParcelItem("Sugar", 2, 0.3f, new BigDecimal(50));
+        ParcelItem parcelItem2 = new ParcelItem("Salt", 1, 0.2f, new BigDecimal(50));
+        parcelItemsPack1.add(parcelItem1);
+        parcelItemsPack1.add(parcelItem2);
+
+        Parcel parcel1 = new Parcel(0.5f, 0.5f, new BigDecimal(100),
+                new BigDecimal(15), parcelItemsPack1);
+
+        return parcelService.saveEntity(parcel1);
+    }
+
+    public void deleteParcel(Parcel parcel) {
+        parcelService.delete(parcel.getId());
+    }
+
     public Shipment createShipment() {
+        List<Parcel> parcelList = new ArrayList<>();
+        parcelList.add(createParcel());
+        parcelList.add(createParcel());
+
         Shipment shipment = new Shipment(createClient(), createClient(),
-                DeliveryType.D2D, 1.0F, 1.0F, new BigDecimal(200), new BigDecimal(30), new BigDecimal(35.2));
+                DeliveryType.D2D, new BigDecimal(35.2), parcelList);
         return shipmentService.saveEntity(shipment);
     }
 
@@ -90,7 +116,7 @@ public class TestHelper {
         return getJsonObjectFromFile(filePath).toString();
     }
 
-    public File getFileFromResources(String path) {
-        return new File(getClass().getClassLoader().getResource(path).getFile());
+    private File getFileFromResources(String path) {
+        return new File(Objects.requireNonNull(getClass().getClassLoader().getResource(path)).getFile());
     }
 }

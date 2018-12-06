@@ -21,4 +21,6 @@ public interface PostcodePoolService {
     boolean delete(long id);
     
     boolean addBarcodeInnerNumbers(long postcodeId, List<BarcodeInnerNumberDto> barcodeInnerNumberDtos);
+
+
 }

@@ -24,7 +24,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/shipment-tracking")
 public class ShipmentTrackingDetailController {
-    private ShipmentTrackingDetailService shipmentTrackingDetailService;
+    private final ShipmentTrackingDetailService shipmentTrackingDetailService;
 
     @Autowired
     public ShipmentTrackingDetailController(ShipmentTrackingDetailService shipmentTrackingDetailService) {

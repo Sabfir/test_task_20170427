@@ -20,7 +20,7 @@ import java.util.Properties;
 @ComponentScan({"com.opinta"})
 @PropertySource(value = {"classpath:application.properties"})
 public class HibernateConfig {
-    private Environment environment;
+    private final Environment environment;
 
     @Autowired
     public HibernateConfig(Environment environment) {
@@ -31,7 +31,7 @@ public class HibernateConfig {
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan(new String[]{"com.opinta.entity"});
+        sessionFactory.setPackagesToScan("com.opinta.entity");
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }

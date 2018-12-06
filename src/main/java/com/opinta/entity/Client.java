@@ -31,4 +31,25 @@ public class Client {
         this.address = address;
         this.counterparty = counterparty;
     }
+
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public Counterparty getCounterparty() {
+        return counterparty;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
