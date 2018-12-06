@@ -26,8 +26,8 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/postcodes")
 public class PostcodePoolController {
-    private PostcodePoolService postcodePoolService;
-    private BarcodeInnerNumberService barcodeInnerNumberService;
+    private final PostcodePoolService postcodePoolService;
+    private final BarcodeInnerNumberService barcodeInnerNumberService;
 
     @Autowired
     public PostcodePoolController(PostcodePoolService postcodePoolService,

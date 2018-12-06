@@ -32,18 +32,18 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     private TestHelper testHelper;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         counterparty = testHelper.createCounterparty();
         counterpartyId = (int) counterparty.getId();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         testHelper.deleteCounterpartyWithPostcodePool(counterparty);
     }
 
     @Test
-    public void getCounterparties() throws Exception {
+    public void getCounterparties() {
         when().
                 get("/counterparties").
         then().
@@ -51,7 +51,7 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void getCounterparty() throws Exception {
+    public void getCounterparty() {
         when().
                 get("counterparties/{id}", counterpartyId).
         then().
@@ -60,7 +60,7 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void getCounterparty_notFound() throws Exception {
+    public void getCounterparty_notFound() {
         when().
                 get("/counterparties/{id}", counterpartyId + 1).
         then().
@@ -121,7 +121,7 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void deleteCounterparty() throws Exception {
+    public void deleteCounterparty() {
         when().
                 delete("/counterparties/{id}", counterpartyId).
         then().
@@ -129,7 +129,7 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void deleteCounterparty_notFound() throws Exception {
+    public void deleteCounterparty_notFound() {
         when().
                 delete("/counterparties/{id}", counterpartyId + 1).
         then().

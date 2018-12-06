@@ -15,8 +15,8 @@ import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 @Service
 @Slf4j
 public class ShipmentTrackingDetailServiceImpl implements ShipmentTrackingDetailService {
-    private ShipmentTrackingDetailDao shipmentTrackingDetailDao;
-    private ShipmentTrackingDetailMapper shipmentTrackingDetailMapper;
+    private final ShipmentTrackingDetailDao shipmentTrackingDetailDao;
+    private final ShipmentTrackingDetailMapper shipmentTrackingDetailMapper;
 
     @Autowired
     public ShipmentTrackingDetailServiceImpl(ShipmentTrackingDetailDao shipmentTrackingDetailDao,

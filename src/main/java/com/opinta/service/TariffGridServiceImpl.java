@@ -14,7 +14,7 @@ import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 @Service
 @Slf4j
 public class TariffGridServiceImpl implements TariffGridService {
-    private TariffGridDao tariffGridDao;
+    private final TariffGridDao tariffGridDao;
 
     @Autowired
     public TariffGridServiceImpl(TariffGridDao tariffGridDao) {

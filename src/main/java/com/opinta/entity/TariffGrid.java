@@ -27,4 +27,8 @@ public class TariffGrid {
         this.w2wVariation = w2wVariation;
         this.price = price;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 }

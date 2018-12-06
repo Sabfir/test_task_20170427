@@ -20,7 +20,7 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
     private static final String PDF_LABEL_TEMPLATE = "pdfTemplate/label-template.pdf";
     private static final String PDF_POSTPAY_TEMPLATE = "pdfTemplate/postpay-template.pdf";
 
-    private ShipmentService shipmentService;
+    private final ShipmentService shipmentService;
     private PDDocument template;
     private PDTextField field;
 

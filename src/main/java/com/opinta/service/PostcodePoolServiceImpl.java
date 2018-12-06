@@ -17,9 +17,9 @@ import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 @Service
 @Slf4j
 public class PostcodePoolServiceImpl implements PostcodePoolService {
-    private PostcodePoolDao postcodePoolDao;
-    private PostcodePoolMapper postcodePoolMapper;
-    private BarcodeInnerNumberMapper barcodeInnerNumberMapper;
+    private final PostcodePoolDao postcodePoolDao;
+    private final PostcodePoolMapper postcodePoolMapper;
+    private final BarcodeInnerNumberMapper barcodeInnerNumberMapper;
 
     @Autowired
     public PostcodePoolServiceImpl(PostcodePoolDao postcodePoolDao, PostcodePoolMapper postcodePoolMapper,

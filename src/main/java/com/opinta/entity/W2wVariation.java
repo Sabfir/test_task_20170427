@@ -5,7 +5,7 @@ public enum W2wVariation {
     REGION("Between region centers"),
     COUNTRY("All county");
 
-    private String name;
+    private final String name;
 
     W2wVariation(String name){
         this.name = name;

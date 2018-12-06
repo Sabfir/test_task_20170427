@@ -38,4 +38,8 @@ public class ShipmentTrackingDetail {
         this.shipmentStatus = shipmentStatus;
         this.date = date;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 }

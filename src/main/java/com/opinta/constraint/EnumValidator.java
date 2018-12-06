@@ -6,7 +6,7 @@ import java.util.Set;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class EnumValidator implements ConstraintValidator<EnumString, String> {
+class EnumValidator implements ConstraintValidator<EnumString, String> {
     private Set<String> AVAILABLE_ENUM_NAMES;
 
     private Set<String> getNamesSet(Class<? extends Enum<?>> e) {

@@ -31,18 +31,18 @@ public class ClientControllerIT extends BaseControllerIT {
     private TestHelper testHelper;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         client = testHelper.createClient();
         clientId = (int) client.getId();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         testHelper.deleteClient(client);
     }
 
     @Test
-    public void getClients() throws Exception {
+    public void getClients() {
         when().
                 get("/clients").
         then().
@@ -50,7 +50,7 @@ public class ClientControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void getClient() throws Exception {
+    public void getClient() {
         when().
                 get("clients/{id}", clientId).
         then().
@@ -59,7 +59,7 @@ public class ClientControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void getClient_notFound() throws Exception {
+    public void getClient_notFound() {
         when().
                 get("/clients/{id}", clientId + 1).
         then().
@@ -122,7 +122,7 @@ public class ClientControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void deleteClient() throws Exception {
+    public void deleteClient() {
         when().
                 delete("/clients/{id}", clientId).
         then().
@@ -130,7 +130,7 @@ public class ClientControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void deleteClient_notFound() throws Exception {
+    public void deleteClient_notFound() {
         when().
                 delete("/clients/{id}", clientId + 1).
         then().

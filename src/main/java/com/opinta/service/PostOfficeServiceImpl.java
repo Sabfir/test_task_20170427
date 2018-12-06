@@ -15,8 +15,8 @@ import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 @Service
 @Slf4j
 public class PostOfficeServiceImpl implements PostOfficeService {
-    private PostOfficeDao postOfficeDao;
-    private PostOfficeMapper postOfficeMapper;
+    private final PostOfficeDao postOfficeDao;
+    private final PostOfficeMapper postOfficeMapper;
 
     @Autowired
     public PostOfficeServiceImpl(PostOfficeDao postOfficeDao, PostOfficeMapper postOfficeMapper) {

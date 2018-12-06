@@ -38,7 +38,7 @@ public class AddressControllerIT extends BaseControllerIT {
     }
     
     @Test
-    public void getAddresses() throws Exception {
+    public void getAddresses() {
         when().
                 get("/addresses").
         then().
@@ -46,7 +46,7 @@ public class AddressControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void getAddress() throws Exception {
+    public void getAddress() {
         when().
                 get("/addresses/{id}", addressId).
         then().
@@ -55,7 +55,7 @@ public class AddressControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void getAddress_notFound() throws Exception {
+    public void getAddress_notFound() {
         when().
                 get("/addresses/{id}", addressId + 1).
         then().
@@ -110,7 +110,7 @@ public class AddressControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void deleteAddress() throws Exception {
+    public void deleteAddress() {
         when()
                 .delete("/addresses/{id}", addressId).
         then().
@@ -118,7 +118,7 @@ public class AddressControllerIT extends BaseControllerIT {
     }
 
     @Test
-    public void deleteAddress_notFound() throws Exception {
+    public void deleteAddress_notFound() {
         when()
                 .delete("/addresses/{id}", addressId+1).
         then().

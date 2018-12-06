@@ -1,6 +1,5 @@
 package com.opinta.dao;
 
-import com.opinta.entity.Counterparty;
 import java.util.List;
 
 import com.opinta.entity.Client;

@@ -27,4 +27,5 @@ public class AddressDto {
     private String apartmentNumber;
     @Size(max = 255)
     private String description;
+
 }

@@ -2,8 +2,10 @@ package com.opinta.controller;
 
 import java.util.List;
 
+import com.opinta.dto.ParcelDto;
 import com.opinta.dto.ShipmentDto;
 import com.opinta.service.PDFGeneratorService;
+import com.opinta.service.ParcelService;
 import com.opinta.service.ShipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -27,13 +29,16 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/shipments")
 public class ShipmentController {
-    private ShipmentService shipmentService;
-    private PDFGeneratorService pdfGeneratorService;
+    private final ShipmentService shipmentService;
+    private final PDFGeneratorService pdfGeneratorService;
+    private final ParcelService parcelService;
 
     @Autowired
-    public ShipmentController(ShipmentService shipmentService, PDFGeneratorService pdfGeneratorService) {
+    public ShipmentController(ShipmentService shipmentService, PDFGeneratorService pdfGeneratorService,
+                                ParcelService parcelService) {
         this.shipmentService = shipmentService;
         this.pdfGeneratorService = pdfGeneratorService;
+        this.parcelService = parcelService;
     }
 
     @GetMapping
@@ -92,6 +97,41 @@ public class ShipmentController {
     public ResponseEntity<?> deleteShipment(@PathVariable long id) {
         if (!shipmentService.delete(id)) {
             return new ResponseEntity<>(format("No Shipment found for ID %d", id), NOT_FOUND);
+        }
+        return new ResponseEntity<>(OK);
+    }
+
+    @GetMapping("{shipmentId}/parcels")
+    public ResponseEntity<?> getParcels(@PathVariable long shipmentId) {
+        List<ParcelDto> parcelDtos = parcelService.getAllByShipmentId(shipmentId);
+        if (parcelDtos == null) {
+            return new ResponseEntity<>(format("Shipment %d doesn't exist", shipmentId), NOT_FOUND);
+        }
+        return new ResponseEntity<>(parcelDtos, OK);
+    }
+
+    @GetMapping("parcels/{id}")
+    public ResponseEntity<?> getParcel(@PathVariable("id") long id) {
+        ParcelDto parcelDto = parcelService.getById(id);
+        if (parcelDto == null) {
+            return new ResponseEntity<>(format("No parcel found for id %d", id), NOT_FOUND);
+        }
+        return new ResponseEntity<>(parcelDto, OK);
+    }
+
+    @PostMapping("{shipmentId}/parcels")
+    public ResponseEntity<?> createParcel(@PathVariable("shipmentId")long shipmentId,
+                                          @RequestBody ParcelDto parcelDto) {
+        parcelDto = parcelService.save(shipmentId, parcelDto);
+        if (parcelDto == null) {
+            return new ResponseEntity<>(format("Shipment %d doesn't exist", shipmentId), NOT_FOUND);
+        }
+        return new ResponseEntity<>(parcelDto, OK);
+    }
+
+    public ResponseEntity<?> deleteParcel(@PathVariable long id) {
+        if (!parcelService.delete(id)) {
+            return new ResponseEntity<>(format("No parcel found for ID %d", id), NOT_FOUND);
         }
         return new ResponseEntity<>(OK);
     }

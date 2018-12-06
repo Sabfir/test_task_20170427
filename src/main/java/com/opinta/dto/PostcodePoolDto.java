@@ -13,4 +13,8 @@ public class PostcodePoolDto {
     @Pattern(regexp = POSTCODE_REGEX)
     private String postcode;
     private boolean closed;
+
+    public long getId() {
+        return id;
+    }
 }
