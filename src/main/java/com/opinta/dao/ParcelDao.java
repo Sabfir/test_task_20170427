@@ -10,9 +10,9 @@ public interface ParcelDao {
 
     Parcel getById(long id);
 
-    Parcel save(Parcel address);
+    Parcel save(Parcel parcel);
 
-    void update(Parcel address);
+    void update(Parcel parcel);
 
-    void delete(Parcel address);
+    void delete(Parcel parcel);
 }
