@@ -17,8 +17,12 @@ import java.io.IOException;
 @Service
 @Slf4j
 public class PDFGeneratorServiceImpl implements PDFGeneratorService {
+
     private static final String PDF_LABEL_TEMPLATE = "pdfTemplate/label-template.pdf";
     private static final String PDF_POSTPAY_TEMPLATE = "pdfTemplate/postpay-template.pdf";
+
+    private static final String ERROR_WHILE_PARSING_PDF_TEMPLATE = "Error while parsing PDF template: ";
+    private static final String ERROR_WHILE_READING_THE_TEMPLATE_FILE = "Error while reading the template file %s";
 
     private ShipmentService shipmentService;
     private PDDocument template;
@@ -57,9 +61,9 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
             template.save(outputStream);
             data = outputStream.toByteArray();
         } catch (IOException e) {
-            log.error("Error while parsing PDF template: " + e.getMessage());
+            log.error(ERROR_WHILE_PARSING_PDF_TEMPLATE + e.getMessage());
         } catch (NullPointerException e) {
-            log.error("Error while reading the template file %s", PDF_LABEL_TEMPLATE);
+            log.error(ERROR_WHILE_READING_THE_TEMPLATE_FILE, PDF_LABEL_TEMPLATE);
         }
         return data;
     }
@@ -79,10 +83,10 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
                 generateClientsData(shipment, acroForm);
 
                 field = (PDTextField) acroForm.getField("mass");
-                field.setValue(String.valueOf(shipment.getWeight()));
+                field.setValue(String.valueOf(shipmentService.getWeight(shipmentId)));
 
                 field = (PDTextField) acroForm.getField("value");
-                field.setValue(String.valueOf(shipment.getDeclaredPrice()));
+                field.setValue(String.valueOf(shipmentService.getDeclaredPrice(shipmentId)));
 
                 field = (PDTextField) acroForm.getField("sendingCost");
                 field.setValue(String.valueOf(shipment.getPrice()));
@@ -97,9 +101,9 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
             template.save(outputStream);
             data = outputStream.toByteArray();
         } catch (IOException e) {
-            log.error("Error while parsing PDF template: " + e.getMessage());
+            log.error(ERROR_WHILE_PARSING_PDF_TEMPLATE + e.getMessage());
         } catch (NullPointerException e) {
-            log.error("Error while reading the template file %s", PDF_LABEL_TEMPLATE);
+            log.error(ERROR_WHILE_READING_THE_TEMPLATE_FILE, PDF_LABEL_TEMPLATE);
         }
         return data;
     }

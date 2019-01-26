@@ -5,6 +5,8 @@ import com.opinta.dto.ShipmentDto;
 import com.opinta.entity.Shipment;
 import com.opinta.mapper.ShipmentMapper;
 import com.opinta.service.ShipmentService;
+import com.opinta.temp.InitDbService;
+import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -20,6 +22,7 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.hamcrest.Matchers.equalTo;
 
+@Slf4j
 public class ShipmentControllerIT extends BaseControllerIT {
     private Shipment shipment;
     private int shipmentId = MIN_VALUE;
@@ -29,9 +32,12 @@ public class ShipmentControllerIT extends BaseControllerIT {
     private ShipmentService shipmentService;
     @Autowired
     private TestHelper testHelper;
+    @Autowired
+    private InitDbService initDbService;
 
     @Before
     public void setUp() throws Exception {
+        initDbService.init();
         shipment = testHelper.createShipment();
         shipmentId = (int) shipment.getId();
     }
@@ -68,7 +74,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void createClient() throws Exception {
+    public void createShipment() throws Exception {
         // create
         JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/shipment.json");
         jsonObject.put("senderId", (int) testHelper.createClient().getId());
@@ -87,6 +93,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
 
         // check created data
         Shipment createdShipment = shipmentService.getEntityById(newShipmentId);
+        log.info(createdShipment.toString());
         ObjectMapper mapper = new ObjectMapper();
         String actualJson = mapper.writeValueAsString(shipmentMapper.toDto(createdShipment));
 
@@ -118,7 +125,7 @@ public class ShipmentControllerIT extends BaseControllerIT {
         ObjectMapper mapper = new ObjectMapper();
         String actualJson = mapper.writeValueAsString(shipmentDto);
 
-        jsonObject.put("price", 45);
+        jsonObject.put("price", 90);
         expectedJson = jsonObject.toString();
 
         JSONAssert.assertEquals(expectedJson, actualJson, false);
