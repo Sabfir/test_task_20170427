@@ -1,10 +1,9 @@
 package com.opinta.controller;
 
-import java.util.List;
-
 import com.opinta.dto.ShipmentTrackingDetailDto;
 import com.opinta.service.ShipmentTrackingDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,14 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import static java.lang.String.format;
+import java.util.List;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
+import static java.lang.String.format;
 
 @RestController
 @RequestMapping("/shipment-tracking")
 public class ShipmentTrackingDetailController {
+    private static final String NO_SHIPMENT_TRACKING_DETAIL_FOUND_FOR_ID = "No ShipmentTrackingDetail found for ID %d";
     private ShipmentTrackingDetailService shipmentTrackingDetailService;
 
     @Autowired
@@ -32,41 +31,41 @@ public class ShipmentTrackingDetailController {
     }
 
     @GetMapping
-    @ResponseStatus(OK)
+    @ResponseStatus(HttpStatus.OK)
     public List<ShipmentTrackingDetailDto> getShipmentTrackingDetails() {
         return shipmentTrackingDetailService.getAll();
     }
 
-	@GetMapping("{id}")
-	public ResponseEntity<?> getShipmentTrackingDetail(@PathVariable("id") long id) {
-		ShipmentTrackingDetailDto shipmentTrackingDetailDto = shipmentTrackingDetailService.getById(id);
-		if (shipmentTrackingDetailDto == null) {
-			return new ResponseEntity<>(format("No ShipmentTrackingDetail found for ID %d", id), NOT_FOUND);
-		}
-		return new ResponseEntity<>(shipmentTrackingDetailDto, OK);
-	}
+    @GetMapping("{id}")
+    public ResponseEntity<?> getShipmentTrackingDetail(@PathVariable("id") long id) {
+        ShipmentTrackingDetailDto shipmentTrackingDetailDto = shipmentTrackingDetailService.getById(id);
+        if (shipmentTrackingDetailDto == null) {
+            return new ResponseEntity<>(format(NO_SHIPMENT_TRACKING_DETAIL_FOUND_FOR_ID, id), HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(shipmentTrackingDetailDto, HttpStatus.OK);
+    }
 
-	@PostMapping
-    @ResponseStatus(OK)
-	public void createShipmentTrackingDetail(@RequestBody ShipmentTrackingDetailDto shipmentTrackingDetailDto) {
-		shipmentTrackingDetailService.save(shipmentTrackingDetailDto);
-	}
+    @PostMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void createShipmentTrackingDetail(@RequestBody ShipmentTrackingDetailDto shipmentTrackingDetailDto) {
+        shipmentTrackingDetailService.save(shipmentTrackingDetailDto);
+    }
 
-	@PutMapping("{id}")
-	public ResponseEntity<?> updateShipmentTrackingDetail(
-			@PathVariable long id, @RequestBody ShipmentTrackingDetailDto shipmentTrackingDetailDto) {
-		shipmentTrackingDetailDto = shipmentTrackingDetailService.update(id, shipmentTrackingDetailDto);
-		if (shipmentTrackingDetailDto == null) {
-			return new ResponseEntity<>(format("No ShipmentTrackingDetail found for ID %d", id), NOT_FOUND);
-		}
-		return new ResponseEntity<>(shipmentTrackingDetailDto, OK);
-	}
+    @PutMapping("{id}")
+    public ResponseEntity<?> updateShipmentTrackingDetail(
+            @PathVariable long id, @RequestBody ShipmentTrackingDetailDto shipmentTrackingDetailDto) {
+        shipmentTrackingDetailDto = shipmentTrackingDetailService.update(id, shipmentTrackingDetailDto);
+        if (shipmentTrackingDetailDto == null) {
+            return new ResponseEntity<>(format(NO_SHIPMENT_TRACKING_DETAIL_FOUND_FOR_ID, id), HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(shipmentTrackingDetailDto, HttpStatus.OK);
+    }
 
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteShipmentTrackingDetail(@PathVariable long id) {
         if (!shipmentTrackingDetailService.delete(id)) {
-            return new ResponseEntity<>(format("No ShipmentTrackingDetail found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_SHIPMENT_TRACKING_DETAIL_FOUND_FOR_ID, id), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -3,11 +3,13 @@ package com.opinta.service;
 import com.opinta.dao.TariffGridDao;
 import com.opinta.entity.TariffGrid;
 import com.opinta.entity.W2wVariation;
-import java.util.List;
-import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 
@@ -52,7 +54,7 @@ public class TariffGridServiceImpl implements TariffGridService {
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for tariffGrid", e);
         }
         target.setId(id);

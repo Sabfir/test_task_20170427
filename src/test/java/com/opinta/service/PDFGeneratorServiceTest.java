@@ -1,12 +1,12 @@
 package com.opinta.service;
 
 import com.opinta.entity.Address;
+import com.opinta.entity.Client;
 import com.opinta.entity.Counterparty;
+import com.opinta.entity.DeliveryType;
+import com.opinta.entity.Parcel;
 import com.opinta.entity.PostcodePool;
 import com.opinta.entity.Shipment;
-import com.opinta.entity.Counterparty;
-import com.opinta.entity.Client;
-import com.opinta.entity.DeliveryType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
@@ -18,12 +18,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PDFGeneratorServiceTest {
@@ -38,19 +38,23 @@ public class PDFGeneratorServiceTest {
         pdfGeneratorService = new PDFGeneratorServiceImpl(shipmentService);
 
         Address senderAddress = new Address("00001", "Ternopil", "Monastiriska",
-                        "Monastiriska", "Sadova", "51", "");
+                "Monastiriska", "Sadova", "51", "");
         Address recipientAddress = new Address("00002", "Kiev", "", "Kiev", "Khreschatik", "121", "37");
         Counterparty counterparty = new Counterparty("Modna kasta",
                 new PostcodePool("00003", false));
         Client sender = new Client("FOP Ivanov", "001", senderAddress, counterparty);
         Client recipient = new Client("Petrov PP", "002", recipientAddress, counterparty);
-        shipment = new Shipment(sender, recipient, DeliveryType.W2W, 1, 1,
-                new BigDecimal("12.5"), new BigDecimal("2.5"), new BigDecimal("15.25"));
+        List<Parcel> parcels = new ArrayList<>();
+        parcels.add(new Parcel(0.5F, 1, 0.5F, 0, new BigDecimal(100), new BigDecimal(50)));
+        parcels.add(new Parcel(0.5F, 1, 0.5F, 0, new BigDecimal(100), new BigDecimal(50)));
+
+        shipment = new Shipment(sender, recipient, DeliveryType.W2W, new BigDecimal("2.5"), new BigDecimal("15.25"), parcels);
     }
 
     @Test
     public void generateLabel_and_generatePostpay_ShouldReturnNotEmptyFile() {
         when(shipmentService.getEntityById(1L)).thenReturn(shipment);
+        when(shipmentService.getWeight(1L)).thenReturn(1.0F);
         assertNotEquals("PDFGenerator returned an empty label",
                 pdfGeneratorService.generateLabel(1L).length, 0);
         assertNotEquals("PDFGenerator returned an empty postpay form",
@@ -61,6 +65,8 @@ public class PDFGeneratorServiceTest {
     @Test
     public void generateLabel_ShouldReturnValidAcroForms() throws Exception {
         when(shipmentService.getEntityById(1L)).thenReturn(shipment);
+        when(shipmentService.getWeight(1L)).thenReturn(1.0F);
+        when(shipmentService.getDeclaredPrice(1L)).thenReturn(new BigDecimal(12.5));
 
         byte[] labelForm = pdfGeneratorService.generateLabel(1L);
 
@@ -80,6 +86,7 @@ public class PDFGeneratorServiceTest {
         field = (PDTextField) acroForm.getField("recipientAddress");
         assertEquals("Expected recipientAddress form to contain Khreschatik st., 121, Kiev\n00002",
                 field.getValue(), "Khreschatik st., 121, Kiev\n00002");
+
 
         field = (PDTextField) acroForm.getField("mass");
         assertEquals("Expected mass to be 1.0", field.getValue(), "1.0");

@@ -1,22 +1,23 @@
 package com.opinta.mapper;
 
-import java.util.List;
 import org.mapstruct.InheritInverseConfiguration;
+
+import java.util.List;
 
 /**
  * Base dto mapper
  *
- * @param <DTO>    type of Dto
- * @param <ENTITY> type of Entity
+ * @param <D> type of Dto
+ * @param <E> type of Entity
  */
-public interface BaseMapper<DTO, ENTITY> {
+public interface BaseMapper<D, E> {
 
-    DTO toDto(ENTITY entity);
+    D toDto(E entity);
 
-    List<DTO> toDto(List<ENTITY> entities);
+    List<D> toDto(List<E> entities);
 
     @InheritInverseConfiguration
-    ENTITY toEntity(DTO dto);
+    E toEntity(D dto);
 
-    List<ENTITY> toEntity(List<DTO> dtos);
+    List<E> toEntity(List<D> dtos);
 }
