@@ -1,6 +1,5 @@
 package com.opinta.temp;
 
-
 import com.opinta.dto.AddressDto;
 import com.opinta.dto.BarcodeInnerNumberDto;
 import com.opinta.dto.CounterpartyDto;
