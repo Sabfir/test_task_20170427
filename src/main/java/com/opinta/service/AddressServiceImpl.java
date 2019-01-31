@@ -1,5 +1,6 @@
 package com.opinta.service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -57,7 +58,7 @@ public class AddressServiceImpl implements AddressService {
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for address", e);
         }
         target.setId(id);

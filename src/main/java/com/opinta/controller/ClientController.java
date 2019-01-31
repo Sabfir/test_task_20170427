@@ -27,6 +27,8 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/clients")
 public class ClientController {
+    private static final String NO_CLIENT_FOUND = "No Client found for ID %d";
+
     private final ClientService clientService;
     private final ShipmentService shipmentService;
     
@@ -46,7 +48,7 @@ public class ClientController {
     public ResponseEntity<?> getClient(@PathVariable("id") long id) {
         ClientDto clientDto = clientService.getById(id);
         if (clientDto == null) {
-            return new ResponseEntity<>(format("No Client found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_CLIENT_FOUND, id), NOT_FOUND);
         }
         return new ResponseEntity<>(clientDto, OK);
     }
@@ -75,14 +77,14 @@ public class ClientController {
         if (clientDto != null) {
             return new ResponseEntity<>(clientDto, OK);
         } else {
-            return new ResponseEntity<>(format("No Client found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_CLIENT_FOUND, id), NOT_FOUND);
         }
     }
     
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteClient(@PathVariable long id) {
         if (!clientService.delete(id)) {
-            return new ResponseEntity<>(format("No Client found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_CLIENT_FOUND, id), NOT_FOUND);
         }
         return new ResponseEntity<>(OK);
     }

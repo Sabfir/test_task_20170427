@@ -37,30 +37,30 @@ public class ShipmentTrackingDetailController {
         return shipmentTrackingDetailService.getAll();
     }
 
-	@GetMapping("{id}")
+    @GetMapping("{id}")
 	public ResponseEntity<?> getShipmentTrackingDetail(@PathVariable("id") long id) {
-		ShipmentTrackingDetailDto shipmentTrackingDetailDto = shipmentTrackingDetailService.getById(id);
-		if (shipmentTrackingDetailDto == null) {
-			return new ResponseEntity<>(format("No ShipmentTrackingDetail found for ID %d", id), NOT_FOUND);
-		}
-		return new ResponseEntity<>(shipmentTrackingDetailDto, OK);
-	}
+    	ShipmentTrackingDetailDto shipmentTrackingDetailDto = shipmentTrackingDetailService.getById(id);
+    	if (shipmentTrackingDetailDto == null) {
+    		return new ResponseEntity<>(format("No ShipmentTrackingDetail found for ID %d", id), NOT_FOUND);
+    	}
+    	return new ResponseEntity<>(shipmentTrackingDetailDto, OK);
+    }
 
-	@PostMapping
+    @PostMapping
     @ResponseStatus(OK)
 	public void createShipmentTrackingDetail(@RequestBody ShipmentTrackingDetailDto shipmentTrackingDetailDto) {
-		shipmentTrackingDetailService.save(shipmentTrackingDetailDto);
-	}
+    	shipmentTrackingDetailService.save(shipmentTrackingDetailDto);
+    }
 
-	@PutMapping("{id}")
+    @PutMapping("{id}")
 	public ResponseEntity<?> updateShipmentTrackingDetail(
 			@PathVariable long id, @RequestBody ShipmentTrackingDetailDto shipmentTrackingDetailDto) {
-		shipmentTrackingDetailDto = shipmentTrackingDetailService.update(id, shipmentTrackingDetailDto);
-		if (shipmentTrackingDetailDto == null) {
-			return new ResponseEntity<>(format("No ShipmentTrackingDetail found for ID %d", id), NOT_FOUND);
-		}
-		return new ResponseEntity<>(shipmentTrackingDetailDto, OK);
-	}
+    	shipmentTrackingDetailDto = shipmentTrackingDetailService.update(id, shipmentTrackingDetailDto);
+    	if (shipmentTrackingDetailDto == null) {
+    		return new ResponseEntity<>(format("No ShipmentTrackingDetail found for ID %d", id), NOT_FOUND);
+    	}
+    	return new ResponseEntity<>(shipmentTrackingDetailDto, OK);
+    }
 
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteShipmentTrackingDetail(@PathVariable long id) {

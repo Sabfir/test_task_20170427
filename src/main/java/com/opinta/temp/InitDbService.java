@@ -121,7 +121,8 @@ public class InitDbService {
         // create Address
         List<AddressDto> addresses = new ArrayList<>();
         List<AddressDto> addressesSaved = new ArrayList<>();
-        addresses.add(addressMapper.toDto(new Address("00001", "Ternopil", "Monastiriska", "Monastiriska", "Sadova", "51", "")));
+        addresses.add(addressMapper.toDto(new Address("00001", "Ternopil", "Monastiriska",
+                "Monastiriska", "Sadova", "51", "")));
         addresses.add(addressMapper.toDto(new Address("00002", "Kiev", "", "Kiev", "Khreschatik", "121", "37")));
         addresses.forEach((AddressDto addressDto) -> addressesSaved.add(addressService.save(addressDto)));
 
@@ -140,7 +141,7 @@ public class InitDbService {
         clients.add(new Client("Petrov PP", "002",
                 addressMapper.toEntity(addressesSaved.get(1)), counterparty));
         clients.forEach((Client client) ->
-            clientsSaved.add(this.clientMapper.toEntity(clientService.save(this.clientMapper.toDto(client))))
+                clientsSaved.add(this.clientMapper.toEntity(clientService.save(this.clientMapper.toDto(client))))
         );
 
         // create Shipment

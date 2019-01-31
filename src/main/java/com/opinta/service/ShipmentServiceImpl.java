@@ -6,6 +6,8 @@ import com.opinta.entity.DeliveryType;
 import com.opinta.entity.TariffGrid;
 import com.opinta.entity.W2wVariation;
 import com.opinta.util.AddressUtil;
+
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -121,7 +123,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         target.setPrice(calculatePrice(target));
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for shipment", e);
         }
         target.setId(id);
