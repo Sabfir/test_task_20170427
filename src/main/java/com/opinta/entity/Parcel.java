@@ -2,6 +2,7 @@ package com.opinta.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -20,6 +21,7 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
+@ToString
 public class Parcel {
     @Id
     @GeneratedValue
@@ -35,7 +37,7 @@ public class Parcel {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinColumn(name = "parcel_id")
-    private List<ParcelItem> parcelItemList = new ArrayList<>();
+    private List<ParcelItem> parcelItems = new ArrayList<>();
 
     public Parcel(float weight, float length, float width, float height, BigDecimal declaredPrice, BigDecimal price) {
         this.weight = weight;

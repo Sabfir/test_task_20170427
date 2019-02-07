@@ -64,8 +64,8 @@ public class ParcelServiceImpl implements ParcelService {
     public ParcelDto save(ParcelDto parcelDto) {
         log.info("Saving parcel dto {}", parcelDto);
         Parcel parcel = parcelMapper.toEntity(parcelDto);
-        parcel = parcelDao.save(parcel);
-        return parcelMapper.toDto(parcel);
+        Parcel parcel1 = parcelDao.save(parcel);
+        return parcelMapper.toDto(parcel1);
     }
 
     @Override

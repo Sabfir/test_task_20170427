@@ -5,6 +5,7 @@ import com.opinta.dto.ShipmentDto;
 import com.opinta.entity.Shipment;
 import com.opinta.mapper.ShipmentMapper;
 import com.opinta.service.ShipmentService;
+import com.opinta.temp.InitDbService;
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
