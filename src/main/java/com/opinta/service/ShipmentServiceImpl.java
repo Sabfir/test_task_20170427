@@ -7,6 +7,7 @@ import com.opinta.util.AddressUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -30,17 +31,19 @@ public class ShipmentServiceImpl implements ShipmentService {
     private final ShipmentMapper shipmentMapper;
     private final BarcodeInnerNumberService barcodeInnerNumberService;
     private final ParcelDao parcelDao;
+    private final ParcelService parcelService;
 
     @Autowired
     public ShipmentServiceImpl(ShipmentDao shipmentDao, ClientDao clientDao, TariffGridDao tariffGridDao,
                                ShipmentMapper shipmentMapper, BarcodeInnerNumberService barcodeInnerNumberService,
-                               ParcelDao parcelDao) {
+                               ParcelDao parcelDao, ParcelService parcelService) {
         this.shipmentDao = shipmentDao;
         this.clientDao = clientDao;
         this.tariffGridDao = tariffGridDao;
         this.shipmentMapper = shipmentMapper;
         this.barcodeInnerNumberService = barcodeInnerNumberService;
         this.parcelDao = parcelDao;
+        this.parcelService = parcelService;
     }
 
     @Override
@@ -102,7 +105,8 @@ public class ShipmentServiceImpl implements ShipmentService {
 
         shipment.setSender(clientDao.getById(shipment.getSender().getId()));
         shipment.setRecipient(clientDao.getById(shipment.getRecipient().getId()));
-        shipment.setPrice(calculatePrice(shipment));
+        shipment.setPrice(parcelService.calculatePrice(shipment));
+
         Shipment newShipment = shipmentDao.save(shipment);
 
         return shipmentMapper.toDto(shipmentDao.save(newShipment));
@@ -123,8 +127,8 @@ public class ShipmentServiceImpl implements ShipmentService {
             log.error("Can't get properties from object to updatable object for shipment", e);
         }
         target.setId(id);
-//        target.setParcels(shipmentDao.getById(id).getParcels());
-        target.setPrice(calculatePrice(target));
+
+        target.setPrice(parcelService.calculatePrice(target));
         log.info("Updating shipment {}", target);
         shipmentDao.update(target);
         return shipmentMapper.toDto(target);
@@ -142,50 +146,6 @@ public class ShipmentServiceImpl implements ShipmentService {
         log.info("Deleting shipment {}", shipment);
         shipmentDao.delete(shipment);
         return true;
-    }
-
-    private BigDecimal calculatePrice(Shipment shipment) {
-        log.info("Calculating price for shipment {}", shipment);
-
-        Address senderAddress = shipment.getSender().getAddress();
-        Address recipientAddress = shipment.getRecipient().getAddress();
-        W2wVariation w2wVariation = W2wVariation.COUNTRY;
-        if (AddressUtil.isSameTown(senderAddress, recipientAddress)) {
-            w2wVariation = W2wVariation.TOWN;
-        } else if (AddressUtil.isSameRegion(senderAddress, recipientAddress)) {
-            w2wVariation = W2wVariation.REGION;
-        }
-
-        TariffGrid tariffGrid = tariffGridDao.getLast(w2wVariation);
-
-        float totalPrice = 0;
-        for (Parcel parcel : shipment.getParcels()) {
-            if (parcel.getWeight() < tariffGrid.getWeight() && parcel.getLength() < tariffGrid.getLength()) {
-                tariffGrid = tariffGridDao.getByDimension(parcel.getWeight(), parcel.getLength(), w2wVariation);
-            }
-
-            log.info("TariffGrid for weight {} per length {} and type {}: {}",
-                    parcel.getWeight(), parcel.getLength(), w2wVariation, tariffGrid);
-
-            if (tariffGrid == null) {
-                return BigDecimal.ZERO;
-            }
-
-            float price = tariffGrid.getPrice() + getSurcharges(shipment);
-            totalPrice = totalPrice + price;
-        }
-        return new BigDecimal(Float.toString(totalPrice));
-    }
-
-    private float getSurcharges(Shipment shipment) {
-        float surcharges = 0;
-        if (shipment.getDeliveryType().equals(DeliveryType.D2W) ||
-                shipment.getDeliveryType().equals(DeliveryType.W2D)) {
-            surcharges += 9;
-        } else if (shipment.getDeliveryType().equals(DeliveryType.D2D)) {
-            surcharges += 12;
-        }
-        return surcharges;
     }
 
     @Override
