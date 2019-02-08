@@ -15,6 +15,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class TariffGridDaoImpl implements TariffGridDao {
+    private static final String ID = "id";
+    private static final String W2W_VARIATION = "w2wVariation";
+
     private final SessionFactory sessionFactory;
 
     @Autowired
@@ -58,13 +61,13 @@ public class TariffGridDaoImpl implements TariffGridDao {
     @Override
     @SuppressWarnings("unchecked")
     public TariffGrid getByDimension(float weight, float length, W2wVariation w2wVariation) {
-        String id = "id";
+        String id = ID;
         Session session = sessionFactory.getCurrentSession();
         DetachedCriteria minId = DetachedCriteria.forClass(TariffGrid.class).setProjection(Projections.min(id));
         return (TariffGrid) session.createCriteria(TariffGrid.class)
                 .add(Restrictions.and(Restrictions.ge("weight", weight),
                         Restrictions.ge("length", length),
-                        Restrictions.eq("w2wVariation", w2wVariation)))
+                        Restrictions.eq(W2W_VARIATION, w2wVariation)))
                 .addOrder(Order.asc(id))
                 .setMaxResults(1)
                 .uniqueResult();
@@ -72,10 +75,10 @@ public class TariffGridDaoImpl implements TariffGridDao {
 
     @Override
     public TariffGrid getLast(W2wVariation w2wVariation) {
-        String id = "id";
+        String id = ID;
         Session session = sessionFactory.getCurrentSession();
         return (TariffGrid) session.createCriteria(TariffGrid.class)
-                .add(Restrictions.eq("w2wVariation", w2wVariation))
+                .add(Restrictions.eq(W2W_VARIATION, w2wVariation))
                 .addOrder(Order.desc(id))
                 .setMaxResults(1)
                 .uniqueResult();

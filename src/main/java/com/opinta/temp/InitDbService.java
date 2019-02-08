@@ -2,7 +2,19 @@ package com.opinta.temp;
 
 import com.opinta.dto.PostOfficeDto;
 import com.opinta.dto.ShipmentDto;
-import com.opinta.entity.*;
+
+import com.opinta.entity.BarcodeInnerNumber;
+import com.opinta.entity.PostcodePool;
+import com.opinta.entity.ShipmentStatus;
+import com.opinta.entity.ShipmentTrackingDetail;
+import com.opinta.entity.TariffGrid;
+import com.opinta.entity.W2wVariation;
+import com.opinta.entity.Counterparty;
+import com.opinta.entity.DeliveryType;
+import com.opinta.entity.PostOffice;
+import com.opinta.entity.Shipment;
+import com.opinta.entity.Client;
+import com.opinta.entity.Address;
 import com.opinta.mapper.ShipmentTrackingDetailMapper;
 import com.opinta.service.ShipmentTrackingDetailService;
 import com.opinta.service.TariffGridService;

@@ -19,6 +19,8 @@ import java.io.IOException;
 public class PDFGeneratorServiceImpl implements PDFGeneratorService {
     private static final String PDF_LABEL_TEMPLATE = "pdfTemplate/label-template.pdf";
     private static final String PDF_POSTPAY_TEMPLATE = "pdfTemplate/postpay-template.pdf";
+    private static final String ERROR_WHILE_PARCING_PDF_TEMPLATE = "Error while parsing PDF template: ";
+    private static final String ERROR_WHILE_READING_THE_TEMPLATE_FILE = "Error while reading the template file %s";
 
     private ShipmentService shipmentService;
     private PDDocument template;
@@ -57,9 +59,9 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
             template.save(outputStream);
             data = outputStream.toByteArray();
         } catch (IOException e) {
-            log.error("Error while parsing PDF template: " + e.getMessage());
+            log.error(ERROR_WHILE_PARCING_PDF_TEMPLATE + e.getMessage());
         } catch (NullPointerException e) {
-            log.error("Error while reading the template file %s", PDF_LABEL_TEMPLATE);
+            log.error(ERROR_WHILE_READING_THE_TEMPLATE_FILE, PDF_LABEL_TEMPLATE);
         }
         return data;
     }
@@ -97,9 +99,9 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
             template.save(outputStream);
             data = outputStream.toByteArray();
         } catch (IOException e) {
-            log.error("Error while parsing PDF template: " + e.getMessage());
+            log.error(ERROR_WHILE_PARCING_PDF_TEMPLATE + e.getMessage());
         } catch (NullPointerException e) {
-            log.error("Error while reading the template file %s", PDF_LABEL_TEMPLATE);
+            log.error(ERROR_WHILE_READING_THE_TEMPLATE_FILE, PDF_LABEL_TEMPLATE);
         }
         return data;
     }

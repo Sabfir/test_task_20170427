@@ -2,12 +2,9 @@ package com.opinta.service;
 
 import com.opinta.dao.ParcelDao;
 import com.opinta.dao.TariffGridDao;
-import com.opinta.entity.*;
-import com.opinta.util.AddressUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -15,6 +12,12 @@ import javax.transaction.Transactional;
 import com.opinta.dao.ClientDao;
 import com.opinta.dao.ShipmentDao;
 import com.opinta.dto.ShipmentDto;
+import com.opinta.entity.Shipment;
+import com.opinta.entity.BarcodeInnerNumber;
+import com.opinta.entity.PostcodePool;
+import com.opinta.entity.Counterparty;
+import com.opinta.entity.Parcel;
+import com.opinta.entity.Client;
 import com.opinta.mapper.ShipmentMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

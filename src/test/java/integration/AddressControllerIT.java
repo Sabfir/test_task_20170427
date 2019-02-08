@@ -20,6 +20,11 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 public class AddressControllerIT extends BaseControllerIT {
+    private static final String ADDRESSES_ID = "/addresses/{id}";
+    private static final String ID = "id";
+    private static final String ADDRESSES = "/addresses";
+    private static final String APPLICATION_JSON = "application/json;charset=UTF-8";
+    private static final String JSON_ADDRESS = "json/address.json";
     private int addressId = MIN_VALUE;
     @Autowired
     private AddressService addressService;
@@ -40,7 +45,7 @@ public class AddressControllerIT extends BaseControllerIT {
     @Test
     public void getAddresses() throws Exception {
         when().
-                get("/addresses").
+                get(ADDRESSES).
         then().
                 statusCode(SC_OK);
     }
@@ -48,16 +53,16 @@ public class AddressControllerIT extends BaseControllerIT {
     @Test
     public void getAddress() throws Exception {
         when().
-                get("/addresses/{id}", addressId).
+                get(ADDRESSES_ID, addressId).
         then().
                 statusCode(SC_OK).
-                body("id", equalTo(addressId));
+                body(ID, equalTo(addressId));
     }
 
     @Test
     public void getAddress_notFound() throws Exception {
         when().
-                get("/addresses/{id}", addressId + 1).
+                get(ADDRESSES_ID, addressId + 1).
         then().
                 statusCode(SC_NOT_FOUND);
     }
@@ -65,17 +70,17 @@ public class AddressControllerIT extends BaseControllerIT {
     @Test
     public void createAddress() throws Exception {
         // create
-        String expectedJson = testHelper.getJsonFromFile("json/address.json");
+        String expectedJson = testHelper.getJsonFromFile(JSON_ADDRESS);
 
         int newAddressId =
                 given().
-                        contentType("application/json;charset=UTF-8").
+                        contentType(APPLICATION_JSON).
                         body(expectedJson).
                 when().
-                        post("/addresses").
+                        post(ADDRESSES).
                 then().
                         extract().
-                        path("id");
+                        path(ID);
 
         // check created data
         Address address = addressService.getEntityById(newAddressId);
@@ -91,13 +96,13 @@ public class AddressControllerIT extends BaseControllerIT {
     @Test
     public void updateAddress() throws Exception {
         // update data
-        String expectedJson = testHelper.getJsonFromFile("json/address.json");
+        String expectedJson = testHelper.getJsonFromFile(JSON_ADDRESS);
 
         given().
-                contentType("application/json;charset=UTF-8").
+                contentType(APPLICATION_JSON).
                 body(expectedJson).
         when().
-                put("/addresses/{id}", addressId).
+                put(ADDRESSES_ID, addressId).
         then().
                 statusCode(SC_OK);
 
@@ -112,7 +117,7 @@ public class AddressControllerIT extends BaseControllerIT {
     @Test
     public void deleteAddress() throws Exception {
         when()
-                .delete("/addresses/{id}", addressId).
+                .delete(ADDRESSES_ID, addressId).
         then().
                 statusCode(SC_OK);
     }
@@ -120,7 +125,7 @@ public class AddressControllerIT extends BaseControllerIT {
     @Test
     public void deleteAddress_notFound() throws Exception {
         when()
-                .delete("/addresses/{id}", addressId + 1).
+                .delete(ADDRESSES_ID, addressId + 1).
         then().
                 statusCode(SC_NOT_FOUND);
     }

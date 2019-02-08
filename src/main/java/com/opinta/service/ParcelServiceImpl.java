@@ -3,7 +3,13 @@ package com.opinta.service;
 import com.opinta.dao.ParcelDao;
 import com.opinta.dao.TariffGridDao;
 import com.opinta.dto.ParcelDto;
-import com.opinta.entity.*;
+
+import com.opinta.entity.Parcel;
+import com.opinta.entity.TariffGrid;
+import com.opinta.entity.W2wVariation;
+import com.opinta.entity.DeliveryType;
+import com.opinta.entity.Shipment;
+import com.opinta.entity.Address;
 import com.opinta.mapper.ParcelMapper;
 import com.opinta.util.AddressUtil;
 import lombok.extern.slf4j.Slf4j;

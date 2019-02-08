@@ -1,7 +1,12 @@
 package com.opinta.service;
 
-import com.opinta.entity.*;
+import com.opinta.entity.PostcodePool;
 import com.opinta.entity.Counterparty;
+import com.opinta.entity.DeliveryType;
+import com.opinta.entity.Shipment;
+import com.opinta.entity.Client;
+import com.opinta.entity.Address;
+import com.opinta.entity.Parcel;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
