@@ -5,7 +5,6 @@ import com.opinta.entity.Counterparty;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-
 @Mapper(componentModel = "spring")
 public interface CounterpartyMapper extends BaseMapper<CounterpartyDto, Counterparty> {
     

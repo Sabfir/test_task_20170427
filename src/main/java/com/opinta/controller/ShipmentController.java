@@ -27,6 +27,13 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/shipments")
 public class ShipmentController {
+    private static final String ID = "id";
+    private static final String NO_SHIPMENT_FOUND_FOR_ID = "No Shipment found for ID %d";
+    private static final String LABEL_FORM = "labelform";
+    private static final String PDF = ".pdf";
+    private static final String APPLICATION_PDF = "application/pdf";
+    private static final String MUST_REVALIDATE_POST_CHECK_PRE_CHECK = "must-revalidate, post-check=0, pre-check=0";
+
     private ShipmentService shipmentService;
     private PDFGeneratorService pdfGeneratorService;
 
@@ -43,33 +50,33 @@ public class ShipmentController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<?> getShipment(@PathVariable("id") long id) {
+    public ResponseEntity<?> getShipment(@PathVariable(ID) long id) {
         ShipmentDto shipmentDto = shipmentService.getById(id);
         if (shipmentDto == null) {
-            return new ResponseEntity<>(format("No Shipment found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_SHIPMENT_FOUND_FOR_ID, id), NOT_FOUND);
         }
         return new ResponseEntity<>(shipmentDto, OK);
     }
 
     @GetMapping("{id}/label-form")
-    public ResponseEntity<?> getShipmentLabelForm(@PathVariable("id") long id) {
+    public ResponseEntity<?> getShipmentLabelForm(@PathVariable(ID) long id) {
         byte[] data = pdfGeneratorService.generateLabel(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("application/pdf"));
-        String filename = "labelform" + id + ".pdf";
+        headers.setContentType(MediaType.parseMediaType(APPLICATION_PDF));
+        String filename = LABEL_FORM + id + PDF;
         headers.setContentDispositionFormData(filename, filename);
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+        headers.setCacheControl(MUST_REVALIDATE_POST_CHECK_PRE_CHECK);
         return new ResponseEntity<>(data, headers, OK);
     }
 
     @GetMapping("{id}/postpay-form")
-    public ResponseEntity<?> getShipmentPostpayForm(@PathVariable("id") long id) {
+    public ResponseEntity<?> getShipmentPostpayForm(@PathVariable(ID) long id) {
         byte[] data = pdfGeneratorService.generatePostpay(id);
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("application/pdf"));
-        String filename = "postpayform" + id + ".pdf";
+        headers.setContentType(MediaType.parseMediaType(APPLICATION_PDF));
+        String filename = "postpayform" + id + PDF;
         headers.setContentDispositionFormData(filename, filename);
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+        headers.setCacheControl(MUST_REVALIDATE_POST_CHECK_PRE_CHECK);
         return new ResponseEntity<>(data, headers, OK);
     }
 
@@ -83,7 +90,7 @@ public class ShipmentController {
     public ResponseEntity<?> updateShipment(@PathVariable long id, @RequestBody ShipmentDto shipmentDto) {
         shipmentDto = shipmentService.update(id, shipmentDto);
         if (shipmentDto == null) {
-            return new ResponseEntity<>(format("No Shipment found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_SHIPMENT_FOUND_FOR_ID, id), NOT_FOUND);
         }
         return new ResponseEntity<>(shipmentDto, OK);
     }
@@ -91,7 +98,7 @@ public class ShipmentController {
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteShipment(@PathVariable long id) {
         if (!shipmentService.delete(id)) {
-            return new ResponseEntity<>(format("No Shipment found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_SHIPMENT_FOUND_FOR_ID, id), NOT_FOUND);
         }
         return new ResponseEntity<>(OK);
     }
