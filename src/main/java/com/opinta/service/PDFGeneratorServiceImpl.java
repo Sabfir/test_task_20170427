@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -34,9 +35,9 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
         Shipment shipment = shipmentService.getEntityById(shipmentId);
         byte[] data = null;
         try {
-            File file = new File(getClass()
+            File file = new File(Objects.requireNonNull(getClass()
                     .getClassLoader()
-                    .getResource(PDF_POSTPAY_TEMPLATE)
+                    .getResource(PDF_POSTPAY_TEMPLATE))
                     .getFile());
             template = PDDocument.load(file);
             PDAcroForm acroForm = template.getDocumentCatalog().getAcroForm();
@@ -69,9 +70,9 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
         Shipment shipment = shipmentService.getEntityById(shipmentId);
         byte[] data = null;
         try {
-            File file = new File(getClass()
+            File file = new File(Objects.requireNonNull(getClass()
                     .getClassLoader()
-                    .getResource(PDF_LABEL_TEMPLATE)
+                    .getResource(PDF_LABEL_TEMPLATE))
                     .getFile());
             template = PDDocument.load(file);
             PDAcroForm acroForm = template.getDocumentCatalog().getAcroForm();
@@ -79,10 +80,10 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
                 generateClientsData(shipment, acroForm);
 
                 field = (PDTextField) acroForm.getField("mass");
-                field.setValue(String.valueOf(shipment.getWeight()));
+                field.setValue(String.valueOf(shipmentService.getWeight(shipment)));
 
                 field = (PDTextField) acroForm.getField("value");
-                field.setValue(String.valueOf(shipment.getDeclaredPrice()));
+                field.setValue(String.valueOf(shipmentService.getDeclaredPrice(shipment)));
 
                 field = (PDTextField) acroForm.getField("sendingCost");
                 field.setValue(String.valueOf(shipment.getPrice()));
@@ -96,10 +97,10 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             template.save(outputStream);
             data = outputStream.toByteArray();
-        } catch (IOException e) {
-            log.error("Error while parsing PDF template: " + e.getMessage());
         } catch (NullPointerException e) {
             log.error("Error while reading the template file %s", PDF_LABEL_TEMPLATE);
+        } catch (IOException e) {
+            log.error("Error while parsing PDF template: " + e.getMessage());
         }
         return data;
     }
