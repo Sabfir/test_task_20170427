@@ -46,7 +46,8 @@ public class ShipmentControllerIT extends BaseControllerIT {
         when().
                 get("/shipments").
         then().
-                statusCode(SC_OK);
+                statusCode(SC_OK)
+        .extract().body().jsonPath().prettyPrint();
     }
 
     @Test
@@ -55,7 +56,8 @@ public class ShipmentControllerIT extends BaseControllerIT {
                 get("shipments/{id}", shipmentId).
         then().
                 statusCode(SC_OK).
-                body("id", equalTo(shipmentId));
+                body("id", equalTo(shipmentId))
+        .extract().body().jsonPath().prettyPrint();
     }
 
     @Test

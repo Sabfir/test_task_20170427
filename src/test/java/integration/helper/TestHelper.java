@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class TestHelper {
@@ -28,6 +30,11 @@ public class TestHelper {
     @Autowired
     private PostOfficeService postOfficeService;
 
+    @Autowired
+    private ParcelItemService parcelItemService;
+    @Autowired
+    private ParcelService parcelService;
+
     public PostOffice createPostOffice() {
         PostOffice postOffice = new PostOffice("Lviv post office", createAddress(), createPostcodePool());
         return postOfficeService.saveEntity(postOffice);
@@ -40,8 +47,35 @@ public class TestHelper {
 
     public Shipment createShipment() {
         Shipment shipment = new Shipment(createClient(), createClient(),
-                DeliveryType.D2D, 1.0F, 1.0F, new BigDecimal(200), new BigDecimal(30), new BigDecimal(35.2));
+                DeliveryType.D2D, new BigDecimal(35.2));
         return shipmentService.saveEntity(shipment);
+    }
+
+    public List<ParcelItem> createParcelItems1() {
+        List<ParcelItem> parcelItems = new ArrayList<>();
+        List<ParcelItem> savedParcelItems = new ArrayList<>();
+        parcelItems.add(new ParcelItem("Item1", 2, 0.2F, new BigDecimal("10")));
+        parcelItems.add(new ParcelItem("Item2", 5, 1.0F, new BigDecimal("250")));
+        parcelItems.forEach(parcelItem -> savedParcelItems.add(parcelItemService.saveEntity(parcelItem)));
+        return savedParcelItems;
+    }
+
+    public List<ParcelItem> createParcelItems2() {
+        List<ParcelItem> parcelItems = new ArrayList<>();
+        List<ParcelItem> savedParcelItems = new ArrayList<>();
+        parcelItems.add(new ParcelItem("Item3", 3, 0.4F, new BigDecimal("100")));
+        parcelItems.add(new ParcelItem("Item4", 1, 0.4F, new BigDecimal("1000")));
+        parcelItems.forEach(parcelItem -> savedParcelItems.add(parcelItemService.saveEntity(parcelItem)));
+        return savedParcelItems;
+    }
+
+    public List<Parcel> createParcels() {
+        List<Parcel> parcels = new ArrayList<>();
+        List<Parcel> savedParcels = new ArrayList<>();
+        parcels.add(new Parcel(5F, 4F, new BigDecimal("100"), new BigDecimal("25"), createParcelItems1()));
+        parcels.add(new Parcel(3F, 5F, new BigDecimal("200"), new BigDecimal("30"), createParcelItems2()));
+        parcels.forEach(parcel -> savedParcels.add(parcelService.saveEntity(parcel)));
+        return savedParcels;
     }
 
     public void deleteShipment(Shipment shipment) {
