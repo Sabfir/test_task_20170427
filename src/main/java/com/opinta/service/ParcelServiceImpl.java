@@ -1,10 +1,11 @@
 package com.opinta.service;
 
 import com.opinta.dao.ParcelDao;
+import com.opinta.dao.ParcelItemDao;
 import com.opinta.dto.ParcelDto;
 import com.opinta.dto.ParcelItemDto;
 import com.opinta.entity.Parcel;
-import com.opinta.entity.Shipment;
+import com.opinta.entity.ParcelItem;
 import com.opinta.mapper.ParcelMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,14 +25,17 @@ public class ParcelServiceImpl implements ParcelService {
 
     private final ParcelDao parcelDao;
     private final ParcelMapper parcelMapper;
+    private final ParcelItemDao parcelItemDao;
 
     private final ParcelItemService parcelItemService;
 
     @Autowired
-    public ParcelServiceImpl(ParcelDao parcelDao, ParcelMapper parcelMapper, ParcelItemService parcelItemService) {
+    public ParcelServiceImpl(ParcelDao parcelDao, ParcelMapper parcelMapper, ParcelItemService parcelItemService,
+                             ParcelItemDao parcelItemDao) {
         this.parcelDao = parcelDao;
         this.parcelMapper = parcelMapper;
         this.parcelItemService = parcelItemService;
+        this.parcelItemDao = parcelItemDao;
     }
 
     @Override
@@ -50,6 +53,13 @@ public class ParcelServiceImpl implements ParcelService {
     @Override
     public Parcel saveEntity(Parcel parcel) {
         log.info("Saving parcel {}", parcel);
+
+        List<ParcelItem> savedParcelItems = new ArrayList<>();
+        for (ParcelItem parcelItem : parcel.getParcelItems()) {
+            savedParcelItems.add(parcelItemDao.save(parcelItem));
+        }
+        parcel.setParcelItems(savedParcelItems);
+
         return parcelDao.save(parcel);
     }
 
@@ -97,7 +107,7 @@ public class ParcelServiceImpl implements ParcelService {
     @Override
     public ParcelDto update(long id, ParcelDto parcelDto) {
         Parcel parcel = updateEntity(id, parcelMapper.toEntity(parcelDto));
-        return (parcel == null ? null : parcelMapper.toDto(parcel));
+        return parcel == null ? null : parcelMapper.toDto(parcel);
     }
 
     @Override
@@ -107,6 +117,9 @@ public class ParcelServiceImpl implements ParcelService {
             log.debug("Can't delete parcel. Parcel doesn't exist {}", id);
             return false;
         }
+//        for (ParcelItem parcelItem : parcel.getParcelItems()) {
+//            parcelItemService.delete(parcelItem.getId());
+//        }
         log.info("Deleting parcel {}", parcel);
         parcelDao.delete(parcel);
         return true;

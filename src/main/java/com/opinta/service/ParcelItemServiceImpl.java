@@ -5,7 +5,6 @@ import com.opinta.dto.ParcelItemDto;
 import com.opinta.entity.ParcelItem;
 import com.opinta.mapper.ParcelItemMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,7 @@ import javax.transaction.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import static org.apache.commons.beanutils.BeanUtils.*;
+import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 
 @Service
 @Slf4j
@@ -83,7 +82,7 @@ public class ParcelItemServiceImpl implements ParcelItemService {
     @Override
     public ParcelItemDto update(long id, ParcelItemDto parcelItemDto) {
         ParcelItem parcelItem = updateEntity(id, parcelItemMapper.toEntity(parcelItemDto));
-        return (parcelItem == null ? null : parcelItemMapper.toDto(parcelItem));
+        return parcelItem == null ? null : parcelItemMapper.toDto(parcelItem);
     }
 
     @Override

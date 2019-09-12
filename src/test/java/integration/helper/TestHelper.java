@@ -1,10 +1,27 @@
 package integration.helper;
 
-import com.opinta.entity.*;
-import com.opinta.service.*;
+import com.opinta.entity.Address;
+import com.opinta.entity.Client;
+import com.opinta.entity.Counterparty;
+import com.opinta.entity.DeliveryType;
+import com.opinta.entity.Parcel;
+import com.opinta.entity.ParcelItem;
+import com.opinta.entity.PostOffice;
+import com.opinta.entity.PostcodePool;
+import com.opinta.entity.Shipment;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+
+import com.opinta.service.AddressService;
+import com.opinta.service.ClientService;
+import com.opinta.service.CounterpartyService;
+import com.opinta.service.ParcelItemService;
+import com.opinta.service.ParcelService;
+import com.opinta.service.PostOfficeService;
+import com.opinta.service.PostcodePoolService;
+import com.opinta.service.ShipmentService;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -17,6 +34,7 @@ import java.util.List;
 
 @Component
 public class TestHelper {
+    private static final String MONASTIRISKA = "Monastiriska";
     @Autowired
     private ClientService clientService;
     @Autowired
@@ -47,14 +65,14 @@ public class TestHelper {
 
     public Shipment createShipment() {
         Shipment shipment = new Shipment(createClient(), createClient(),
-                DeliveryType.D2D, new BigDecimal(35.2));
+                DeliveryType.D2D, new BigDecimal("35.2"), createParcels());
         return shipmentService.saveEntity(shipment);
     }
 
     public List<ParcelItem> createParcelItems1() {
         List<ParcelItem> parcelItems = new ArrayList<>();
         List<ParcelItem> savedParcelItems = new ArrayList<>();
-        parcelItems.add(new ParcelItem("Item1", 2, 0.2F, new BigDecimal("10")));
+        parcelItems.add(new ParcelItem("Item1", 2, 0.2F, BigDecimal.TEN));
         parcelItems.add(new ParcelItem("Item2", 5, 1.0F, new BigDecimal("250")));
         parcelItems.forEach(parcelItem -> savedParcelItems.add(parcelItemService.saveEntity(parcelItem)));
         return savedParcelItems;
@@ -63,7 +81,7 @@ public class TestHelper {
     public List<ParcelItem> createParcelItems2() {
         List<ParcelItem> parcelItems = new ArrayList<>();
         List<ParcelItem> savedParcelItems = new ArrayList<>();
-        parcelItems.add(new ParcelItem("Item3", 3, 0.4F, new BigDecimal("100")));
+        parcelItems.add(new ParcelItem("Item3", 3, 0.4F, new BigDecimal("101")));
         parcelItems.add(new ParcelItem("Item4", 1, 0.4F, new BigDecimal("1000")));
         parcelItems.forEach(parcelItem -> savedParcelItems.add(parcelItemService.saveEntity(parcelItem)));
         return savedParcelItems;
@@ -96,8 +114,8 @@ public class TestHelper {
     }
 
     public Address createAddress() {
-        Address address = new Address("00001", "Ternopil", "Monastiriska",
-                "Monastiriska", "Sadova", "51", "");
+        Address address = new Address("00001", "Ternopil", MONASTIRISKA,
+                MONASTIRISKA, "Sadova", "51", "");
         return addressService.saveEntity(address);
     }
 

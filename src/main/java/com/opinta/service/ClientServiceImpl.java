@@ -1,6 +1,8 @@
 package com.opinta.service;
 
 import com.opinta.entity.Counterparty;
+
+import java.util.Collections;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -19,6 +21,7 @@ import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 @Service
 @Slf4j
 public class ClientServiceImpl implements ClientService {
+    private static final String ALL_CLIENTS_MESSAGE = "Getting all clients";
     private final ClientDao clientDao;
     private final CounterpartyDao counterpartyDao;
     private final ClientMapper clientMapper;
@@ -34,7 +37,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional
     public List<Client> getAllEntities() {
-        log.info("Getting all clients");
+        log.info(ALL_CLIENTS_MESSAGE);
         return clientDao.getAll();
     }
 
@@ -55,7 +58,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional
     public List<ClientDto> getAll() {
-        log.info("Getting all clients");
+        log.info(ALL_CLIENTS_MESSAGE);
         List<Client> allClients = clientDao.getAll();
         return clientMapper.toDto(allClients);
     }
@@ -66,7 +69,7 @@ public class ClientServiceImpl implements ClientService {
         Counterparty counterparty = counterpartyDao.getById(counterpartyId);
         if (counterparty == null) {
             log.debug("Can't get client list by counterparty. Counterparty {} doesn't exist", counterpartyId);
-            return null;
+            return Collections.emptyList();
         }
         log.info("Getting all clients by counterparty {}", counterparty);
         return clientMapper.toDto(clientDao.getAllByCounterparty(counterparty));
@@ -100,7 +103,7 @@ public class ClientServiceImpl implements ClientService {
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Can't get properties from object to updatable object for client", e);
         }
         target.setId(id);

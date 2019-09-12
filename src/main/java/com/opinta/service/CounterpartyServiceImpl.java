@@ -18,6 +18,8 @@ import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 @Service
 @Slf4j
 public class CounterpartyServiceImpl implements CounterpartyService {
+    private static final String COUNTERPARTIES_ALL_MESSAGE = "Getting all counterparties";
+    private static final String COUNTERPARTY_SAVE_MESSAGE = "Saving counterparty {}";
     private final CounterpartyDao counterpartyDao;
     private final CounterpartyMapper counterpartyMapper;
 
@@ -31,7 +33,7 @@ public class CounterpartyServiceImpl implements CounterpartyService {
     @Override
     @Transactional
     public List<Counterparty> getAllEntities() {
-        log.info("Getting all counterparties");
+        log.info(COUNTERPARTIES_ALL_MESSAGE);
         return counterpartyDao.getAll();
     }
 
@@ -58,15 +60,15 @@ public class CounterpartyServiceImpl implements CounterpartyService {
                     counterparties);
             return null;
         }
-        log.info("Saving counterparty {}", counterparty);
+        log.info(COUNTERPARTY_SAVE_MESSAGE, counterparty);
         return counterpartyDao.save(counterparty);
     }
 
     @Override
     @Transactional
     public List<CounterpartyDto> getAll() {
-        log.info("Getting all counterparties");
-        List<Counterparty> counterparties =  counterpartyDao.getAll();
+        log.info(COUNTERPARTIES_ALL_MESSAGE);
+        List<Counterparty> counterparties = counterpartyDao.getAll();
         return counterpartyMapper.toDto(counterparties);
     }
 
@@ -81,7 +83,7 @@ public class CounterpartyServiceImpl implements CounterpartyService {
     @Override
     @Transactional
     public CounterpartyDto save(CounterpartyDto counterpartyDto) {
-        log.info("Saving counterparty {}", counterpartyDto);
+        log.info(COUNTERPARTY_SAVE_MESSAGE, counterpartyDto);
         Counterparty counterparty = counterpartyMapper.toEntity(counterpartyDto);
         return counterpartyMapper.toDto(saveEntity(counterparty));
     }
@@ -97,7 +99,7 @@ public class CounterpartyServiceImpl implements CounterpartyService {
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Can't get properties from object to updatable object for counterparty", e);
         }
         target.setId(id);
