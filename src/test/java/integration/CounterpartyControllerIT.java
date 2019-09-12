@@ -21,6 +21,11 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 public class CounterpartyControllerIT extends BaseControllerIT {
+    private static final String ID_FIELD = "id";
+    private static final String COUNTERPARTIE_GET_URL = "/counterparties/{id}";
+    private static final String COUNTERPARTY_JSON = "json/counterparty.json";
+    private static final String POSTCODE_POOL_ID = "postcodePoolId";
+    private static final String APPLICATION_JSON_UTF_8 = "application/json;charset=UTF-8";
     private Counterparty counterparty;
     private int counterpartyId = MIN_VALUE;
 
@@ -56,13 +61,13 @@ public class CounterpartyControllerIT extends BaseControllerIT {
                 get("counterparties/{id}", counterpartyId).
         then().
                 statusCode(SC_OK).
-                body("id", equalTo(counterpartyId));
+                body(ID_FIELD, equalTo(counterpartyId));
     }
 
     @Test
     public void getCounterparty_notFound() throws Exception {
         when().
-                get("/counterparties/{id}", counterpartyId + 1).
+                get(COUNTERPARTIE_GET_URL, counterpartyId + 1).
         then().
                 statusCode(SC_NOT_FOUND);
     }
@@ -71,19 +76,19 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void createCounterparty() throws Exception {
         // create
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/counterparty.json");
-        jsonObject.put("postcodePoolId", (int) testHelper.createPostcodePool().getId());
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile(COUNTERPARTY_JSON);
+        jsonObject.put(POSTCODE_POOL_ID, (int) testHelper.createPostcodePool().getId());
         String expectedJson = jsonObject.toString();
 
         int newCounterpartyId =
                 given().
-                        contentType("application/json;charset=UTF-8").
+                        contentType(APPLICATION_JSON_UTF_8).
                         body(expectedJson).
                 when().
                         post("/counterparties/").
                 then().
                         extract().
-                        path("id");
+                        path(ID_FIELD);
 
         // check created data
         Counterparty createdCounterparty = counterpartyService.getEntityById(newCounterpartyId);
@@ -99,15 +104,15 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void updateCounterparty() throws Exception {
         // update
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/counterparty.json");
-        jsonObject.put("postcodePoolId", (int) testHelper.createPostcodePool().getId());
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile(COUNTERPARTY_JSON);
+        jsonObject.put(POSTCODE_POOL_ID, (int) testHelper.createPostcodePool().getId());
         String expectedJson = jsonObject.toString();
 
         given().
-                contentType("application/json;charset=UTF-8").
+                contentType(APPLICATION_JSON_UTF_8).
                 body(expectedJson).
         when().
-                put("/counterparties/{id}", counterpartyId).
+                put(COUNTERPARTIE_GET_URL, counterpartyId).
         then().
                 statusCode(SC_OK);
 
@@ -123,7 +128,7 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     @Test
     public void deleteCounterparty() throws Exception {
         when().
-                delete("/counterparties/{id}", counterpartyId).
+                delete(COUNTERPARTIE_GET_URL, counterpartyId).
         then().
                 statusCode(SC_OK);
     }
@@ -131,7 +136,7 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     @Test
     public void deleteCounterparty_notFound() throws Exception {
         when().
-                delete("/counterparties/{id}", counterpartyId + 1).
+                delete(COUNTERPARTIE_GET_URL, counterpartyId + 1).
         then().
                 statusCode(SC_NOT_FOUND);
     }

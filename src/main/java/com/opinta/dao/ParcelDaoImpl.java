@@ -1,53 +1,54 @@
 package com.opinta.dao;
 
-import java.util.List;
-
-import com.opinta.entity.PostcodePool;
-import org.hibernate.Criteria;
+import com.opinta.entity.Parcel;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
-public class PostcodePoolDaoImpl implements PostcodePoolDao {
+public class ParcelDaoImpl implements ParcelDao {
+
     private final SessionFactory sessionFactory;
 
     @Autowired
-    public PostcodePoolDaoImpl(SessionFactory sessionFactory) {
+    public ParcelDaoImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<PostcodePool> getAll() {
+    public List<Parcel> getAll() {
         Session session = sessionFactory.getCurrentSession();
-        return session.createCriteria(PostcodePool.class)
-                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+        return session.createCriteria(Parcel.class)
+                .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
                 .list();
     }
 
     @Override
-    public PostcodePool getById(long id) {
+    public Parcel getById(long id) {
         Session session = sessionFactory.getCurrentSession();
-        return (PostcodePool) session.get(PostcodePool.class, id);
+        return (Parcel) session.get(Parcel.class, id);
     }
 
     @Override
-    public PostcodePool save(PostcodePool postcodePool) {
+    public Parcel save(Parcel parcel) {
         Session session = sessionFactory.getCurrentSession();
-        return (PostcodePool) session.merge(postcodePool);
+        return (Parcel) session.merge(parcel);
     }
 
     @Override
-    public void update(PostcodePool postcodePool) {
+    public void update(Parcel parcel) {
         Session session = sessionFactory.getCurrentSession();
-        session.update(postcodePool);
+        session.update(parcel);
     }
 
     @Override
-    public void delete(PostcodePool postcodePool) {
+    public void delete(Parcel parcel) {
         Session session = sessionFactory.getCurrentSession();
-        session.delete(postcodePool);
+        session.delete(parcel);
     }
 }

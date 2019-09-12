@@ -13,13 +13,13 @@ public interface PostOfficeMapper extends BaseMapper<PostOfficeDto, PostOffice> 
     @Mappings({
             @Mapping(source = "address.id", target = "addressId"),
             @Mapping(source = "postcodePool.id", target = "postcodePoolId")
-    })
+            })
     PostOfficeDto toDto(PostOffice postOffice);
 
     @Override
     @Mappings({
             @Mapping(source = "addressId", target = "address.id"),
             @Mapping(source = "postcodePoolId", target = "postcodePool.id")
-    })
+            })
     PostOffice toEntity(PostOfficeDto postOfficeDto);
 }
