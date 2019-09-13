@@ -4,7 +4,7 @@ import com.opinta.dto.ShipmentTrackingDetailDto;
 import java.util.List;
 
 public interface ShipmentTrackingDetailService {
-    
+
     List<ShipmentTrackingDetailDto> getAll();
 
     ShipmentTrackingDetailDto getById(long id);
@@ -12,6 +12,6 @@ public interface ShipmentTrackingDetailService {
     ShipmentTrackingDetailDto save(ShipmentTrackingDetailDto shipmentTrackingDetailDto);
 
     ShipmentTrackingDetailDto update(long id, ShipmentTrackingDetailDto shipmentTrackingDetailDto);
-    
+
     boolean delete(long id);
 }

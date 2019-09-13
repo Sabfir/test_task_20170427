@@ -2,14 +2,23 @@ package com.opinta.temp;
 
 import com.opinta.dto.PostOfficeDto;
 import com.opinta.dto.ShipmentDto;
+
+import com.opinta.entity.PostcodePool;
+import com.opinta.entity.BarcodeInnerNumber;
 import com.opinta.entity.Counterparty;
-import com.opinta.mapper.ShipmentTrackingDetailMapper;
-import com.opinta.entity.ShipmentStatus;
+import com.opinta.entity.Address;
+import com.opinta.entity.Shipment;
+import com.opinta.entity.Client;
+import com.opinta.entity.DeliveryType;
+import com.opinta.entity.PostOffice;
 import com.opinta.entity.ShipmentTrackingDetail;
+import com.opinta.entity.ShipmentStatus;
 import com.opinta.entity.TariffGrid;
 import com.opinta.entity.W2wVariation;
+import com.opinta.mapper.ShipmentTrackingDetailMapper;
 import com.opinta.service.ShipmentTrackingDetailService;
 import com.opinta.service.TariffGridService;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,13 +37,6 @@ import com.opinta.mapper.PostOfficeMapper;
 import com.opinta.mapper.PostcodePoolMapper;
 import com.opinta.mapper.ShipmentMapper;
 import com.opinta.mapper.CounterpartyMapper;
-import com.opinta.entity.Address;
-import com.opinta.entity.BarcodeInnerNumber;
-import com.opinta.entity.Client;
-import com.opinta.entity.DeliveryType;
-import com.opinta.entity.PostOffice;
-import com.opinta.entity.PostcodePool;
-import com.opinta.entity.Shipment;
 import com.opinta.service.AddressService;
 import com.opinta.service.BarcodeInnerNumberService;
 import com.opinta.service.ClientService;
@@ -121,8 +123,10 @@ public class InitDbService {
         // create Address
         List<AddressDto> addresses = new ArrayList<>();
         List<AddressDto> addressesSaved = new ArrayList<>();
-        addresses.add(addressMapper.toDto(new Address("00001", "Ternopil", "Monastiriska", "Monastiriska", "Sadova", "51", "")));
-        addresses.add(addressMapper.toDto(new Address("00002", "Kiev", "", "Kiev", "Khreschatik", "121", "37")));
+        addresses.add(addressMapper.toDto(new Address("00001", "Ternopil", "Monastiriska",
+                "Monastiriska", "Sadova", "51", "")));
+        addresses.add(addressMapper.toDto(new Address("00002", "Kiev", "", "Kiev",
+                "Khreschatik", "121", "37")));
         addresses.forEach((AddressDto addressDto) -> addressesSaved.add(addressService.save(addressDto)));
 
         // create Client with Counterparty
@@ -140,19 +144,19 @@ public class InitDbService {
         clients.add(new Client("Petrov PP", "002",
                 addressMapper.toEntity(addressesSaved.get(1)), counterparty));
         clients.forEach((Client client) ->
-            clientsSaved.add(this.clientMapper.toEntity(clientService.save(this.clientMapper.toDto(client))))
+                clientsSaved.add(this.clientMapper.toEntity(clientService.save(this.clientMapper.toDto(client))))
         );
 
         // create Shipment
         List<ShipmentDto> shipmentsSaved = new ArrayList<>();
-        Shipment shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(1), DeliveryType.W2W, 1, 1,
-                new BigDecimal("12.5"), new BigDecimal("2.5"), new BigDecimal("15"));
+        Shipment shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(1), DeliveryType.W2W,
+                new BigDecimal("2.5"), new BigDecimal("15"), null);
         shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
-        shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(0), DeliveryType.W2D, 2, 2,
-                new BigDecimal("19.5"), new BigDecimal("0.5"), new BigDecimal("20.5"));
+        shipment = new Shipment(clientsSaved.get(0), clientsSaved.get(0), DeliveryType.W2D,
+                new BigDecimal("0.5"), new BigDecimal("20.5"), null);
         shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
-        shipment = new Shipment(clientsSaved.get(1), clientsSaved.get(0), DeliveryType.D2D, 3, 3,
-                new BigDecimal("8.5"), new BigDecimal("2.25"), new BigDecimal("13.5"));
+        shipment = new Shipment(clientsSaved.get(1), clientsSaved.get(0), DeliveryType.D2D,
+                new BigDecimal("2.25"), new BigDecimal("13.5"), null);
         shipmentsSaved.add(shipmentService.save(shipmentMapper.toDto(shipment)));
 
         // create PostOffice

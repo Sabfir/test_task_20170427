@@ -27,26 +27,27 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/clients")
 public class ClientController {
+    private static final String NO_CLIENT_FOUND_FOR_ID = "No Client found for ID %d";
     private final ClientService clientService;
     private final ShipmentService shipmentService;
-    
+
     @Autowired
     public ClientController(ClientService clientService, ShipmentService shipmentService) {
         this.clientService = clientService;
         this.shipmentService = shipmentService;
     }
-    
+
     @GetMapping
     @ResponseStatus(OK)
     public List<ClientDto> getAllClients() {
         return this.clientService.getAll();
     }
-    
+
     @GetMapping("{id}")
     public ResponseEntity<?> getClient(@PathVariable("id") long id) {
         ClientDto clientDto = clientService.getById(id);
         if (clientDto == null) {
-            return new ResponseEntity<>(format("No Client found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_CLIENT_FOUND_FOR_ID, id), NOT_FOUND);
         }
         return new ResponseEntity<>(clientDto, OK);
     }
@@ -54,12 +55,12 @@ public class ClientController {
     @GetMapping("{clientId}/shipments")
     public ResponseEntity<?> getShipmentsByClientId(@PathVariable long clientId) {
         List<ShipmentDto> shipmentDtos = shipmentService.getAllByClientId(clientId);
-        if (shipmentDtos == null) {
-            return new ResponseEntity<>(format("Client %d doesn't exist", clientId), NOT_FOUND);
+        if (shipmentDtos.isEmpty()) {
+            return new ResponseEntity<>(format(NO_CLIENT_FOUND_FOR_ID, clientId), NOT_FOUND);
         }
         return new ResponseEntity<>(shipmentDtos, OK);
     }
-    
+
     @PostMapping
     public ResponseEntity<?> createClient(@RequestBody ClientDto clientDto) {
         clientDto = clientService.save(clientDto);
@@ -68,21 +69,21 @@ public class ClientController {
         }
         return new ResponseEntity<>(clientDto, OK);
     }
-    
+
     @PutMapping("{id}")
     public ResponseEntity<?> updateClient(@PathVariable long id, @RequestBody ClientDto clientDto) {
         clientDto = clientService.update(id, clientDto);
         if (clientDto != null) {
             return new ResponseEntity<>(clientDto, OK);
         } else {
-            return new ResponseEntity<>(format("No Client found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_CLIENT_FOUND_FOR_ID, id), NOT_FOUND);
         }
     }
-    
+
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteClient(@PathVariable long id) {
         if (!clientService.delete(id)) {
-            return new ResponseEntity<>(format("No Client found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_CLIENT_FOUND_FOR_ID, id), NOT_FOUND);
         }
         return new ResponseEntity<>(OK);
     }

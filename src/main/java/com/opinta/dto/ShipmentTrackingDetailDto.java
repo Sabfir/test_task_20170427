@@ -2,7 +2,9 @@ package com.opinta.dto;
 
 import com.opinta.constraint.EnumString;
 import com.opinta.entity.ShipmentStatus;
+
 import java.util.Date;
+
 import lombok.Getter;
 import lombok.Setter;
 

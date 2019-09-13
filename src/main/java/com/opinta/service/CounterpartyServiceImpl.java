@@ -2,11 +2,14 @@ package com.opinta.service;
 
 import com.opinta.entity.Counterparty;
 import com.opinta.entity.PostcodePool;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
 import com.opinta.dao.CounterpartyDao;
+
 import com.opinta.dto.CounterpartyDto;
 import com.opinta.mapper.CounterpartyMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +21,8 @@ import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 @Service
 @Slf4j
 public class CounterpartyServiceImpl implements CounterpartyService {
+    private static final String GETTING_ALL_COUNTERPARTIES = "Getting all counterparties";
+    private static final String SAVING_COUNTERPARTY = "Saving counterparty {}";
     private final CounterpartyDao counterpartyDao;
     private final CounterpartyMapper counterpartyMapper;
 
@@ -31,7 +36,7 @@ public class CounterpartyServiceImpl implements CounterpartyService {
     @Override
     @Transactional
     public List<Counterparty> getAllEntities() {
-        log.info("Getting all counterparties");
+        log.info(GETTING_ALL_COUNTERPARTIES);
         return counterpartyDao.getAll();
     }
 
@@ -58,15 +63,15 @@ public class CounterpartyServiceImpl implements CounterpartyService {
                     counterparties);
             return null;
         }
-        log.info("Saving counterparty {}", counterparty);
+        log.info(SAVING_COUNTERPARTY, counterparty);
         return counterpartyDao.save(counterparty);
     }
 
     @Override
     @Transactional
     public List<CounterpartyDto> getAll() {
-        log.info("Getting all counterparties");
-        List<Counterparty> counterparties =  counterpartyDao.getAll();
+        log.info(GETTING_ALL_COUNTERPARTIES);
+        List<Counterparty> counterparties = counterpartyDao.getAll();
         return counterpartyMapper.toDto(counterparties);
     }
 
@@ -81,7 +86,7 @@ public class CounterpartyServiceImpl implements CounterpartyService {
     @Override
     @Transactional
     public CounterpartyDto save(CounterpartyDto counterpartyDto) {
-        log.info("Saving counterparty {}", counterpartyDto);
+        log.info(SAVING_COUNTERPARTY, counterpartyDto);
         Counterparty counterparty = counterpartyMapper.toEntity(counterpartyDto);
         return counterpartyMapper.toDto(saveEntity(counterparty));
     }
@@ -97,7 +102,7 @@ public class CounterpartyServiceImpl implements CounterpartyService {
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for counterparty", e);
         }
         target.setId(id);

@@ -2,6 +2,7 @@ package com.opinta.dto;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
 import lombok.Getter;
 import lombok.Setter;
 

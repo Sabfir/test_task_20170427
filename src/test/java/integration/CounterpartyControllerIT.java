@@ -21,6 +21,13 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 public class CounterpartyControllerIT extends BaseControllerIT {
+    private static final String ID = "id";
+    private static final String COUNTERPARTIES = "/counterparties";
+    private static final String COUNTERPARTIES_ID = "/counterparties/{id}";
+    private static final String APPLICATION_JSON = "application/json;charset=UTF-8";
+    private static final String POSTCODEPOOL_ID = "postcodePoolId";
+    private static final String JSON_COUNTERPARTY = "json/counterparty.json";
+
     private Counterparty counterparty;
     private int counterpartyId = MIN_VALUE;
 
@@ -45,25 +52,25 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     @Test
     public void getCounterparties() throws Exception {
         when().
-                get("/counterparties").
-        then().
+                get(COUNTERPARTIES).
+                then().
                 statusCode(SC_OK);
     }
 
     @Test
     public void getCounterparty() throws Exception {
         when().
-                get("counterparties/{id}", counterpartyId).
-        then().
+                get(COUNTERPARTIES_ID, counterpartyId).
+                then().
                 statusCode(SC_OK).
-                body("id", equalTo(counterpartyId));
+                body(ID, equalTo(counterpartyId));
     }
 
     @Test
     public void getCounterparty_notFound() throws Exception {
         when().
-                get("/counterparties/{id}", counterpartyId + 1).
-        then().
+                get(COUNTERPARTIES_ID, counterpartyId + 1).
+                then().
                 statusCode(SC_NOT_FOUND);
     }
 
@@ -71,19 +78,19 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void createCounterparty() throws Exception {
         // create
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/counterparty.json");
-        jsonObject.put("postcodePoolId", (int) testHelper.createPostcodePool().getId());
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile(JSON_COUNTERPARTY);
+        jsonObject.put(POSTCODEPOOL_ID, (int) testHelper.createPostcodePool().getId());
         String expectedJson = jsonObject.toString();
 
         int newCounterpartyId =
                 given().
-                        contentType("application/json;charset=UTF-8").
+                        contentType(APPLICATION_JSON).
                         body(expectedJson).
-                when().
-                        post("/counterparties/").
-                then().
+                        when().
+                        post(COUNTERPARTIES).
+                        then().
                         extract().
-                        path("id");
+                        path(ID);
 
         // check created data
         Counterparty createdCounterparty = counterpartyService.getEntityById(newCounterpartyId);
@@ -99,16 +106,16 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void updateCounterparty() throws Exception {
         // update
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/counterparty.json");
-        jsonObject.put("postcodePoolId", (int) testHelper.createPostcodePool().getId());
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile(JSON_COUNTERPARTY);
+        jsonObject.put(POSTCODEPOOL_ID, (int) testHelper.createPostcodePool().getId());
         String expectedJson = jsonObject.toString();
 
         given().
-                contentType("application/json;charset=UTF-8").
+                contentType(APPLICATION_JSON).
                 body(expectedJson).
-        when().
-                put("/counterparties/{id}", counterpartyId).
-        then().
+                when().
+                put(COUNTERPARTIES_ID, counterpartyId).
+                then().
                 statusCode(SC_OK);
 
         // check updated data
@@ -123,16 +130,16 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     @Test
     public void deleteCounterparty() throws Exception {
         when().
-                delete("/counterparties/{id}", counterpartyId).
-        then().
+                delete(COUNTERPARTIES_ID, counterpartyId).
+                then().
                 statusCode(SC_OK);
     }
 
     @Test
     public void deleteCounterparty_notFound() throws Exception {
         when().
-                delete("/counterparties/{id}", counterpartyId + 1).
-        then().
+                delete(COUNTERPARTIES_ID, counterpartyId + 1).
+                then().
                 statusCode(SC_NOT_FOUND);
     }
 }

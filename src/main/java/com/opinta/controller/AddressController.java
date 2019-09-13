@@ -26,7 +26,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/addresses")
 public class AddressController {
     private AddressService addressService;
-
+    private static final String NO_ADDRESS_FOUND = "No Address found for ID %d";
     @Autowired
     public AddressController(AddressService addressService) {
         this.addressService = addressService;
@@ -42,7 +42,7 @@ public class AddressController {
     public ResponseEntity<?> getAddress(@PathVariable("id") long id) {
         AddressDto addressDto = addressService.getById(id);
         if (addressDto == null) {
-            return new ResponseEntity<>(format("No Address found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_ADDRESS_FOUND, id), NOT_FOUND);
         }
         return new ResponseEntity<>(addressDto, OK);
     }
@@ -61,7 +61,7 @@ public class AddressController {
     public ResponseEntity<?> updateAddress(@PathVariable long id, @RequestBody AddressDto addressDto) {
         addressDto = addressService.update(id, addressDto);
         if (addressDto == null) {
-            return new ResponseEntity<>(format("No Address found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_ADDRESS_FOUND, id), NOT_FOUND);
         }
         return new ResponseEntity<>(addressDto, OK);
     }
@@ -69,7 +69,7 @@ public class AddressController {
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteAddress(@PathVariable long id) {
         if (!addressService.delete(id)) {
-            return new ResponseEntity<>(format("No Address found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_ADDRESS_FOUND, id), NOT_FOUND);
         }
         return new ResponseEntity<>(OK);
     }

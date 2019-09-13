@@ -12,14 +12,14 @@ public interface PostOfficeService {
     PostOffice getEntityById(long id);
 
     PostOffice saveEntity(PostOffice postOffice);
-    
+
     List<PostOfficeDto> getAll();
-    
+
     PostOfficeDto getById(long id);
-    
+
     PostOfficeDto save(PostOfficeDto postOfficeDto);
-    
+
     PostOfficeDto update(long id, PostOfficeDto postOfficeDto);
-    
+
     boolean delete(long id);
 }
