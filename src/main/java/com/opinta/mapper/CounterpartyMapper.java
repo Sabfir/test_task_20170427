@@ -8,11 +8,11 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface CounterpartyMapper extends BaseMapper<CounterpartyDto, Counterparty> {
-    
+
     @Override
     @Mapping(source = "postcodePoolId", target = "postcodePool.id")
     Counterparty toEntity(CounterpartyDto dto);
-    
+
     @Override
     @Mapping(source = "postcodePool.id", target = "postcodePoolId")
     CounterpartyDto toDto(Counterparty entity);

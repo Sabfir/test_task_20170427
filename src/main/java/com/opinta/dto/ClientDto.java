@@ -1,12 +1,12 @@
 package com.opinta.dto;
 
-import javax.validation.constraints.Size;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import javax.validation.constraints.Size;
 
 
 @Getter
@@ -21,5 +21,5 @@ public class ClientDto {
     @Size(max = 25)
     private String uniqueRegistrationNumber;
     private long counterpartyId;
-    private long addressId;
+    private long adressId;
 }

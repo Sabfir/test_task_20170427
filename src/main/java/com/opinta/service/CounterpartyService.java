@@ -15,14 +15,14 @@ public interface CounterpartyService {
     List<Counterparty> getEntityByPostcodePool(PostcodePool postcodePool);
 
     Counterparty saveEntity(Counterparty counterparty);
-    
+
     List<CounterpartyDto> getAll();
-    
+
     CounterpartyDto getById(long id);
-    
+
     CounterpartyDto update(long id, CounterpartyDto source);
-    
+
     CounterpartyDto save(CounterpartyDto counterparty);
-    
+
     boolean delete(long id);
 }

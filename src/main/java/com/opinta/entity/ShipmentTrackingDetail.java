@@ -1,5 +1,4 @@
 package com.opinta.entity;
-
 import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

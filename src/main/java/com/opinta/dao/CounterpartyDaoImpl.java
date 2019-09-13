@@ -16,12 +16,12 @@ import org.springframework.stereotype.Repository;
 @Slf4j
 public class CounterpartyDaoImpl implements CounterpartyDao {
     private final SessionFactory sessionFactory;
-    
+
     @Autowired
     public CounterpartyDaoImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
-    
+
     @Override
     @SuppressWarnings("unchecked")
     public List<Counterparty> getAll() {

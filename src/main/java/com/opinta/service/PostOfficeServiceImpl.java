@@ -4,8 +4,11 @@ import com.opinta.dao.PostOfficeDao;
 import com.opinta.dto.PostOfficeDto;
 import com.opinta.mapper.PostOfficeMapper;
 import com.opinta.entity.PostOffice;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import javax.transaction.Transactional;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -74,7 +77,7 @@ public class PostOfficeServiceImpl implements PostOfficeService {
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for postOffice", e);
         }
         target.setId(id);
