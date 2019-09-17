@@ -2,6 +2,7 @@ package com.opinta.service;
 
 import com.opinta.entity.TariffGrid;
 import com.opinta.entity.W2wVariation;
+
 import java.util.List;
 
 public interface TariffGridService {

@@ -1,18 +1,17 @@
 package com.opinta.service;
 
-import com.opinta.entity.Counterparty;
-import java.util.List;
-
-import javax.transaction.Transactional;
-
 import com.opinta.dao.ClientDao;
 import com.opinta.dao.CounterpartyDao;
 import com.opinta.dto.ClientDto;
-import com.opinta.mapper.ClientMapper;
 import com.opinta.entity.Client;
+import com.opinta.entity.Counterparty;
+import com.opinta.mapper.ClientMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.List;
 
 import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 

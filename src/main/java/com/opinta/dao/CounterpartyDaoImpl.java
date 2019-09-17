@@ -2,8 +2,6 @@ package com.opinta.dao;
 
 import com.opinta.entity.Counterparty;
 import com.opinta.entity.PostcodePool;
-import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -11,6 +9,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 @Slf4j

@@ -1,7 +1,5 @@
 package com.opinta.controller;
 
-import java.util.List;
-
 import com.opinta.dto.ShipmentTrackingDetailDto;
 import com.opinta.service.ShipmentTrackingDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import static java.lang.String.format;
+import java.util.List;
 
+import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 

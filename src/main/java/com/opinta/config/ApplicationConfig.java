@@ -8,6 +8,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
-@ComponentScan(basePackages = "com.opinta")
+@ComponentScan(basePackages = "com.com.opinta")
 public class ApplicationConfig {
 }

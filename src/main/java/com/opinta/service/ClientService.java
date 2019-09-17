@@ -1,9 +1,9 @@
 package com.opinta.service;
 
-import java.util.List;
-
 import com.opinta.dto.ClientDto;
 import com.opinta.entity.Client;
+
+import java.util.List;
 
 public interface ClientService {
 

@@ -1,53 +1,52 @@
 package com.opinta.dao;
 
-import com.opinta.entity.PostOffice;
+import com.opinta.entity.Parcel;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
-public class PostOfficeDaoImpl implements PostOfficeDao {
+public class ParcelDaoImpl implements ParcelDao {
+
     private final SessionFactory sessionFactory;
 
     @Autowired
-    public PostOfficeDaoImpl(SessionFactory sessionFactory) {
+    public ParcelDaoImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<PostOffice> getAll() {
+    public List<Parcel> getAll() {
         Session session = sessionFactory.getCurrentSession();
-        return session.createCriteria(PostOffice.class)
+        return session.createCriteria(Parcel.class)
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
                 .list();
     }
 
     @Override
-    public PostOffice getById(long id) {
+    public Parcel getById(long id) {
         Session session = sessionFactory.getCurrentSession();
-        return (PostOffice) session.get(PostOffice.class, id);
+        return (Parcel) session.get(Parcel.class, id);
     }
 
     @Override
-    public PostOffice save(PostOffice postOffice) {
+    public Parcel save(Parcel parcel) {
         Session session = sessionFactory.getCurrentSession();
-        return (PostOffice) session.merge(postOffice);
+        return (Parcel) session.merge(parcel);
     }
 
     @Override
-    public void update(PostOffice postOffice) {
+    public void update(Parcel parcel) {
         Session session = sessionFactory.getCurrentSession();
-        session.update(postOffice);
+        session.update(parcel);
     }
 
     @Override
-    public void delete(PostOffice postOffice) {
+    public void delete(Parcel parcel) {
         Session session = sessionFactory.getCurrentSession();
-        session.delete(postOffice);
+        session.delete(parcel);
     }
 }
