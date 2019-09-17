@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = ParcelMapper.class)
 public interface ShipmentMapper extends BaseMapper<ShipmentDto, Shipment> {
 
     @Override
