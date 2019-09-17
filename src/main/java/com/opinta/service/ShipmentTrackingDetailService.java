@@ -1,7 +1,6 @@
 package com.opinta.service;
 
 import com.opinta.dto.ShipmentTrackingDetailDto;
-
 import java.util.List;
 
 public interface ShipmentTrackingDetailService {

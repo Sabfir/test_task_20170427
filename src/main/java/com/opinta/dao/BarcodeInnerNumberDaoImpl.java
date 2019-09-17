@@ -1,13 +1,13 @@
 package com.opinta.dao;
 
+import java.util.List;
+
 import com.opinta.entity.BarcodeInnerNumber;
 import com.opinta.entity.PostcodePool;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public class BarcodeInnerNumberDaoImpl implements BarcodeInnerNumberDao {

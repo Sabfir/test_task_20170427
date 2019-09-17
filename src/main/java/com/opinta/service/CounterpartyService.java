@@ -1,10 +1,10 @@
 package com.opinta.service;
 
-import com.opinta.dto.CounterpartyDto;
 import com.opinta.entity.Counterparty;
 import com.opinta.entity.PostcodePool;
-
 import java.util.List;
+
+import com.opinta.dto.CounterpartyDto;
 
 public interface CounterpartyService {
 

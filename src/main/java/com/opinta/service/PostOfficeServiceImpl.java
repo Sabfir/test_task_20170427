@@ -2,14 +2,13 @@ package com.opinta.service;
 
 import com.opinta.dao.PostOfficeDao;
 import com.opinta.dto.PostOfficeDto;
-import com.opinta.entity.PostOffice;
 import com.opinta.mapper.PostOfficeMapper;
+import com.opinta.entity.PostOffice;
+import java.util.List;
+import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
-import java.util.List;
 
 import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 

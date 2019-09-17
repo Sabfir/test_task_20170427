@@ -1,13 +1,12 @@
 package com.opinta.dao;
 
 import com.opinta.entity.PostOffice;
+import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public class PostOfficeDaoImpl implements PostOfficeDao {

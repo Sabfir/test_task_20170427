@@ -17,7 +17,7 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan({"com.com.opinta"})
+@ComponentScan({"com.opinta"})
 @PropertySource(value = {"classpath:application.properties"})
 public class HibernateConfig {
     private Environment environment;
@@ -31,7 +31,7 @@ public class HibernateConfig {
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan(new String[]{"com.com.opinta.entity"});
+        sessionFactory.setPackagesToScan(new String[]{"com.opinta.entity"});
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }

@@ -1,9 +1,9 @@
 package com.opinta.service;
 
+import java.util.List;
+
 import com.opinta.dto.PostOfficeDto;
 import com.opinta.entity.PostOffice;
-
-import java.util.List;
 
 public interface PostOfficeService {
 

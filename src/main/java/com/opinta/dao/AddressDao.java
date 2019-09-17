@@ -1,8 +1,8 @@
 package com.opinta.dao;
 
-import com.opinta.entity.Address;
-
 import java.util.List;
+
+import com.opinta.entity.Address;
 
 public interface AddressDao {
 

@@ -1,8 +1,7 @@
 package com.opinta.mapper;
 
-import org.mapstruct.InheritInverseConfiguration;
-
 import java.util.List;
+import org.mapstruct.InheritInverseConfiguration;
 
 /**
  * Base dto mapper

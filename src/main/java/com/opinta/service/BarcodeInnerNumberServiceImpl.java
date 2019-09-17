@@ -1,19 +1,20 @@
 package com.opinta.service;
 
-import com.opinta.dao.BarcodeInnerNumberDao;
-import com.opinta.dao.PostcodePoolDao;
-import com.opinta.dto.BarcodeInnerNumberDto;
-import com.opinta.entity.BarcodeInnerNumber;
-import com.opinta.entity.PostcodePool;
-import com.opinta.mapper.BarcodeInnerNumberMapper;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.transaction.Transactional;
+
+import com.opinta.dao.BarcodeInnerNumberDao;
+import com.opinta.dao.PostcodePoolDao;
+import com.opinta.dto.BarcodeInnerNumberDto;
+import com.opinta.mapper.BarcodeInnerNumberMapper;
+import com.opinta.entity.BarcodeInnerNumber;
+import com.opinta.entity.PostcodePool;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import static com.opinta.entity.BarcodeStatus.USED;
 import static java.lang.String.format;
