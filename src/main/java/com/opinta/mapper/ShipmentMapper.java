@@ -20,7 +20,7 @@ public interface ShipmentMapper extends BaseMapper<ShipmentDto, Shipment> {
     @Override
     @Mappings({
             @Mapping(target = "sender", expression = "java(createClientById(shipmentDto.getSenderId()))"),
-            @Mapping(target = "recipient", expression = "java(createClientById(shipmentDto.getRecipientId()))")
+            @Mapping(target = "recipient", expression = "java(createClientById(shipmentDto.getRecipientId()))"),
     })
     Shipment toEntity(ShipmentDto shipmentDto);
 

@@ -1,17 +1,19 @@
 package com.opinta.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
 @Data
 @NoArgsConstructor
-public class ParcelItem {
-
+public class ParcelItem implements Serializable {
     @Id
     @GeneratedValue
     private long id;
@@ -20,10 +22,6 @@ public class ParcelItem {
     private float weight;
     private BigDecimal price;
 
-//    @ManyToOne
-//    @JoinColumn(name = "parcel_id")
-//    private Parcel parcel;
-
     public ParcelItem(String name, int quantity, float weight, BigDecimal price) {
         this.name = name;
         this.quantity = quantity;
@@ -31,3 +29,4 @@ public class ParcelItem {
         this.price = price;
     }
 }
+

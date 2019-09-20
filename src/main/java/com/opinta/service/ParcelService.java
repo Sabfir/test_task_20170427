@@ -1,8 +1,7 @@
 package com.opinta.service;
 
-import com.opinta.dto.ShipmentDto;
+import com.opinta.dto.ParcelDto;
 import com.opinta.entity.Parcel;
-import com.opinta.entity.Shipment;
 
 import java.util.List;
 
@@ -14,15 +13,15 @@ public interface ParcelService {
 
     Parcel saveEntity(Parcel parcel);
 
-    List<ShipmentDto> getAll();
+    List<ParcelDto> getAll();
 
-    List<ShipmentDto> getAllByClientId(long clientId);
+    List<ParcelDto> getAllByShipmentId(long shipmentId);
 
-    ShipmentDto getById(long id);
+    ParcelDto getById(long id);
 
-    ShipmentDto save(ShipmentDto shipmentDto);
+    ParcelDto save(ParcelDto parcelDto);
 
-    ShipmentDto update(long id, ShipmentDto shipmentDto);
+    ParcelDto update(long id, ParcelDto parcelDto);
 
     boolean delete(long id);
 }
