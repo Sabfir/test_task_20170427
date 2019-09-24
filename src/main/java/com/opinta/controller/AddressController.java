@@ -1,7 +1,5 @@
 package com.opinta.controller;
 
-import java.util.List;
-
 import com.opinta.dto.AddressDto;
 import com.opinta.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import static java.lang.String.format;
+import java.util.List;
 
+import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -25,6 +24,8 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/addresses")
 public class AddressController {
+    private final static String NO_ADDRESS = "No Address found for ID %d";
+
     private AddressService addressService;
 
     @Autowired
@@ -42,7 +43,7 @@ public class AddressController {
     public ResponseEntity<?> getAddress(@PathVariable("id") long id) {
         AddressDto addressDto = addressService.getById(id);
         if (addressDto == null) {
-            return new ResponseEntity<>(format("No Address found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_ADDRESS, id), NOT_FOUND);
         }
         return new ResponseEntity<>(addressDto, OK);
     }
@@ -61,7 +62,7 @@ public class AddressController {
     public ResponseEntity<?> updateAddress(@PathVariable long id, @RequestBody AddressDto addressDto) {
         addressDto = addressService.update(id, addressDto);
         if (addressDto == null) {
-            return new ResponseEntity<>(format("No Address found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_ADDRESS, id), NOT_FOUND);
         }
         return new ResponseEntity<>(addressDto, OK);
     }
@@ -69,7 +70,7 @@ public class AddressController {
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteAddress(@PathVariable long id) {
         if (!addressService.delete(id)) {
-            return new ResponseEntity<>(format("No Address found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NO_ADDRESS, id), NOT_FOUND);
         }
         return new ResponseEntity<>(OK);
     }

@@ -21,6 +21,13 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 public class ClientControllerIT extends BaseControllerIT {
+    public static final String CLIENTS = "/clients";
+    public static final String ID = "id";
+    public static final String CLIENTS_ID = "/clients/{id}";
+    public static final String JSON_CLIENT_JSON = "json/client.json";
+    public static final String COUNTERPARTY_ID = "counterpartyId";
+    public static final String ADDRESS_ID = "addressId";
+    public static final String APPLICATION_JSON_CHARSET_UTF_8 = "application/json;charset=UTF-8";
     private Client client;
     private int clientId = MIN_VALUE;
     @Autowired
@@ -44,7 +51,7 @@ public class ClientControllerIT extends BaseControllerIT {
     @Test
     public void getClients() throws Exception {
         when().
-                get("/clients").
+                get(CLIENTS).
         then().
                 statusCode(SC_OK);
     }
@@ -55,13 +62,13 @@ public class ClientControllerIT extends BaseControllerIT {
                 get("clients/{id}", clientId).
         then().
                 statusCode(SC_OK).
-                body("id", equalTo(clientId));
+                body(ID, equalTo(clientId));
     }
 
     @Test
     public void getClient_notFound() throws Exception {
         when().
-                get("/clients/{id}", clientId + 1).
+                get(CLIENTS_ID, clientId + 1).
         then().
                 statusCode(SC_NOT_FOUND);
     }
@@ -70,20 +77,20 @@ public class ClientControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void createClient() throws Exception {
         // create
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/client.json");
-        jsonObject.put("counterpartyId", (int) testHelper.createCounterparty().getId());
-        jsonObject.put("addressId", (int) testHelper.createAddress().getId());
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile(JSON_CLIENT_JSON);
+        jsonObject.put(COUNTERPARTY_ID, (int) testHelper.createCounterparty().getId());
+        jsonObject.put(ADDRESS_ID, (int) testHelper.createAddress().getId());
         String expectedJson = jsonObject.toString();
 
         int newClientId =
                 given().
-                        contentType("application/json;charset=UTF-8").
+                        contentType(APPLICATION_JSON_CHARSET_UTF_8).
                         body(expectedJson).
                 when().
-                        post("/clients").
+                        post(CLIENTS).
                 then().
                         extract().
-                        path("id");
+                        path(ID);
 
         // check created data
         Client createdClient = clientService.getEntityById(newClientId);
@@ -100,16 +107,16 @@ public class ClientControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void updateClient() throws Exception {
         // update
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/client.json");
-        jsonObject.put("counterpartyId", (int) testHelper.createCounterparty().getId());
-        jsonObject.put("addressId", (int) testHelper.createAddress().getId());
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile(JSON_CLIENT_JSON);
+        jsonObject.put(COUNTERPARTY_ID, (int) testHelper.createCounterparty().getId());
+        jsonObject.put(ADDRESS_ID, (int) testHelper.createAddress().getId());
         String expectedJson = jsonObject.toString();
 
         given().
-                contentType("application/json;charset=UTF-8").
+                contentType(APPLICATION_JSON_CHARSET_UTF_8).
                 body(expectedJson).
         when().
-                put("/clients/{id}", clientId).
+                put(CLIENTS_ID, clientId).
         then().
                 statusCode(SC_OK);
 
@@ -124,7 +131,7 @@ public class ClientControllerIT extends BaseControllerIT {
     @Test
     public void deleteClient() throws Exception {
         when().
-                delete("/clients/{id}", clientId).
+                delete(CLIENTS_ID, clientId).
         then().
                 statusCode(SC_OK);
     }
@@ -132,7 +139,7 @@ public class ClientControllerIT extends BaseControllerIT {
     @Test
     public void deleteClient_notFound() throws Exception {
         when().
-                delete("/clients/{id}", clientId + 1).
+                delete(CLIENTS_ID, clientId + 1).
         then().
                 statusCode(SC_NOT_FOUND);
     }

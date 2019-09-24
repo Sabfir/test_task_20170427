@@ -1,5 +1,6 @@
 package com.opinta.service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +25,9 @@ import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 @Slf4j
 public class BarcodeInnerNumberServiceImpl implements BarcodeInnerNumberService {
     // TODO delete after implementation stored procedure that generates innerNumbers
+    public static final int VERY_LONG_NUMBER = 9_999_999;
     private static final Map<String, Integer> POSTCODE_COUNTERS = new HashMap<>();
-    
+
     private final BarcodeInnerNumberDao barcodeInnerNumberDao;
     private final PostcodePoolDao postcodePoolDao;
     private final BarcodeInnerNumberMapper barcodeInnerNumberMapper;
@@ -44,8 +46,9 @@ public class BarcodeInnerNumberServiceImpl implements BarcodeInnerNumberService 
     public List<BarcodeInnerNumberDto> getAll(long postcodeId) {
         PostcodePool postcodePool = postcodePoolDao.getById(postcodeId);
         if (postcodePool == null) {
-            log.debug("Can't get barcodeInnerNumberDto list by postcodePool. PostCodePool {} doesn't exist", postcodeId);
-            return null;
+            log.debug("Can't get barcodeInnerNumberDto list by postcodePool. " +
+                    "PostCodePool {} doesn't exist", postcodeId);
+            return Collections.emptyList();
         }
         log.info("Getting all barcodeInnerNumbers by postcodeId {}", postcodeId);
         return barcodeInnerNumberMapper.toDto(barcodeInnerNumberDao.getAll(postcodeId));
@@ -86,7 +89,7 @@ public class BarcodeInnerNumberServiceImpl implements BarcodeInnerNumberService 
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Can't get properties from object to updatable object for barcodeInnerNumber", e);
         }
         target.setId(id);
@@ -120,7 +123,7 @@ public class BarcodeInnerNumberServiceImpl implements BarcodeInnerNumberService 
         POSTCODE_COUNTERS.putIfAbsent(postcode, 0);
         int innerNumberCounter = POSTCODE_COUNTERS.get(postcode);
         POSTCODE_COUNTERS.put(postcode, innerNumberCounter + 1);
-        if (innerNumberCounter > 9999999) {
+        if (innerNumberCounter > VERY_LONG_NUMBER) {
             throw new RuntimeException(format("Barcode %d is too large", innerNumberCounter));
         }
         return String.format("%07d", innerNumberCounter);

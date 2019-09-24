@@ -11,17 +11,13 @@ import org.mapstruct.Mappings;
 public interface ShipmentMapper extends BaseMapper<ShipmentDto, Shipment> {
 
     @Override
-    @Mappings({
-            @Mapping(source = "sender.id", target = "senderId"),
-            @Mapping(source = "recipient.id", target = "recipientId")
-    })
+    @Mappings({@Mapping(source = "sender.id", target = "senderId"),
+            @Mapping(source = "recipient.id", target = "recipientId")})
     ShipmentDto toDto(Shipment shipment);
 
     @Override
-    @Mappings({
-            @Mapping(target = "sender", expression = "java(createClientById(shipmentDto.getSenderId()))"),
-            @Mapping(target = "recipient", expression = "java(createClientById(shipmentDto.getRecipientId()))")
-    })
+    @Mappings({@Mapping(target = "sender", expression = "java(createClientById(shipmentDto.getSenderId()))"),
+            @Mapping(target = "recipient", expression = "java(createClientById(shipmentDto.getRecipientId()))"),})
     Shipment toEntity(ShipmentDto shipmentDto);
 
     default Client createClientById(long id) {

@@ -1,5 +1,6 @@
 package com.opinta.config;
 
+import com.opinta.util.ShipmentInterceptor;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,11 +21,16 @@ import java.util.Properties;
 @ComponentScan({"com.opinta"})
 @PropertySource(value = {"classpath:application.properties"})
 public class HibernateConfig {
+    public static final String HIBERNATE_DIALECT = "hibernate.dialect";
+    public static final String HIBERNATE_SHOW_SQL = "hibernate.show_sql";
+    public static final String HIBERNATE_HBM_2_DDL_AUTO = "hibernate.hbm2ddl.auto";
     private Environment environment;
+    private ShipmentInterceptor shipmentInterceptor;
 
     @Autowired
-    public HibernateConfig(Environment environment) {
+    public HibernateConfig(Environment environment, ShipmentInterceptor shipmentInterceptor) {
         this.environment = environment;
+        this.shipmentInterceptor = shipmentInterceptor;
     }
 
     @Bean
@@ -33,6 +39,7 @@ public class HibernateConfig {
         sessionFactory.setDataSource(dataSource());
         sessionFactory.setPackagesToScan(new String[]{"com.opinta.entity"});
         sessionFactory.setHibernateProperties(hibernateProperties());
+        sessionFactory.setEntityInterceptor(shipmentInterceptor);
         return sessionFactory;
     }
 
@@ -48,9 +55,9 @@ public class HibernateConfig {
 
     private Properties hibernateProperties() {
         Properties properties = new Properties();
-        properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
-        properties.put("hibernate.show_sql", environment.getRequiredProperty("hibernate.show_sql"));
-        properties.put("hibernate.hbm2ddl.auto", environment.getRequiredProperty("hibernate.hbm2ddl.auto"));
+        properties.put(HIBERNATE_DIALECT, environment.getRequiredProperty(HIBERNATE_DIALECT));
+        properties.put(HIBERNATE_SHOW_SQL, environment.getRequiredProperty(HIBERNATE_SHOW_SQL));
+        properties.put(HIBERNATE_HBM_2_DDL_AUTO, environment.getRequiredProperty(HIBERNATE_HBM_2_DDL_AUTO));
         return properties;
     }
 
