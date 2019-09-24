@@ -6,7 +6,9 @@ import com.opinta.entity.DeliveryType;
 import com.opinta.entity.TariffGrid;
 import com.opinta.entity.W2wVariation;
 import com.opinta.util.AddressUtil;
+
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -55,7 +57,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     @Transactional
     public Shipment getEntityById(long id) {
-        log.info("Getting postcodePool by id {}", id);
+        log.info("Getting shipment by id {}", id);
         return shipmentDao.getById(id);
     }
 
@@ -100,11 +102,10 @@ public class ShipmentServiceImpl implements ShipmentService {
         postcodePool.getBarcodeInnerNumbers().add(newBarcode);
         Shipment shipment = shipmentMapper.toEntity(shipmentDto);
         shipment.setBarcode(newBarcode);
-        log.info("Saving shipment with assigned barcode", shipmentMapper.toDto(shipment));
+        log.info("Saving shipment with assigned barcode {}", shipment);
 
         shipment.setSender(clientDao.getById(shipment.getSender().getId()));
         shipment.setRecipient(clientDao.getById(shipment.getRecipient().getId()));
-        shipment.setPrice(calculatePrice(shipment));
 
         return shipmentMapper.toDto(shipmentDao.save(shipment));
     }
@@ -118,13 +119,20 @@ public class ShipmentServiceImpl implements ShipmentService {
             log.debug("Can't update shipment. Shipment doesn't exist {}", id);
             return null;
         }
-        target.setPrice(calculatePrice(target));
+        log.info("target.price {}, calculatePrice(source) {}", target.getPrice(), calculatePrice(source));
+        log.info("source.price {}", source.getPrice());
+        log.info("id source: {}, id - {}", source.getId(), id);
+        log.info("target.getPrice {}", target.getPrice());
+        source.setId(id);
         try {
             copyProperties(target, source);
         } catch (Exception e) {
             log.error("Can't get properties from object to updatable object for shipment", e);
         }
-        target.setId(id);
+        log.info("target.price2 {}", target.getPrice());
+//        target.setId(id);
+        target.setPrice(calculatePrice(source));
+
         log.info("Updating shipment {}", target);
         shipmentDao.update(target);
         return shipmentMapper.toDto(target);
@@ -168,8 +176,14 @@ public class ShipmentServiceImpl implements ShipmentService {
         if (tariffGrid == null) {
             return BigDecimal.ZERO;
         }
-
-        float price = tariffGrid.getPrice() + getSurcharges(shipment);
+        float price = getSurcharges(shipment);;
+        BigDecimal tariffPrice = BigDecimal.valueOf(tariffGrid.getPrice());
+        BigDecimal shipmentPrice = shipment.getPrice();
+        if (tariffPrice.compareTo(shipmentPrice) > 0) {
+            price += tariffGrid.getPrice();
+        } else {
+            price += shipmentPrice.floatValue();
+        }
 
         return new BigDecimal(Float.toString(price));
     }
