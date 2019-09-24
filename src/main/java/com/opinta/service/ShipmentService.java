@@ -12,7 +12,9 @@ public interface ShipmentService {
     Shipment getEntityById(long id);
 
     Shipment saveEntity(Shipment shipment);
-    
+
+    void updateEntity(Shipment shipment);
+
     List<ShipmentDto> getAll();
 
     List<ShipmentDto> getAllByClientId(long clientId);

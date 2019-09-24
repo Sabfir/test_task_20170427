@@ -1,11 +1,13 @@
 package com.opinta.service;
 
 import com.opinta.dao.ClientDao;
+import com.opinta.dao.ParcelDao;
 import com.opinta.dao.ShipmentDao;
 import com.opinta.dto.ShipmentDto;
 import com.opinta.entity.BarcodeInnerNumber;
 import com.opinta.entity.Client;
 import com.opinta.entity.Counterparty;
+import com.opinta.entity.Parcel;
 import com.opinta.entity.PostcodePool;
 import com.opinta.entity.Shipment;
 import com.opinta.mapper.ShipmentMapper;
@@ -24,14 +26,16 @@ import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 public class ShipmentServiceImpl implements ShipmentService {
     private final ShipmentDao shipmentDao;
     private final ClientDao clientDao;
+    private final ParcelDao parcelDao;
     private final ShipmentMapper shipmentMapper;
     private final BarcodeInnerNumberService barcodeInnerNumberService;
 
     @Autowired
-    public ShipmentServiceImpl(ShipmentDao shipmentDao, ClientDao clientDao, ShipmentMapper shipmentMapper,
-                               BarcodeInnerNumberService barcodeInnerNumberService) {
+    public ShipmentServiceImpl(ShipmentDao shipmentDao, ClientDao clientDao, ParcelDao parcelDao,
+                               ShipmentMapper shipmentMapper, BarcodeInnerNumberService barcodeInnerNumberService) {
         this.shipmentDao = shipmentDao;
         this.clientDao = clientDao;
+        this.parcelDao = parcelDao;
         this.shipmentMapper = shipmentMapper;
         this.barcodeInnerNumberService = barcodeInnerNumberService;
     }
@@ -55,6 +59,12 @@ public class ShipmentServiceImpl implements ShipmentService {
     public Shipment saveEntity(Shipment shipment) {
         log.info("Saving shipment {}", shipment);
         return shipmentDao.save(shipment);
+    }
+
+    @Override
+    @Transactional
+    public void updateEntity(Shipment shipment) {
+        shipmentDao.update(shipment);
     }
 
     @Override

@@ -1,25 +1,33 @@
 package com.opinta.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.opinta.util.ShipmentInterceptor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-//@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
 @Entity
 @Data
 @NoArgsConstructor
+@EntityListeners(ShipmentInterceptor.class)
 public class Shipment implements Serializable {
     @Id
     @GeneratedValue
@@ -49,13 +57,4 @@ public class Shipment implements Serializable {
         this.deliveryType = deliveryType;
         this.postPay = postPay;
     }
-
-//    public void setParcelList(List<Parcel> parcelList) {
-////        if (parcelList != null && !parcelList.isEmpty()) {
-////            parcelList.forEach((parcel) -> {
-////                this.price = this.price.add(parcel == null ? BigDecimal.ZERO : parcel.getPrice());
-////            });
-////        }
-//        this.parcelList = parcelList;
-//    }
 }

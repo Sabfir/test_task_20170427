@@ -32,7 +32,8 @@ public class ParcelServiceImpl implements ParcelService {
     private final ShipmentService shipmentService;
 
     @Autowired
-    public ParcelServiceImpl(ParcelDao parcelDao, TariffGridDao tariffGridDao, ParcelMapper parcelMapper, ShipmentService shipmentService) {
+    public ParcelServiceImpl(ParcelDao parcelDao, TariffGridDao tariffGridDao, ParcelMapper parcelMapper,
+                             ShipmentService shipmentService) {
         this.parcelDao = parcelDao;
         this.tariffGridDao = tariffGridDao;
         this.parcelMapper = parcelMapper;
@@ -53,11 +54,19 @@ public class ParcelServiceImpl implements ParcelService {
         return parcelDao.getById(id);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public Parcel saveEntity(Parcel parcel) {
         log.info("Saving parcelEntity {}", parcel);
         parcel.setPrice(calculatePrice(parcel));
+        if (parcel.getShipment() != null) {
+            Shipment shipment = shipmentService.getEntityById(parcel.getShipment().getId());
+            BigDecimal currentPrice = shipment.getPrice();
+            BigDecimal sumPrice = currentPrice.add(parcel.getPrice());
+            shipment.setPrice(sumPrice);
+            shipmentService.updateEntity(shipment);
+            log.info("Update shipmentPrice from parcel saveEntity - {}", shipment.toString());
+        }
         return parcelDao.save(parcel);
     }
 

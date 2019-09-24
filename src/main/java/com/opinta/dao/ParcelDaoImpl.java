@@ -36,12 +36,14 @@ public class ParcelDaoImpl implements ParcelDao {
     @Override
     public Parcel save(Parcel parcel) {
         Session session = sessionFactory.getCurrentSession();
+        session.flush();
         return (Parcel) session.merge(parcel);
     }
 
     @Override
     public void update(Parcel parcel) {
         Session session = sessionFactory.getCurrentSession();
+        session.flush();
         session.update(parcel);
     }
 

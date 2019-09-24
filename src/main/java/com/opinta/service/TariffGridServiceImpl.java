@@ -52,7 +52,7 @@ public class TariffGridServiceImpl implements TariffGridService {
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Can't get properties from object to updatable object for tariffGrid", e);
         }
         target.setId(id);

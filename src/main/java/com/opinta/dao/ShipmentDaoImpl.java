@@ -55,6 +55,7 @@ public class ShipmentDaoImpl implements ShipmentDao {
     @Override
     public void update(Shipment shipment) {
         Session session = sessionFactory.getCurrentSession();
+        session.flush();
         session.update(shipment);
     }
 

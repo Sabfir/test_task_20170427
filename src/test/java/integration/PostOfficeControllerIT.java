@@ -21,6 +21,13 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 public class PostOfficeControllerIT extends BaseControllerIT {
+    public static final String POST_OFFICES = "/post-offices";
+    public static final String POST_OFFICES_ID = "/post-offices/{id}";
+    public static final String ID = "id";
+    public static final String JSON_POST_OFFICE_JSON = "json/post-office.json";
+    public static final String ADDRESS_ID = "addressId";
+    public static final String POSTCODE_POOL_ID = "postcodePoolId";
+    public static final String APPLICATION_JSON_CHARSET_UTF_8 = "application/json;charset=UTF-8";
     private PostOffice postOffice;
     private int postOfficeId = MIN_VALUE;
     @Autowired
@@ -44,7 +51,7 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     @Test
     public void getPostOffices() throws Exception {
         when().
-                get("/post-offices").
+                get(POST_OFFICES).
         then().
                 statusCode(SC_OK);
     }
@@ -52,16 +59,16 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     @Test
     public void getPostOffice() throws Exception {
         when().
-                get("/post-offices/{id}", postOfficeId).
+                get(POST_OFFICES_ID, postOfficeId).
         then().
                 statusCode(SC_OK).
-                body("id", equalTo(postOfficeId));
+                body(ID, equalTo(postOfficeId));
     }
 
     @Test
     public void getPostOffice_notFound() throws Exception {
         when().
-                get("/post-offices/{id}", postOfficeId + 1).
+                get(POST_OFFICES_ID, postOfficeId + 1).
         then().
                 statusCode(SC_NOT_FOUND);
     }
@@ -70,20 +77,20 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void createPostOffice() throws Exception {
         // create
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/post-office.json");
-        jsonObject.put("addressId", (int) testHelper.createAddress().getId());
-        jsonObject.put("postcodePoolId", (int) testHelper.createPostcodePool().getId());
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile(JSON_POST_OFFICE_JSON);
+        jsonObject.put(ADDRESS_ID, (int) testHelper.createAddress().getId());
+        jsonObject.put(POSTCODE_POOL_ID, (int) testHelper.createPostcodePool().getId());
         String expectedJson = jsonObject.toString();
 
         int newPostOfficeId =
                 given().
-                        contentType("application/json;charset=UTF-8").
+                        contentType(APPLICATION_JSON_CHARSET_UTF_8).
                         body(expectedJson).
                 when().
-                        post("/post-offices").
+                        post(POST_OFFICES).
                 then().
                         extract().
-                        path("id");
+                        path(ID);
 
         // check created data
         PostOffice createdPostOffice = postOfficeService.getEntityById(newPostOfficeId);
@@ -100,16 +107,16 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void updatePostOffice() throws Exception {
         // update
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/post-office.json");
-        jsonObject.put("addressId", (int) testHelper.createAddress().getId());
-        jsonObject.put("postcodePoolId", (int) testHelper.createPostcodePool().getId());
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile(JSON_POST_OFFICE_JSON);
+        jsonObject.put(ADDRESS_ID, (int) testHelper.createAddress().getId());
+        jsonObject.put(POSTCODE_POOL_ID, (int) testHelper.createPostcodePool().getId());
         String expectedJson = jsonObject.toString();
 
         given().
-                contentType("application/json;charset=UTF-8").
+                contentType(APPLICATION_JSON_CHARSET_UTF_8).
                 body(expectedJson).
         when().
-                put("/post-offices/{id}", postOfficeId).
+                put(POST_OFFICES_ID, postOfficeId).
         then().
                 statusCode(SC_OK);
 
@@ -124,7 +131,7 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     @Test
     public void deletePostOffice() throws Exception {
         when().
-                delete("/post-offices/{id}", postOfficeId).
+                delete(POST_OFFICES_ID, postOfficeId).
         then().
                 statusCode(SC_OK);
     }
@@ -132,7 +139,7 @@ public class PostOfficeControllerIT extends BaseControllerIT {
     @Test
     public void deletePostOffices_notFound() throws Exception {
         when().
-                delete("/post-offices/{id}", postOfficeId + 1).
+                delete(POST_OFFICES_ID, postOfficeId + 1).
         then().
                 statusCode(SC_NOT_FOUND);
     }

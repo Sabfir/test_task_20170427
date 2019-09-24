@@ -10,16 +10,12 @@ import org.mapstruct.Mappings;
 public interface ShipmentTrackingDetailMapper extends BaseMapper<ShipmentTrackingDetailDto, ShipmentTrackingDetail> {
 
     @Override
-    @Mappings({
-            @Mapping(source = "shipment.id", target = "shipmentId"),
-            @Mapping(source = "postOffice.id", target = "postOfficeId")
-    })
+    @Mappings({@Mapping(source = "shipment.id", target = "shipmentId"),
+            @Mapping(source = "postOffice.id", target = "postOfficeId")})
     ShipmentTrackingDetailDto toDto(ShipmentTrackingDetail shipmentTrackingDetail);
 
     @Override
-    @Mappings({
-            @Mapping(source = "shipmentId", target = "shipment.id"),
-            @Mapping(source = "postOfficeId", target = "postOffice.id")
-    })
+    @Mappings({@Mapping(source = "shipmentId", target = "shipment.id"),
+            @Mapping(source = "postOfficeId", target = "postOffice.id")})
     ShipmentTrackingDetail toEntity(ShipmentTrackingDetailDto shipmentTrackingDetailDto);
 }

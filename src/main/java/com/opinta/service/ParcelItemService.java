@@ -1,6 +1,5 @@
 package com.opinta.service;
 
-
 import com.opinta.entity.ParcelItem;
 
 import java.util.List;
