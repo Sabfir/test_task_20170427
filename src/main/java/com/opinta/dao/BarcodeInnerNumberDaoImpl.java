@@ -1,7 +1,7 @@
 package com.opinta.dao;
 
+import java.util.ArrayList;
 import java.util.List;
-
 import com.opinta.entity.BarcodeInnerNumber;
 import com.opinta.entity.PostcodePool;
 import org.hibernate.Session;
@@ -25,7 +25,7 @@ public class BarcodeInnerNumberDaoImpl implements BarcodeInnerNumberDao {
         Session session = sessionFactory.getCurrentSession();
         PostcodePool postcodePool = (PostcodePool) session.get(PostcodePool.class, postcodeId);
         if (postcodePool == null) {
-            return null;
+            return new ArrayList<>();
         }
         return postcodePool.getBarcodeInnerNumbers();
     }

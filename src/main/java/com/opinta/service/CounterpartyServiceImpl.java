@@ -1,18 +1,16 @@
 package com.opinta.service;
 
-import com.opinta.entity.Counterparty;
-import com.opinta.entity.PostcodePool;
-import java.util.List;
-
-import javax.transaction.Transactional;
-
 import com.opinta.dao.CounterpartyDao;
 import com.opinta.dto.CounterpartyDto;
+import com.opinta.entity.Counterparty;
+import com.opinta.entity.PostcodePool;
 import com.opinta.mapper.CounterpartyMapper;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 
 @Service
@@ -54,8 +52,8 @@ public class CounterpartyServiceImpl implements CounterpartyService {
     public Counterparty saveEntity(Counterparty counterparty) {
         List<Counterparty> counterparties = getEntityByPostcodePool(counterparty.getPostcodePool());
         if (counterparties.size() != 0) {
-            log.error("PostcodePool {} is already used in the VPO {}", counterparty.getPostcodePool(),
-                    counterparties);
+            log.error("PostcodePool {} is already used in the VPO {}",
+                    counterparty.getPostcodePool(), counterparties);
             return null;
         }
         log.info("Saving counterparty {}", counterparty);
@@ -97,7 +95,7 @@ public class CounterpartyServiceImpl implements CounterpartyService {
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for counterparty", e);
         }
         target.setId(id);

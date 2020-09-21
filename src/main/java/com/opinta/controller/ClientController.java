@@ -1,7 +1,6 @@
 package com.opinta.controller;
 
 import java.util.List;
-
 import com.opinta.dto.ClientDto;
 import com.opinta.dto.ShipmentDto;
 import com.opinta.service.ClientService;
@@ -17,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
 import static java.lang.String.format;
-
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -27,6 +24,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/clients")
 public class ClientController {
+    private static final String NOT_FOUND_MESSAGE = "No Client found for ID %d";
     private final ClientService clientService;
     private final ShipmentService shipmentService;
     
@@ -46,7 +44,7 @@ public class ClientController {
     public ResponseEntity<?> getClient(@PathVariable("id") long id) {
         ClientDto clientDto = clientService.getById(id);
         if (clientDto == null) {
-            return new ResponseEntity<>(format("No Client found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NOT_FOUND_MESSAGE, id), NOT_FOUND);
         }
         return new ResponseEntity<>(clientDto, OK);
     }
@@ -75,14 +73,14 @@ public class ClientController {
         if (clientDto != null) {
             return new ResponseEntity<>(clientDto, OK);
         } else {
-            return new ResponseEntity<>(format("No Client found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NOT_FOUND_MESSAGE, id), NOT_FOUND);
         }
     }
     
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteClient(@PathVariable long id) {
         if (!clientService.delete(id)) {
-            return new ResponseEntity<>(format("No Client found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(NOT_FOUND_MESSAGE, id), NOT_FOUND);
         }
         return new ResponseEntity<>(OK);
     }

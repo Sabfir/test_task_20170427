@@ -31,8 +31,8 @@ public class ShipmentTrackingDetail {
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
-    public ShipmentTrackingDetail(Shipment shipment, PostOffice postOffice, ShipmentStatus shipmentStatus,
-                                  Date date) {
+    public ShipmentTrackingDetail(Shipment shipment, PostOffice postOffice,
+                                  ShipmentStatus shipmentStatus, Date date) {
         this.shipment = shipment;
         this.postOffice = postOffice;
         this.shipmentStatus = shipmentStatus;

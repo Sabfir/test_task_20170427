@@ -1,10 +1,10 @@
 package com.opinta.controller;
 
-import java.util.List;
-
 import com.opinta.dto.ShipmentDto;
 import com.opinta.service.PDFGeneratorService;
+import com.opinta.service.ParcelService;
 import com.opinta.service.ShipmentService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,22 +18,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
 import static java.lang.String.format;
-
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/shipments")
 public class ShipmentController {
-    private ShipmentService shipmentService;
-    private PDFGeneratorService pdfGeneratorService;
+    public static final String SHIPMENT_NOT_FOUND = "No Shipment found for ID %d";
+    private final ShipmentService shipmentService;
+    private final PDFGeneratorService pdfGeneratorService;
+    private final ParcelService parcelService;
 
     @Autowired
-    public ShipmentController(ShipmentService shipmentService, PDFGeneratorService pdfGeneratorService) {
+    public ShipmentController(ShipmentService shipmentService,
+                              PDFGeneratorService pdfGeneratorService,
+                              ParcelService parcelService) {
         this.shipmentService = shipmentService;
         this.pdfGeneratorService = pdfGeneratorService;
+        this.parcelService = parcelService;
     }
 
     @GetMapping
@@ -46,7 +49,7 @@ public class ShipmentController {
     public ResponseEntity<?> getShipment(@PathVariable("id") long id) {
         ShipmentDto shipmentDto = shipmentService.getById(id);
         if (shipmentDto == null) {
-            return new ResponseEntity<>(format("No Shipment found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(SHIPMENT_NOT_FOUND, id), NOT_FOUND);
         }
         return new ResponseEntity<>(shipmentDto, OK);
     }
@@ -76,14 +79,17 @@ public class ShipmentController {
     @PostMapping
     @ResponseStatus(OK)
     public ShipmentDto createShipment(@RequestBody ShipmentDto shipmentDto) {
+        shipmentDto.setParcels(parcelService.saveWithCalculatedPrice(shipmentDto));
         return shipmentService.save(shipmentDto);
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<?> updateShipment(@PathVariable long id, @RequestBody ShipmentDto shipmentDto) {
+    public ResponseEntity<?> updateShipment(@PathVariable long id,
+                                            @RequestBody ShipmentDto shipmentDto) {
+        shipmentDto.setParcels(parcelService.saveWithCalculatedPrice(shipmentDto));
         shipmentDto = shipmentService.update(id, shipmentDto);
         if (shipmentDto == null) {
-            return new ResponseEntity<>(format("No Shipment found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(SHIPMENT_NOT_FOUND, id), NOT_FOUND);
         }
         return new ResponseEntity<>(shipmentDto, OK);
     }
@@ -91,7 +97,7 @@ public class ShipmentController {
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteShipment(@PathVariable long id) {
         if (!shipmentService.delete(id)) {
-            return new ResponseEntity<>(format("No Shipment found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format(SHIPMENT_NOT_FOUND, id), NOT_FOUND);
         }
         return new ResponseEntity<>(OK);
     }

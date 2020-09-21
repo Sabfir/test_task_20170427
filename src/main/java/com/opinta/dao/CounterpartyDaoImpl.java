@@ -3,7 +3,6 @@ package com.opinta.dao;
 import com.opinta.entity.Counterparty;
 import com.opinta.entity.PostcodePool;
 import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Criteria;
 import org.hibernate.Session;

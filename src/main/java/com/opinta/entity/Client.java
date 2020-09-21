@@ -5,7 +5,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -25,7 +24,8 @@ public class Client {
     @JoinColumn(name = "counterparty_id")
     private Counterparty counterparty;
 
-    public Client(String name, String uniqueRegistrationNumber, Address address, Counterparty counterparty) {
+    public Client(String name, String uniqueRegistrationNumber,
+                  Address address, Counterparty counterparty) {
         this.name = name;
         this.uniqueRegistrationNumber = uniqueRegistrationNumber;
         this.address = address;

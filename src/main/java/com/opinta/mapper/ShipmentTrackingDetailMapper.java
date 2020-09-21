@@ -7,7 +7,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring")
-public interface ShipmentTrackingDetailMapper extends BaseMapper<ShipmentTrackingDetailDto, ShipmentTrackingDetail> {
+public interface ShipmentTrackingDetailMapper extends
+        BaseMapper<ShipmentTrackingDetailDto, ShipmentTrackingDetail> {
 
     @Override
     @Mappings({

@@ -1,9 +1,8 @@
 package com.opinta.service;
 
+import com.opinta.dto.AddressDto;
 import com.opinta.entity.Address;
 import java.util.List;
-
-import com.opinta.dto.AddressDto;
 
 public interface AddressService {
 

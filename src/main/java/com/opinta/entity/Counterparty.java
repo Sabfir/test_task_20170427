@@ -5,10 +5,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 /**
  * Counterparty is the group of clients with the same postcode

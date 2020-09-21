@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import integration.helper.TestHelper;
-
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.when;
 import static java.lang.Integer.MIN_VALUE;
@@ -21,6 +20,11 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 public class ClientControllerIT extends BaseControllerIT {
+    private static final String CLIENTS = "/clients";
+    private static final String CLIENT_ID = "/clients/{id}";
+    private static final String ID = "id";
+    private static final String JSON_FILE = "json/client.json";
+    private static final String CONTENT_TYPE = "application/json;charset=UTF-8";
     private Client client;
     private int clientId = MIN_VALUE;
     @Autowired
@@ -44,7 +48,7 @@ public class ClientControllerIT extends BaseControllerIT {
     @Test
     public void getClients() throws Exception {
         when().
-                get("/clients").
+                get(CLIENTS).
         then().
                 statusCode(SC_OK);
     }
@@ -52,16 +56,16 @@ public class ClientControllerIT extends BaseControllerIT {
     @Test
     public void getClient() throws Exception {
         when().
-                get("clients/{id}", clientId).
+                get(CLIENT_ID, clientId).
         then().
                 statusCode(SC_OK).
-                body("id", equalTo(clientId));
+                body(ID, equalTo(clientId));
     }
 
     @Test
     public void getClient_notFound() throws Exception {
         when().
-                get("/clients/{id}", clientId + 1).
+                get(CLIENT_ID, clientId + 1).
         then().
                 statusCode(SC_NOT_FOUND);
     }
@@ -70,20 +74,20 @@ public class ClientControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void createClient() throws Exception {
         // create
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/client.json");
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile(JSON_FILE);
         jsonObject.put("counterpartyId", (int) testHelper.createCounterparty().getId());
         jsonObject.put("addressId", (int) testHelper.createAddress().getId());
         String expectedJson = jsonObject.toString();
 
         int newClientId =
                 given().
-                        contentType("application/json;charset=UTF-8").
+                        contentType(CONTENT_TYPE).
                         body(expectedJson).
                 when().
-                        post("/clients").
+                        post(CLIENTS).
                 then().
                         extract().
-                        path("id");
+                        path(ID);
 
         // check created data
         Client createdClient = clientService.getEntityById(newClientId);
@@ -100,16 +104,16 @@ public class ClientControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void updateClient() throws Exception {
         // update
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/client.json");
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile(JSON_FILE);
         jsonObject.put("counterpartyId", (int) testHelper.createCounterparty().getId());
         jsonObject.put("addressId", (int) testHelper.createAddress().getId());
         String expectedJson = jsonObject.toString();
 
         given().
-                contentType("application/json;charset=UTF-8").
+                contentType(CONTENT_TYPE).
                 body(expectedJson).
         when().
-                put("/clients/{id}", clientId).
+                put(CLIENT_ID, clientId).
         then().
                 statusCode(SC_OK);
 
@@ -124,7 +128,7 @@ public class ClientControllerIT extends BaseControllerIT {
     @Test
     public void deleteClient() throws Exception {
         when().
-                delete("/clients/{id}", clientId).
+                delete(CLIENT_ID, clientId).
         then().
                 statusCode(SC_OK);
     }
@@ -132,7 +136,7 @@ public class ClientControllerIT extends BaseControllerIT {
     @Test
     public void deleteClient_notFound() throws Exception {
         when().
-                delete("/clients/{id}", clientId + 1).
+                delete(CLIENT_ID, clientId + 1).
         then().
                 statusCode(SC_NOT_FOUND);
     }

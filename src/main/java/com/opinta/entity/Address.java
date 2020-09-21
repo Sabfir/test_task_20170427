@@ -1,12 +1,11 @@
 package com.opinta.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.math.BigDecimal;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -26,8 +25,8 @@ public class Address {
     private BigDecimal latitude;
     private BigDecimal longitude;
 
-    public Address(String postcode, String region, String district, String city, String street, String houseNumber,
-                   String apartmentNumber) {
+    public Address(String postcode, String region, String district, String city,
+                   String street, String houseNumber, String apartmentNumber) {
         this.postcode = postcode;
         this.region = region;
         this.district = district;
