@@ -1,6 +1,7 @@
 package com.opinta.entity;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,10 +14,9 @@ import javax.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /**
- * PostcodePool holds all postcodes ("00000"-"99999") and pool of the inner numbers for each postcode
+ * PostcodePool holds all postcodes ("00000"-"99999") and
+ * pool of the inner numbers for each postcode
  * It shouldn't have field like Client or PostOffice.
  * Client and PostOffice should have reference to it instead
  */

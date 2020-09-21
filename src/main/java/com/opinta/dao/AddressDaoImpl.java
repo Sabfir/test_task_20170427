@@ -1,7 +1,6 @@
 package com.opinta.dao;
 
 import java.util.List;
-
 import com.opinta.entity.Address;
 import org.hibernate.Criteria;
 import org.hibernate.Session;

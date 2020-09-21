@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 public class HibernateConfigTest {
-    private Environment environment;
+    private final Environment environment;
 
     @Autowired
     public HibernateConfigTest(Environment environment) {
@@ -26,7 +26,7 @@ public class HibernateConfigTest {
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan(new String[]{"com.opinta.entity"});
+        sessionFactory.setPackagesToScan("com.opinta.entity");
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }
@@ -45,7 +45,8 @@ public class HibernateConfigTest {
         Properties properties = new Properties();
         properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
         properties.put("hibernate.show_sql", environment.getRequiredProperty("hibernate.show_sql"));
-        properties.put("hibernate.hbm2ddl.auto", environment.getRequiredProperty("hibernate.hbm2ddl.auto"));
+        properties.put("hibernate.hbm2ddl.auto",
+                environment.getRequiredProperty("hibernate.hbm2ddl.auto"));
         return properties;
     }
 

@@ -9,7 +9,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -61,7 +60,8 @@ public class TariffGridDaoImpl implements TariffGridDao {
     public TariffGrid getByDimension(float weight, float length, W2wVariation w2wVariation) {
         String id = "id";
         Session session = sessionFactory.getCurrentSession();
-        DetachedCriteria minId = DetachedCriteria.forClass(TariffGrid.class).setProjection(Projections.min(id));
+        DetachedCriteria minId = DetachedCriteria.forClass(TariffGrid.class)
+                .setProjection(Projections.min(id));
         return (TariffGrid) session.createCriteria(TariffGrid.class)
                 .add(Restrictions.and(Restrictions.ge("weight", weight),
                         Restrictions.ge("length", length),

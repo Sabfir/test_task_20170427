@@ -2,7 +2,13 @@ package com.opinta.service;
 
 import com.opinta.entity.Address;
 import com.opinta.entity.Client;
+import com.opinta.entity.Parcel;
 import com.opinta.entity.Shipment;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
@@ -10,17 +16,12 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-
 @Service
 @Slf4j
 public class PDFGeneratorServiceImpl implements PDFGeneratorService {
     private static final String PDF_LABEL_TEMPLATE = "pdfTemplate/label-template.pdf";
     private static final String PDF_POSTPAY_TEMPLATE = "pdfTemplate/postpay-template.pdf";
-
-    private ShipmentService shipmentService;
+    private final ShipmentService shipmentService;
     private PDDocument template;
     private PDTextField field;
 
@@ -79,13 +80,24 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
                 generateClientsData(shipment, acroForm);
 
                 field = (PDTextField) acroForm.getField("mass");
-                field.setValue(String.valueOf(shipment.getWeight()));
+                Float shipmentWeight = shipment.getParcels().stream()
+                        .map(Parcel::getWeight)
+                        .reduce(0f, Float::sum);
+                field.setValue(String.valueOf(shipmentWeight));
 
                 field = (PDTextField) acroForm.getField("value");
-                field.setValue(String.valueOf(shipment.getDeclaredPrice()));
+                BigDecimal shipmentDeclaredPrice = shipment.getParcels().stream()
+                        .map(Parcel::getDeclaredPrice)
+                        .filter(Objects::nonNull)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                field.setValue(String.valueOf(shipmentDeclaredPrice));
 
                 field = (PDTextField) acroForm.getField("sendingCost");
-                field.setValue(String.valueOf(shipment.getPrice()));
+                BigDecimal shipmentPrice = shipment.getParcels().stream()
+                        .map(Parcel::getPrice)
+                        .filter(Objects::nonNull)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                field.setValue(String.valueOf(shipmentPrice));
 
                 field = (PDTextField) acroForm.getField("postPrice");
                 field.setValue(String.valueOf(shipment.getPostPay()));

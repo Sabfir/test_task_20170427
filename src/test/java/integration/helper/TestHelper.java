@@ -1,17 +1,32 @@
 package integration.helper;
 
-import com.opinta.entity.*;
-import com.opinta.service.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import com.opinta.entity.Address;
+import com.opinta.entity.Client;
+import com.opinta.entity.Counterparty;
+import com.opinta.entity.DeliveryType;
+import com.opinta.entity.Parcel;
+import com.opinta.entity.ParcelItem;
+import com.opinta.entity.PostOffice;
+import com.opinta.entity.PostcodePool;
+import com.opinta.entity.Shipment;
+import com.opinta.service.AddressService;
+import com.opinta.service.ClientService;
+import com.opinta.service.CounterpartyService;
+import com.opinta.service.ParcelItemService;
+import com.opinta.service.ParcelService;
+import com.opinta.service.PostOfficeService;
+import com.opinta.service.PostcodePoolService;
+import com.opinta.service.ShipmentService;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
 
 @Component
 public class TestHelper {
@@ -27,9 +42,14 @@ public class TestHelper {
     private ShipmentService shipmentService;
     @Autowired
     private PostOfficeService postOfficeService;
+    @Autowired
+    private ParcelService parcelService;
+    @Autowired
+    private ParcelItemService parcelItemService;
 
     public PostOffice createPostOffice() {
-        PostOffice postOffice = new PostOffice("Lviv post office", createAddress(), createPostcodePool());
+        PostOffice postOffice = new PostOffice("Lviv post office",
+                createAddress(), createPostcodePool());
         return postOfficeService.saveEntity(postOffice);
     }
 
@@ -39,8 +59,16 @@ public class TestHelper {
     }
 
     public Shipment createShipment() {
+        ParcelItem parcelItem = new ParcelItem("test item", 1, 1, new BigDecimal("200"));
+        ParcelItem savedParcelItem = parcelItemService.saveEntity(parcelItem);
+
+        Parcel parcel = new Parcel(1, 1, new BigDecimal("200"), new BigDecimal("30"));
+        parcel.setParcelItems(Arrays.asList(savedParcelItem));
+        Parcel savedParcel = parcelService.saveEntity(parcel);
+
         Shipment shipment = new Shipment(createClient(), createClient(),
-                DeliveryType.D2D, 1.0F, 1.0F, new BigDecimal(200), new BigDecimal(30), new BigDecimal(35.2));
+                DeliveryType.D2D, new BigDecimal(35.2));
+        shipment.setParcels(Arrays.asList(savedParcel));
         return shipmentService.saveEntity(shipment);
     }
 

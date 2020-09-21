@@ -1,7 +1,6 @@
 package com.opinta.dao;
 
 import java.util.List;
-
 import com.opinta.entity.BarcodeInnerNumber;
 
 public interface BarcodeInnerNumberDao {

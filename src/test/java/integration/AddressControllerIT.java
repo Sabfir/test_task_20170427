@@ -9,17 +9,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.when;
 import static java.lang.Integer.MIN_VALUE;
-
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 
 public class AddressControllerIT extends BaseControllerIT {
+    private static final String ADDRESSES = "/addresses";
+    private static final String ADDRESSES_ID = "/addresses/{id}";
+    private static final String ID = "id";
+    private static final String JSON_FILE = "json/address.json";
+    private static final String CONTENT_TYPE = "application/json;charset=UTF-8";
     private int addressId = MIN_VALUE;
     @Autowired
     private AddressService addressService;
@@ -40,7 +42,7 @@ public class AddressControllerIT extends BaseControllerIT {
     @Test
     public void getAddresses() throws Exception {
         when().
-                get("/addresses").
+                get(ADDRESSES).
         then().
                 statusCode(SC_OK);
     }
@@ -48,16 +50,16 @@ public class AddressControllerIT extends BaseControllerIT {
     @Test
     public void getAddress() throws Exception {
         when().
-                get("/addresses/{id}", addressId).
+                get(ADDRESSES_ID, addressId).
         then().
                 statusCode(SC_OK).
-                body("id", equalTo(addressId));
+                body(ID, equalTo(addressId));
     }
 
     @Test
     public void getAddress_notFound() throws Exception {
         when().
-                get("/addresses/{id}", addressId + 1).
+                get(ADDRESSES_ID, addressId + 1).
         then().
                 statusCode(SC_NOT_FOUND);
     }
@@ -65,17 +67,17 @@ public class AddressControllerIT extends BaseControllerIT {
     @Test
     public void createAddress() throws Exception {
         // create
-        String expectedJson = testHelper.getJsonFromFile("json/address.json");
+        String expectedJson = testHelper.getJsonFromFile(JSON_FILE);
 
         int newAddressId =
                 given().
-                        contentType("application/json;charset=UTF-8").
+                        contentType(CONTENT_TYPE).
                         body(expectedJson).
                 when().
-                        post("/addresses").
+                        post(ADDRESSES).
                 then().
                         extract().
-                        path("id");
+                        path(ID);
 
         // check created data
         Address address = addressService.getEntityById(newAddressId);
@@ -91,13 +93,13 @@ public class AddressControllerIT extends BaseControllerIT {
     @Test
     public void updateAddress() throws Exception {
         // update data
-        String expectedJson = testHelper.getJsonFromFile("json/address.json");
+        String expectedJson = testHelper.getJsonFromFile(JSON_FILE);
 
         given().
-                contentType("application/json;charset=UTF-8").
+                contentType(CONTENT_TYPE).
                 body(expectedJson).
         when().
-                put("/addresses/{id}", addressId).
+                put(ADDRESSES_ID, addressId).
         then().
                 statusCode(SC_OK);
 
@@ -112,7 +114,7 @@ public class AddressControllerIT extends BaseControllerIT {
     @Test
     public void deleteAddress() throws Exception {
         when()
-                .delete("/addresses/{id}", addressId).
+                .delete(ADDRESSES_ID, addressId).
         then().
                 statusCode(SC_OK);
     }
@@ -120,7 +122,7 @@ public class AddressControllerIT extends BaseControllerIT {
     @Test
     public void deleteAddress_notFound() throws Exception {
         when()
-                .delete("/addresses/{id}", addressId+1).
+                .delete(ADDRESSES_ID, addressId+1).
         then().
                 statusCode(SC_NOT_FOUND);
     }

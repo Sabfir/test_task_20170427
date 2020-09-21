@@ -1,5 +1,7 @@
 package com.opinta.config;
 
+import javax.sql.DataSource;
+import java.util.Properties;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,15 +14,12 @@ import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.sql.DataSource;
-import java.util.Properties;
-
 @Configuration
 @EnableTransactionManagement
 @ComponentScan({"com.opinta"})
 @PropertySource(value = {"classpath:application.properties"})
 public class HibernateConfig {
-    private Environment environment;
+    private final Environment environment;
 
     @Autowired
     public HibernateConfig(Environment environment) {
@@ -31,7 +30,7 @@ public class HibernateConfig {
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan(new String[]{"com.opinta.entity"});
+        sessionFactory.setPackagesToScan("com.opinta.entity");
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }
@@ -50,7 +49,8 @@ public class HibernateConfig {
         Properties properties = new Properties();
         properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
         properties.put("hibernate.show_sql", environment.getRequiredProperty("hibernate.show_sql"));
-        properties.put("hibernate.hbm2ddl.auto", environment.getRequiredProperty("hibernate.hbm2ddl.auto"));
+        properties.put("hibernate.hbm2ddl.auto",
+                environment.getRequiredProperty("hibernate.hbm2ddl.auto"));
         return properties;
     }
 

@@ -3,18 +3,18 @@ package com.opinta.service;
 import com.opinta.dao.TariffGridDao;
 import com.opinta.entity.TariffGrid;
 import com.opinta.entity.W2wVariation;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 
 @Service
 @Slf4j
 public class TariffGridServiceImpl implements TariffGridService {
-    private TariffGridDao tariffGridDao;
+    private final TariffGridDao tariffGridDao;
 
     @Autowired
     public TariffGridServiceImpl(TariffGridDao tariffGridDao) {
@@ -52,7 +52,7 @@ public class TariffGridServiceImpl implements TariffGridService {
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for tariffGrid", e);
         }
         target.setId(id);

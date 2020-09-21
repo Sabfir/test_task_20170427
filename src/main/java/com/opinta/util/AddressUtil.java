@@ -1,7 +1,6 @@
 package com.opinta.util;
 
 import com.opinta.entity.Address;
-
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 public class AddressUtil {

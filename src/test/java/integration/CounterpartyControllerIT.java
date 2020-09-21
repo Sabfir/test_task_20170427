@@ -5,14 +5,13 @@ import com.opinta.dto.CounterpartyDto;
 import com.opinta.entity.Counterparty;
 import com.opinta.mapper.CounterpartyMapper;
 import com.opinta.service.CounterpartyService;
+import integration.helper.TestHelper;
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
-import integration.helper.TestHelper;
-
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.when;
 import static java.lang.Integer.MIN_VALUE;
@@ -21,6 +20,11 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 public class CounterpartyControllerIT extends BaseControllerIT {
+    public static final String COUNTERPARTIES = "/counterparties";
+    public static final String COUNTERPARTY_ID = "/counterparties/{id}";
+    public static final String ID = "id";
+    public static final String JSON_FILE = "json/counterparty.json";
+    public static final String CONTENT_TYPE = "application/json;charset=UTF-8";
     private Counterparty counterparty;
     private int counterpartyId = MIN_VALUE;
 
@@ -45,7 +49,7 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     @Test
     public void getCounterparties() throws Exception {
         when().
-                get("/counterparties").
+                get(COUNTERPARTIES).
         then().
                 statusCode(SC_OK);
     }
@@ -53,16 +57,16 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     @Test
     public void getCounterparty() throws Exception {
         when().
-                get("counterparties/{id}", counterpartyId).
+                get(COUNTERPARTY_ID, counterpartyId).
         then().
                 statusCode(SC_OK).
-                body("id", equalTo(counterpartyId));
+                body(ID, equalTo(counterpartyId));
     }
 
     @Test
     public void getCounterparty_notFound() throws Exception {
         when().
-                get("/counterparties/{id}", counterpartyId + 1).
+                get(COUNTERPARTY_ID, counterpartyId + 1).
         then().
                 statusCode(SC_NOT_FOUND);
     }
@@ -71,24 +75,25 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void createCounterparty() throws Exception {
         // create
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/counterparty.json");
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile(JSON_FILE);
         jsonObject.put("postcodePoolId", (int) testHelper.createPostcodePool().getId());
         String expectedJson = jsonObject.toString();
 
         int newCounterpartyId =
                 given().
-                        contentType("application/json;charset=UTF-8").
+                        contentType(CONTENT_TYPE).
                         body(expectedJson).
                 when().
-                        post("/counterparties/").
+                        post(COUNTERPARTIES).
                 then().
                         extract().
-                        path("id");
+                        path(ID);
 
         // check created data
         Counterparty createdCounterparty = counterpartyService.getEntityById(newCounterpartyId);
         ObjectMapper mapper = new ObjectMapper();
-        String actualJson = mapper.writeValueAsString(counterpartyMapper.toDto(createdCounterparty));
+        String actualJson = mapper.writeValueAsString(counterpartyMapper
+                .toDto(createdCounterparty));
         JSONAssert.assertEquals(expectedJson, actualJson, false);
 
         // delete
@@ -99,15 +104,15 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     @SuppressWarnings("unchecked")
     public void updateCounterparty() throws Exception {
         // update
-        JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/counterparty.json");
+        JSONObject jsonObject = testHelper.getJsonObjectFromFile(JSON_FILE);
         jsonObject.put("postcodePoolId", (int) testHelper.createPostcodePool().getId());
         String expectedJson = jsonObject.toString();
 
         given().
-                contentType("application/json;charset=UTF-8").
+                contentType(CONTENT_TYPE).
                 body(expectedJson).
         when().
-                put("/counterparties/{id}", counterpartyId).
+                put(COUNTERPARTY_ID, counterpartyId).
         then().
                 statusCode(SC_OK);
 
@@ -123,7 +128,7 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     @Test
     public void deleteCounterparty() throws Exception {
         when().
-                delete("/counterparties/{id}", counterpartyId).
+                delete(COUNTERPARTY_ID, counterpartyId).
         then().
                 statusCode(SC_OK);
     }
@@ -131,7 +136,7 @@ public class CounterpartyControllerIT extends BaseControllerIT {
     @Test
     public void deleteCounterparty_notFound() throws Exception {
         when().
-                delete("/counterparties/{id}", counterpartyId + 1).
+                delete(COUNTERPARTY_ID, counterpartyId + 1).
         then().
                 statusCode(SC_NOT_FOUND);
     }
