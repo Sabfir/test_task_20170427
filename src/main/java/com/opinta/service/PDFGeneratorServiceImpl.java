@@ -2,6 +2,7 @@ package com.opinta.service;
 
 import com.opinta.entity.Address;
 import com.opinta.entity.Client;
+import com.opinta.entity.Parcel;
 import com.opinta.entity.Shipment;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 @Service
 @Slf4j
@@ -79,10 +81,10 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
                 generateClientsData(shipment, acroForm);
 
                 field = (PDTextField) acroForm.getField("mass");
-                field.setValue(String.valueOf(shipment.getWeight()));
+                field.setValue(String.valueOf(calculateWeight(shipment)));
 
                 field = (PDTextField) acroForm.getField("value");
-                field.setValue(String.valueOf(shipment.getDeclaredPrice()));
+                field.setValue(String.valueOf(calculateDeclaredPrice(shipment)));
 
                 field = (PDTextField) acroForm.getField("sendingCost");
                 field.setValue(String.valueOf(shipment.getPrice()));
@@ -135,5 +137,22 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
                 address.getHouseNumber() + ", " +
                 address.getCity() + "\n" +
                 address.getPostcode();
+    }
+
+    private float calculateWeight(Shipment shipment) {
+        float weight = 0;
+        for (Parcel parcel: shipment.getParcels()) {
+            weight += parcel.getWeight();
+        }
+        return weight;
+    }
+
+    private BigDecimal calculateDeclaredPrice(Shipment shipment) {
+        float price = 0;
+        for (Parcel parcel: shipment.getParcels()) {
+            price += parcel.getDeclaredPrice().floatValue();
+        }
+
+        return new BigDecimal(Float.toString(price));
     }
 }

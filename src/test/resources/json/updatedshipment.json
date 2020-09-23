@@ -1,0 +1,9 @@
+{
+  "senderId": [],
+  "recipientId": [],
+  "deliveryType":"D2W",
+  "price":25.00,
+  "postPay":71.00,
+  "description":null,
+  "parcels":[]
+}

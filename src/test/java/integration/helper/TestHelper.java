@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class TestHelper {
@@ -39,8 +41,20 @@ public class TestHelper {
     }
 
     public Shipment createShipment() {
+        List<ParcelItem> parcelItemsForSave =  new ArrayList<>();
+        parcelItemsForSave.add(new ParcelItem("Some item", 1, 2.0F, new BigDecimal("10.5")));
+        parcelItemsForSave.add(new ParcelItem("Some other item", 2, 3.0F, new BigDecimal("20.5")));
+        parcelItemsForSave.add(new ParcelItem("Some other item", 1, 4.0F, new BigDecimal("20.5")));
+        parcelItemsForSave.add(new ParcelItem("Some other item", 2, 5.0F, new BigDecimal("25.5")));
+
+        List<Parcel> parcelsForSave = new ArrayList<>();
+        parcelsForSave.add(new Parcel(parcelItemsForSave.subList(0,2), 3F, 3F, 3F, 3F,
+                new BigDecimal("8.5"), new BigDecimal("2.25")));
+        parcelsForSave.add(new Parcel(parcelItemsForSave.subList(2,4), 3F, 3F, 3F, 3F,
+                new BigDecimal("8.5"), new BigDecimal("2.25")));
+
         Shipment shipment = new Shipment(createClient(), createClient(),
-                DeliveryType.D2D, 1.0F, 1.0F, new BigDecimal(200), new BigDecimal(30), new BigDecimal(35.2));
+                DeliveryType.D2D, new BigDecimal(35.2), parcelsForSave);
         return shipmentService.saveEntity(shipment);
     }
 

@@ -1,6 +1,8 @@
 package com.opinta.service;
 
 import com.opinta.entity.Counterparty;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -100,7 +102,7 @@ public class ClientServiceImpl implements ClientService {
         }
         try {
             copyProperties(target, source);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Can't get properties from object to updatable object for client", e);
         }
         target.setId(id);
