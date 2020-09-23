@@ -39,7 +39,7 @@ public class ParcelController {
     public ResponseEntity<?> getParcel(@PathVariable("id") long id) {
         Parcel parcel = parcelService.getById(id);
         if (parcel == null) {
-            return new ResponseEntity<>(format("No Shipment found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format("No Parcel found for ID %d", id), NOT_FOUND);
         }
         return new ResponseEntity<>(parcel, OK);
     }
@@ -50,7 +50,7 @@ public class ParcelController {
                                            @RequestBody Parcel parcel) {
         parcel = parcelService.update(id, shipmentId, parcel);
         if (parcel == null) {
-            return new ResponseEntity<>(format("No Shipment found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format("No Parcel found for ID %d", id), NOT_FOUND);
         }
         return new ResponseEntity<>(parcel, OK);
     }
@@ -58,7 +58,7 @@ public class ParcelController {
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteParcel(@PathVariable long id) {
         if (!parcelService.delete(id)) {
-            return new ResponseEntity<>(format("No Shipment found for ID %d", id), NOT_FOUND);
+            return new ResponseEntity<>(format("No Parcel found for ID %d", id), NOT_FOUND);
         }
         return new ResponseEntity<>(OK);
     }
