@@ -1,18 +1,24 @@
 package com.opinta.entity;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
+import javax.persistence.FetchType;
+import javax.persistence.OrderColumn;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ListIndexBase;
 
 @Entity
 @Data
@@ -31,24 +37,23 @@ public class Shipment {
     private BarcodeInnerNumber barcode;
     @Enumerated(EnumType.STRING)
     private DeliveryType deliveryType;
-    private float weight;
-    private float length;
-    private float width;
-    private float height;
-    private BigDecimal declaredPrice;
-    private BigDecimal price;
+
     private BigDecimal postPay;
     private String description;
+    private BigDecimal price;
 
-    public Shipment(Client sender, Client recipient, DeliveryType deliveryType, float weight, float length,
-                    BigDecimal declaredPrice, BigDecimal price, BigDecimal postPay) {
+    @OneToMany(cascade = CascadeType.ALL, targetEntity = Parcel.class, mappedBy = "shipment", fetch = FetchType.EAGER)
+    @OrderColumn
+    @ListIndexBase
+    private List<Parcel> parcels;
+
+    public Shipment(Client sender, Client recipient,
+                    DeliveryType deliveryType,
+                    BigDecimal postPay, List<Parcel> parcels) {
         this.sender = sender;
         this.recipient = recipient;
         this.deliveryType = deliveryType;
-        this.weight = weight;
-        this.length = length;
-        this.declaredPrice = declaredPrice;
-        this.price = price;
         this.postPay = postPay;
+        this.parcels = parcels;
     }
 }
