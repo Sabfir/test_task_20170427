@@ -2,6 +2,7 @@ package com.opinta.service;
 
 import com.opinta.entity.Address;
 import com.opinta.entity.Client;
+import com.opinta.entity.Parcel;
 import com.opinta.entity.Shipment;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 @Service
 @Slf4j
@@ -79,10 +81,21 @@ public class PDFGeneratorServiceImpl implements PDFGeneratorService {
                 generateClientsData(shipment, acroForm);
 
                 field = (PDTextField) acroForm.getField("mass");
-                field.setValue(String.valueOf(shipment.getWeight()));
+                field.setValue(String.valueOf(
+                        shipment
+                                .getParcels()
+                                .stream()
+                                .mapToDouble(Parcel::getWeight).sum()
+                ));
 
                 field = (PDTextField) acroForm.getField("value");
-                field.setValue(String.valueOf(shipment.getDeclaredPrice()));
+                field.setValue(String.valueOf(
+                        shipment
+                                .getParcels()
+                                .stream()
+                                .map(Parcel::getDeclaredPrice)
+                                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                        ));
 
                 field = (PDTextField) acroForm.getField("sendingCost");
                 field.setValue(String.valueOf(shipment.getPrice()));

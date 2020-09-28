@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 import static java.lang.String.format;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -75,7 +77,7 @@ public class ShipmentController {
 
     @PostMapping
     @ResponseStatus(OK)
-    public ShipmentDto createShipment(@RequestBody ShipmentDto shipmentDto) {
+    public ShipmentDto createShipment(@RequestBody @Valid ShipmentDto shipmentDto) {
         return shipmentService.save(shipmentDto);
     }
 

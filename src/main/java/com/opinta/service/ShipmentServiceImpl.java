@@ -1,10 +1,7 @@
 package com.opinta.service;
 
 import com.opinta.dao.TariffGridDao;
-import com.opinta.entity.Address;
-import com.opinta.entity.DeliveryType;
-import com.opinta.entity.TariffGrid;
-import com.opinta.entity.W2wVariation;
+import com.opinta.entity.*;
 import com.opinta.util.AddressUtil;
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,11 +12,6 @@ import com.opinta.dao.ClientDao;
 import com.opinta.dao.ShipmentDao;
 import com.opinta.dto.ShipmentDto;
 import com.opinta.mapper.ShipmentMapper;
-import com.opinta.entity.BarcodeInnerNumber;
-import com.opinta.entity.Client;
-import com.opinta.entity.PostcodePool;
-import com.opinta.entity.Shipment;
-import com.opinta.entity.Counterparty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -104,6 +96,7 @@ public class ShipmentServiceImpl implements ShipmentService {
 
         shipment.setSender(clientDao.getById(shipment.getSender().getId()));
         shipment.setRecipient(clientDao.getById(shipment.getRecipient().getId()));
+        shipment.getParcels().forEach(p->p.setPrice(calculatePrice(shipment, p)));
         shipment.setPrice(calculatePrice(shipment));
 
         return shipmentMapper.toDto(shipmentDao.save(shipment));
@@ -118,15 +111,17 @@ public class ShipmentServiceImpl implements ShipmentService {
             log.debug("Can't update shipment. Shipment doesn't exist {}", id);
             return null;
         }
-        target.setPrice(calculatePrice(target));
         try {
             copyProperties(target, source);
         } catch (Exception e) {
             log.error("Can't get properties from object to updatable object for shipment", e);
         }
         target.setId(id);
+        target.getParcels().forEach(p->p.setPrice(calculatePrice(target, p)));
+        target.setPrice(calculatePrice(target));
         log.info("Updating shipment {}", target);
-        shipmentDao.update(target);
+        // .update method is`n necessary if uses @Transactional,
+        // this annotation tracks changes and save it automatically
         return shipmentMapper.toDto(target);
     }
 
@@ -147,6 +142,17 @@ public class ShipmentServiceImpl implements ShipmentService {
     private BigDecimal calculatePrice(Shipment shipment) {
         log.info("Calculating price for shipment {}", shipment);
 
+        List<Parcel> parcels = shipment.getParcels();
+        return parcels
+                .stream()
+                .map(Parcel::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                ;
+    }
+
+    private BigDecimal calculatePrice(Shipment shipment, Parcel parcel) {
+        log.info("Calculating price for parcel {}", parcel);
+
         Address senderAddress = shipment.getSender().getAddress();
         Address recipientAddress = shipment.getRecipient().getAddress();
         W2wVariation w2wVariation = W2wVariation.COUNTRY;
@@ -157,13 +163,13 @@ public class ShipmentServiceImpl implements ShipmentService {
         }
 
         TariffGrid tariffGrid = tariffGridDao.getLast(w2wVariation);
-        if (shipment.getWeight() < tariffGrid.getWeight() &&
-                shipment.getLength() < tariffGrid.getLength()) {
-            tariffGrid = tariffGridDao.getByDimension(shipment.getWeight(), shipment.getLength(), w2wVariation);
+        if (parcel.getWeight() < tariffGrid.getWeight() &&
+                parcel.getLength() < tariffGrid.getLength()) {
+            tariffGrid = tariffGridDao.getByDimension(parcel.getWeight(), parcel.getLength(), w2wVariation);
         }
 
         log.info("TariffGrid for weight {} per length {} and type {}: {}",
-                shipment.getWeight(), shipment.getLength(), w2wVariation, tariffGrid);
+                parcel.getWeight(), parcel.getLength(), w2wVariation, tariffGrid);
 
         if (tariffGrid == null) {
             return BigDecimal.ZERO;

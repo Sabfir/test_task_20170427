@@ -2,7 +2,7 @@ package integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opinta.dto.ShipmentDto;
-import com.opinta.entity.Shipment;
+import com.opinta.entity.*;
 import com.opinta.mapper.ShipmentMapper;
 import com.opinta.service.ShipmentService;
 import org.json.simple.JSONObject;
@@ -12,6 +12,10 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import integration.helper.TestHelper;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.when;
@@ -67,8 +71,9 @@ public class ShipmentControllerIT extends BaseControllerIT {
     }
 
     @Test
+    @Transactional
     @SuppressWarnings("unchecked")
-    public void createClient() throws Exception {
+    public void createShipment() throws Exception {
         // create
         JSONObject jsonObject = testHelper.getJsonObjectFromFile("json/shipment.json");
         jsonObject.put("senderId", (int) testHelper.createClient().getId());
@@ -97,6 +102,8 @@ public class ShipmentControllerIT extends BaseControllerIT {
     }
 
     @Test
+    //@Transactional let the test to be done when uses FetchType.LAZY in entity
+    @Transactional
     @SuppressWarnings("unchecked")
     public void updateShipment() throws Exception {
         // update
@@ -119,6 +126,11 @@ public class ShipmentControllerIT extends BaseControllerIT {
         String actualJson = mapper.writeValueAsString(shipmentDto);
 
         jsonObject.put("price", 45);
+        List<JSONObject> parcels = (List<JSONObject>) jsonObject.get("parcels");
+        JSONObject parcel = parcels.get(0);
+        parcel.put("price", BigDecimal.valueOf(45));
+        parcels.set(0, parcel);
+        jsonObject.put("parcels", parcels);
         expectedJson = jsonObject.toString();
 
         JSONAssert.assertEquals(expectedJson, actualJson, false);
